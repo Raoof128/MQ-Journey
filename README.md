@@ -1,6 +1,6 @@
 # MQ Navigation
 
-A production-ready Flutter client for Macquarie University's campus — dual-renderer maps, turn-by-turn routing, compass mode, safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: optional anonymous account, zero tracking, zero location history.**
+A production-ready Flutter client for Macquarie University's campus — dual-renderer maps, turn-by-turn routing, compass mode, safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: optional account, zero tracking, zero location history.**
 
 Part of a **two frontends, one backend** architecture sharing a Supabase backend with the Next.js web application.
 
@@ -33,11 +33,11 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 
 ### Authentication
 - **Email/Password Auth** — Supabase-powered sign-up and login with session persistence via `supabase_flutter` and `flutter_secure_storage`.
-- **Protected Routes** — GoRouter auth gate redirects unauthenticated users to the login/signup screen.
+- **Protected Routes** — GoRouter auth gate redirects unauthenticated users to the login/signup screen for certain features.
 - **Account Management** — Email display and sign-out in the Settings page. **Fully optional** — the app works without an account.
 
 ### Favorites
-- **Building Bookmarks** — Heart-toggle on building search results, persisted to Supabase `favorite_buildings` table.
+- **Building Bookmarks** — Heart-toggle on building search results, persisted to Supabase `favorite_buildings` table for authenticated users.
 - **Favorites Page** — Dedicated list with pull-to-refresh, swipe-to-delete, note editing, and navigation to building on map.
 - **State Management** — Riverpod 3 `Notifier` with optimistic UI updates and error handling.
 

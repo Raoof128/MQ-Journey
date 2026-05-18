@@ -26,7 +26,7 @@ All map-related APIs, services, keys, and data sources used by the campus map su
 
 ## Building Registry
 
-- **Source**: `features/map/lib/buildings.ts` in web app (153 buildings in the current Flutter asset snapshot)
+- **Source**: `features/map/lib/buildings.ts` in web app (161 buildings in the current Flutter asset snapshot)
 - **Fields per building**: id, code, name, description, tags, aliases, searchTokens, gridRef, address, category, latitude/longitude, entranceLatitude/entranceLongitude, googlePlaceId, levels, wheelchair, campusX/campusY
 - **Categories**: academic, services, health, food, sports, venue, research, residential, other
 - **Flutter storage**: Bundled JSON asset at `assets/data/buildings.json`

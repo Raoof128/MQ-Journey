@@ -1,7 +1,7 @@
 # MQ Navigation: Technical Architecture (2026)
 
 ## Overview
-Feature-First Clean Architecture for high-concurrency campus navigation, transit data, compass mode, and safety toolkit. Privacy by design: zero account, zero tracking, zero location history.
+Feature-First Clean Architecture for high-concurrency campus navigation, transit data, compass mode, and safety toolkit. Privacy by design: optional anonymous account, zero tracking, zero location history.
 
 ## Directory Structure
 
@@ -24,9 +24,11 @@ lib/
 │   ├── models/             → UserPreferences
 │   └── widgets/            → MqButton, MqCard, MqInput, MqBottomSheet, GlassPane
 └── features/
+    ├── auth/               → Supabase Auth (login, signup, session persistence, auth gate)
+    ├── favorites/          → Building favorites CRUD (controller, repository, datasource, UI)
     ├── deep_link/          → Syllabus Sync deep link contract
     ├── home/               → Welcome dashboard, onboarding, metro countdown
-    ├── map/                → Campus map (178 buildings, dual renderer, routing, compass)
+    ├── map/                → Campus map (161 buildings, dual renderer, routing, compass)
     ├── notifications/      → FCM push + local study prompts
     ├── open_day/           → Open Day event browsing & reminders
     ├── safety/             → Campus Safety Toolkit (flashlight, contacts, first aid, AED)
@@ -38,32 +40,33 @@ lib/
 ## Layering Strategy
 
 ### Presentation Layer (Riverpod)
-- **Controllers**: `MapController`, `SettingsController`, `NotificationsController`
+- **Controllers**: `MapController`, `SettingsController`, `NotificationsController`, `AuthController`, `FavoritesController`
 - **Widgets**: Atomic design (`MqButton`, `MqCard`, `SafetyActionCard`) + feature-specific views
 - **Compass**: `CompassModeView` — real-time heading via `flutter_compass`, `AnimatedRotation`, heading accuracy bar
 
 ### Domain Layer (Pure Dart)
-- **Entities**: `Building`, `MapRoute`, `NavInstruction`, `SafetyPoi`, `EmergencyContact`, `LocationSample`
+- **Entities**: `Building`, `MapRoute`, `NavInstruction`, `SafetyPoi`, `EmergencyContact`, `LocationSample`, `FavoriteBuilding`
 - **Services**: `GeoUtils`, `MapPolylineCodec`, `OfflineMapsService`
 
 ### Data Layer
-- **Repositories**: `MapRepositoryImpl`, `SettingsRepository`
-- **Data Sources**: `MapsRoutesRemoteSource` (Supabase Edge Functions), `SafetyPoiSource` (curated campus data), `SecureStorageService`
+- **Repositories**: `MapRepositoryImpl`, `SettingsRepository`, `AuthRepository`, `FavoriteBuildingRepository`
+- **Data Sources**: `MapsRoutesRemoteSource` (Supabase Edge Functions), `SafetyPoiSource` (curated campus data), `SecureStorageService`, `FavoriteBuildingRemoteSource`
 - **Location**: `LocationSource` (GPS + last-known fallback, Android emulator mock rejection)
 
 ## Navigation & Routing (GoRouter 17.x)
 
 ```
-StatefulShellRoute.indexedStack (3 tabs + standalone routes)
+StatefulShellRoute.indexedStack (4 tabs + standalone routes)
 ├── /home                  → HomePage (dashboard)
 ├── /map                   → MapPage (dual renderer, building search, route panel)
-│   └── /map/building/:id  → MapPage (focus building)
+├── /favorites             → FavoritesPage (list of bookmarks)
 ├── /settings              → SettingsPage (privacy badge, commute, data, danger zone)
+├── /auth/login            → LoginPage (account entry)
+├── /auth/signup           → SignupPage (account creation)
 ├── /safety                → SafetyToolkitPage (standalone, no auto location)
 ├── /notifications         → NotificationsPage (covers shell)
 ├── /open-day              → OpenDayPage (temporal feature)
 ├── /onboarding            → OnboardingPage (first-launch gate)
-├── /meet                  → MapPage (meet-at-point lat/lng)
 └── /open                  → Deep link router (Syllabus Sync)
 ```
 
@@ -73,30 +76,30 @@ StatefulShellRoute.indexedStack (3 tabs + standalone routes)
 - **Google Maps** (`google_maps_flutter` 2.15): traffic, map-type, clustering, bearing camera
 - **Campus Map** (`flutter_map` + `CrsSimple`): custom raster calibrated to MQ GPS coordinates
 - **Routing**: Supabase Edge Functions (Google Routes API + Directions API fallback), 4 travel modes
-- **Compass Mode**: `flutter_compass` 0.8.1 stream, bearing-to-destination calculation, `AnimatedRotation` smooth heading, heading accuracy display, privacy-safe (all on-device)
+- **Compass Mode**: `flutter_compass` 0.8 stream, bearing-to-destination calculation, `AnimatedRotation` smooth heading, heading accuracy display, privacy-safe (all on-device)
 
 ### Campus Safety Toolkit
 - Flashlight toggle (via `torch_light`)
-- Emergency contacts: 000, Campus Security, Health Service, 1800 CRISIS (tap-to-dial via `url_launcher`)
+- Emergency contacts: 000, Campus Security, Health Service, 1800 CRISIS (localized tap-to-dial via `url_launcher`)
 - 3 first aid + 5 AED locations with building codes and descriptions
 - Security shuttle info + call button
 - Privacy banner: "Your location is never shared automatically"
 - **Zero automatic location sharing** — user manually calls or navigates
 
 ### Privacy by Design
-- No account system (no email, no password, no profile)
+- **Optional account** (Email/Password via Supabase Auth)
 - No analytics/tracking packages (enforced by `check.sh` privacy guard)
-- All data stored locally via `SharedPreferences` + `FlutterSecureStorage`
+- Preferences stored locally via `SharedPreferences` + `FlutterSecureStorage`
 - No location history, no telemetry, no crash reporting
-- Settings page shows permanent **Privacy Badge**: "Private by design: no account, no tracking, no location history"
+- Settings page shows permanent **Privacy Badge**: "Private by design: optional account, no tracking, no location history"
 
 ## CI / Validation (`scripts/check.sh`)
 ```
-8-9 steps depending on --quick:
+9 steps:
   1. flutter pub get
   2. dart format (--fix available)
   3. flutter analyze (single-pass, --no-fatal-infos)
-  4. flutter test (228+ tests)
+  4. flutter test (297 tests)
   5. flutter gen-l10n
   6. untranslated l10n check (non-blocking)
   7. privacy guard (blocks analytics packages)
@@ -108,6 +111,7 @@ Supports `--quick`, `--fix`, `--verbose` flags. Structured logs under `.dart_too
 ## Dependencies (Key)
 - **State**: `flutter_riverpod` 3.2 | **Router**: `go_router` 17
 - **Maps**: `google_maps_flutter` 2.15 + `flutter_map` 8.2
+- **Backend**: `supabase_flutter` 2.8 (Auth, DB, Realtime)
 - **Location**: `geolocator` 14 | **Compass**: `flutter_compass` 0.8
 - **Safety**: `torch_light` 1.1 | **Links**: `url_launcher` 6.3
 - **i18n**: `flutter_localizations` / `intl` (35 ARB locales, RTL for ar/fa/he/ur)
