@@ -1,3 +1,17 @@
+### Raouf: 2026-05-18 (AEST) — AuthController with Riverpod state management
+**Scope:** Auth feature — `AuthController` (Riverpod `Notifier`) managing auth UI state.
+**Summary:** Added `AuthController` (extends Riverpod `Notifier<AuthScreenState>`) with `signIn`, `signUp`, `signOut`, `clearError` methods. Manages `isAuthenticated`, `isLoading`, `error`, `userId` state. Adapted to Riverpod 3.x API (`Notifier`/`NotifierProvider` instead of removed `StateNotifier`). Added `authRepositoryProvider` (Provider<AuthRepository>). Wrote 5 tests covering: signIn success, signIn error, signUp success, signOut reset, loading state during signIn. All 17 auth tests pass.
+**Files Changed:** `lib/features/auth/presentation/controllers/auth_controller.dart` (new), `test/features/auth/auth_controller_test.dart` (new), `AGENT.md`, `CHANGELOG.md`
+**Verification:** `flutter test test/features/auth/` (17/17 passed).
+**Follow-ups:** Wire AuthController into login/signup UI pages.
+
+### Raouf: 2026-05-18 (AEST) — Auth Repository with error mapping layer
+**Scope:** Auth feature — data layer repository wrapping AuthService.
+**Summary:** Implemented `AuthRepository` (`lib/features/auth/data/repositories/auth_repository.dart`) with `AuthResult` success/failure union type. Maps `AuthException` errors to user-friendly messages: invalid credentials, duplicate signup, weak password, email not confirmed, network errors. Methods: `signIn`, `signUp`, `signOut`, `resetPassword`, `isAuthenticated`, `userId`, `authStateChanges`. Added 6 mock-based tests in `test/features/auth/auth_repository_test.dart` covering success and all error paths.
+**Files Changed:** `lib/features/auth/data/repositories/auth_repository.dart`, `test/features/auth/auth_repository_test.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `flutter test test/features/auth/auth_repository_test.dart` (6/6 passed).
+**Follow-ups:** Wire AuthRepository into AuthController/notifier (Task 4).
+
 ### Raouf: 2026-05-17 (AEST) — ARB placeholder normalization (ICU Lexing Errors fixed, 8/8 checks pass)
 **Scope:** i18n / ARB localization quality — all 35 locales.
 **Summary:** Fixed 147 ICU placeholder normalization errors across 13 non-English ARB files. Non-English translations were using localized placeholder names (e.g. `{μοίρες}`, `{درجه}`, `{Minuten}`) instead of English ICU names, causing both `ICU Lexing Error` in `flutter gen-l10n` and `not_enough_positional_arguments` compile errors in the generated Dart code. Added two utility scripts (`fix_icu_placeholders.py`, `normalize_arb_placeholders.py`) to detect and repair these issues. Also fixed a `use_null_aware_elements` lint in `safety_action_card.dart`.

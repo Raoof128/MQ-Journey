@@ -49,6 +49,20 @@ lib/
 - All keys loaded via `--dart-define-from-file=.env` — never hardcoded in source
 - Use `scripts/run.sh` to launch with native key injection for Maps SDKs
 
+### Raouf: 2026-05-18 (AEST) — AuthController with Riverpod state management
+**Scope:** Auth feature — `lib/features/auth/presentation/controllers/auth_controller.dart`.
+**Summary:** Added `AuthController` (Riverpod `Notifier<AuthScreenState>`) with signIn/signUp/signOut/clearError methods. Manages `isAuthenticated`, `isLoading`, `error`, `userId` state. Adapted to Riverpod 3.x API (`Notifier`/`NotifierProvider`, since `StateNotifier` was removed in Riverpod 3). Added `authRepositoryProvider` (Provider<AuthRepository>). 
+**Files Changed:** `lib/features/auth/presentation/controllers/auth_controller.dart` (new), `test/features/auth/auth_controller_test.dart` (new), `AGENT.md`, `CHANGELOG.md`
+**Verification:** `flutter test test/features/auth/` (17/17 passed).
+**Follow-ups:** Wire AuthController into login/signup UI pages.
+
+### Raouf: 2026-05-18 (AEST) — Auth Repository with error mapping layer
+**Scope:** Auth feature — `lib/features/auth/data/repositories/auth_repository.dart`.
+**Summary:** Added `AuthRepository` class wrapping `AuthService` with error mapping layer. Defines `AuthResult` union type (success + optional error message). Maps Supabase `AuthException` codes to user-facing strings. Covers: sign in, sign up, sign out, reset password, auth state stream, and 6 unit tests for success + error paths.
+**Files Changed:** `lib/features/auth/data/repositories/auth_repository.dart`, `test/features/auth/auth_repository_test.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `flutter test test/features/auth/auth_repository_test.dart` (6/6 passed).
+**Follow-ups:** Wire AuthRepository into AuthController/notifier for Task 4.
+
 ### Raouf: 2026-05-13 (AEST) — check.sh production-grade upgrade (privacy guard, secret scan, --fix/--verbose)
 **Scope:** CI/Dev UX — `scripts/check.sh` rewrite.
 **Summary:** Upgraded `check.sh` with: `--fix` (auto-format), `--verbose` (stream logs), structured logs under `.dart_tool/check_logs/`, untranslated l10n check (non-blocking), privacy guard (blocks analytics/tracking packages), secret scan (flags hardcoded API keys in lib/test/scripts — supabase/ edge functions excluded since they use `Deno.env.get` for runtime env vars), cleaner summary with per-step failure list. Single-pass `flutter analyze`. Format check now also covers `scripts/` and `integration_test/` if they exist.
