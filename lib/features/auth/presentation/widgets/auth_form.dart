@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/shared/widgets/mq_input.dart';
 
 class AuthForm extends StatelessWidget {
@@ -27,11 +28,13 @@ class AuthForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         MqInput(
-          label: 'Email',
+          label: l10n.authEmailLabel,
           hint: 'you@example.com',
           controller: emailController,
           prefixIcon: Icons.email_outlined,
@@ -41,7 +44,7 @@ class AuthForm extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         MqInput(
-          label: 'Password',
+          label: l10n.authPasswordLabel,
           controller: passwordController,
           prefixIcon: Icons.lock_outlined,
           suffixIcon: IconButton(
@@ -58,7 +61,7 @@ class AuthForm extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4, left: 16),
             child: Text(
-              '8+ characters, one number recommended',
+              l10n.authPasswordHint,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 12,
@@ -68,7 +71,7 @@ class AuthForm extends StatelessWidget {
         if (isSignup) ...[
           const SizedBox(height: 16),
           MqInput(
-            label: 'Confirm password',
+            label: l10n.authConfirmPasswordLabel,
             controller: confirmPasswordController,
             prefixIcon: Icons.lock_outlined,
             suffixIcon: IconButton(
@@ -88,3 +91,4 @@ class AuthForm extends StatelessWidget {
     );
   }
 }
+
