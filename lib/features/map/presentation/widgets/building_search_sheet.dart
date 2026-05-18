@@ -12,6 +12,7 @@ import 'package:mq_navigation/features/map/domain/entities/building.dart';
 import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/services/building_search.dart';
 import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
+import 'package:mq_navigation/features/favorites/presentation/widgets/favorite_button.dart';
 import 'package:mq_navigation/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:mq_navigation/shared/extensions/context_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -214,6 +215,10 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
                     style: TextStyle(
                       color: isDark ? Colors.white : MqColors.contentSecondary,
                     ),
+                  ),
+                  trailing: FavoriteButton(
+                    buildingId: building.id,
+                    buildingName: building.name,
                   ),
                   onTap: () {
                     final haptics =
