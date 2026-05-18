@@ -7,6 +7,7 @@ import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/app/router/route_names.dart';
 import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
+import 'package:mq_navigation/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
 import 'package:mq_navigation/features/open_day/presentation/widgets/open_day_home_card.dart';
 import 'package:mq_navigation/features/settings/presentation/controllers/settings_controller.dart';
@@ -112,6 +113,10 @@ class HomePage extends ConsumerWidget {
                               context.goNamed(RouteNames.settings),
                           onRefreshTap: () =>
                               ref.invalidate(tfnswMetroProvider),
+                        ),
+                        const SizedBox(height: MqSpacing.space4),
+                        _FavoritesCard(
+                          onTap: () => context.goNamed(RouteNames.favorites),
                         ),
                         const SizedBox(height: MqSpacing.space4),
                         // Open Day enhancement — hides itself when the
@@ -725,6 +730,100 @@ class _LogoFallback extends StatelessWidget {
           Icons.school_rounded,
           color: Colors.white,
           size: size * 0.55,
+        ),
+      ),
+    );
+  }
+}
+
+// -------------------------------------------------------------------------- //
+// FAVORITES CARD                                                             //
+// -------------------------------------------------------------------------- //
+
+class _FavoritesCard extends ConsumerWidget {
+  const _FavoritesCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final dark = context.isDarkMode;
+    final state = ref.watch(favoritesControllerProvider);
+
+    final surface = dark
+        ? MqColors.charcoal800.withValues(alpha: 0.94)
+        : Colors.white.withValues(alpha: 0.94);
+    final border = dark
+        ? Colors.white.withValues(alpha: 0.08)
+        : MqColors.charcoal800.withValues(alpha: 0.06);
+    final titleColor = dark ? Colors.white : MqColors.black;
+    final subtitleColor = dark ? Colors.white : MqColors.black;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: BorderRadius.circular(MqSpacing.radiusXl),
+          border: Border.all(color: border, width: 0.6),
+          boxShadow: [
+            BoxShadow(
+              color: MqColors.charcoal800.withValues(alpha: dark ? 0.30 : 0.10),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        padding: const EdgeInsetsDirectional.all(MqSpacing.space4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: const BoxDecoration(
+                color: MqColors.red,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.favorite_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: MqSpacing.space3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    l10n.favoritesCardTitle,
+                    style: context.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: titleColor,
+                    ),
+                  ),
+                  const SizedBox(height: MqSpacing.space1),
+                  Text(
+                    state.favorites.isEmpty
+                        ? l10n.favoritesCardSubtitle
+                        : '${state.favorites.length} buildings',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: subtitleColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: dark ? Colors.white : MqColors.contentTertiary,
+              size: 20,
+            ),
+          ],
         ),
       ),
     );
