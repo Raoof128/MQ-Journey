@@ -279,7 +279,9 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
                       title: l10n.safetyNavigateToSecurity,
                       subtitle: l10n.safetyNavigateToSecurityDesc,
                       onTap: () {
-                        context.showSnackBar(l10n.safetyNavigateToSecurityToast);
+                        context.showSnackBar(
+                          l10n.safetyNavigateToSecurityToast,
+                        );
                       },
                     ),
                   ],
@@ -287,7 +289,11 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
               ),
 
               // Emergency Contacts
-              _buildSectionHeader(context, l10n.safetyEmergencyContacts, isDark),
+              _buildSectionHeader(
+                context,
+                l10n.safetyEmergencyContacts,
+                isDark,
+              ),
               ..._source.emergencyContacts.map(
                 (c) => _buildEmergencyContact(context, isDark, l10n, c),
               ),

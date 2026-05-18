@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/features/auth/data/repositories/auth_repository.dart';
 import 'package:mq_navigation/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:mq_navigation/features/auth/presentation/pages/signup_page.dart';
@@ -17,11 +19,18 @@ void main() {
     when(() => mockRepository.isAuthenticated).thenReturn(false);
   });
 
-  Widget buildTestApp() {
-    return MaterialApp(
-      home: ProviderScope(
-        overrides: [authRepositoryProvider.overrideWithValue(mockRepository)],
-        child: const SignupPage(),
+  Widget buildTestApp({Widget? child}) {
+    return ProviderScope(
+      overrides: [authRepositoryProvider.overrideWithValue(mockRepository)],
+      child: MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: child ?? const SignupPage(),
       ),
     );
   }
@@ -32,24 +41,30 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pump();
 
-    expect(find.text('Email'), findsOneWidget);
-    expect(find.text('Password'), findsWidgets);
-    expect(find.text('Confirm password'), findsOneWidget);
-    expect(find.text('Create Account'), findsWidgets);
-    expect(find.text('Already have an account? '), findsOneWidget);
+    final BuildContext context = tester.element(find.byType(SignupPage));
+    final l10n = AppLocalizations.of(context)!;
+
+    expect(find.text(l10n.authEmailLabel), findsOneWidget);
+    expect(find.text(l10n.authPasswordLabel), findsWidgets);
+    expect(find.text(l10n.authConfirmPasswordLabel), findsOneWidget);
+    expect(find.text(l10n.authSignUpButton), findsWidgets);
+    expect(find.text("${l10n.authHasAccount} "), findsOneWidget);
   });
 
   testWidgets('shows error when passwords do not match', (tester) async {
     await tester.pumpWidget(buildTestApp());
     await tester.pump();
 
+    final BuildContext context = tester.element(find.byType(SignupPage));
+    final l10n = AppLocalizations.of(context)!;
+
     await tester.enterText(find.byType(TextFormField).at(0), 'a@b.com');
     await tester.enterText(find.byType(TextFormField).at(1), 'pass123');
     await tester.enterText(find.byType(TextFormField).at(2), 'different');
-    await tester.tap(find.widgetWithText(MqButton, 'Create Account'));
+    await tester.tap(find.widgetWithText(MqButton, l10n.authSignUpButton));
     await tester.pump();
 
-    expect(find.text('Passwords do not match.'), findsOneWidget);
+    expect(find.text(l10n.authErrorPasswordsDoNotMatch), findsOneWidget);
   });
 
   testWidgets('calls signUp on valid submit', (tester) async {
@@ -64,10 +79,13 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pump();
 
+    final BuildContext context = tester.element(find.byType(SignupPage));
+    final l10n = AppLocalizations.of(context)!;
+
     await tester.enterText(find.byType(TextFormField).at(0), 'a@b.com');
     await tester.enterText(find.byType(TextFormField).at(1), 'pass1234');
     await tester.enterText(find.byType(TextFormField).at(2), 'pass1234');
-    await tester.tap(find.widgetWithText(MqButton, 'Create Account'));
+    await tester.tap(find.widgetWithText(MqButton, l10n.authSignUpButton));
     await tester.pump();
 
     verify(
