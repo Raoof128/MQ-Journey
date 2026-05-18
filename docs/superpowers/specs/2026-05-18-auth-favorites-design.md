@@ -32,6 +32,19 @@ create table favorite_buildings (
   unique (user_id, building_id)
 );
 
+create or replace function set_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger set_favorite_buildings_updated_at
+before update on favorite_buildings
+for each row
+execute function set_updated_at();
+
 alter table favorite_buildings enable row level security;
 
 create policy "Users can read own favourites"
@@ -119,6 +132,7 @@ lib/features/map/
   - "Signing in…" / "Creating account…" / "Sending reset email…"
 - "Forgot password?" link → Supabase password reset
 - Toggle link: "Don't have an account? Create one" / "Already have an account? Sign in"
+- **Sign out** placed in Settings page with confirmation dialog: "Are you sure you want to sign out?"
 - Error banner below form for:
   - "Email or password is incorrect."
   - "An account already exists for this email."
@@ -223,7 +237,7 @@ FavoritesPage → watch(favoritesControllerProvider)
 3. `lib/app/l10n/app_en.arb` — auth + favourites strings
 4. `lib/features/home/presentation/pages/home_page.dart` — add favourites card
 5. `lib/features/settings/presentation/pages/settings_page.dart` — add favourites entry
-6. `README.md` — add auth/favourites docs + test credentials
+6. `README.md` — add auth/favourites docs + marker test credentials with pre-created Supabase account
 7. `pubspec.yaml` — if any new deps needed (unlikely)
 
 ### Database migration
@@ -242,7 +256,7 @@ FavoritesPage → watch(favoritesControllerProvider)
 |----------------|-------|---------------|
 | Auth | 5 | Email/password login, signup, logout, password reset, safe errors, loading states, duplicate detection |
 | Remote DB | 10 | `favorite_buildings` table, RLS, data persists across sessions, loading/error states |
-| Create & Read | 5 | Heart button creates, favourites page reads with real-time display |
+| Create & Read | 5 | Heart button creates, favourites page reads and refreshes after create/update/delete |
 | Update & Delete | 5 | Edit note dialog (update), delete with confirmation dialog |
 | Device Service | 5 | Location permission denial UX polish (existing feature) |
 | Visual Design | 5 | Auth screens styled with MqColors/MqTypography, consistent with existing app |
@@ -252,4 +266,4 @@ FavoritesPage → watch(favoritesControllerProvider)
 | Widget Tests | 10 | Tests for auth screens, favourites page, interactions |
 | Unit Tests | 10 | Tests for controller, repository, model serialization |
 | Overall | 10 | Cohesive product: auth → favourites → map, feels like a real app |
-| **Total** | **80+** | |
+| **Total** | **100 target coverage** | |
