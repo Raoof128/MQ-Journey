@@ -810,7 +810,7 @@ class _FavoritesCard extends ConsumerWidget {
                   Text(
                     state.favorites.isEmpty
                         ? l10n.favoritesCardSubtitle
-                        : '${state.favorites.length} buildings',
+                        : l10n.favoritesCount(state.favorites.length),
                     style: context.textTheme.bodySmall?.copyWith(
                       color: subtitleColor,
                     ),

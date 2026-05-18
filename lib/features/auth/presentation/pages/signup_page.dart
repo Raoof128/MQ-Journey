@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:mq_navigation/features/auth/presentation/widgets/auth_form.dart';
@@ -30,10 +31,11 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   }
 
   void _submit() {
+    final l10n = AppLocalizations.of(context)!;
     final password = _passwordController.text;
     final confirm = _confirmPasswordController.text;
     if (password != confirm) {
-      setState(() => _confirmPasswordError = 'Passwords do not match.');
+      setState(() => _confirmPasswordError = l10n.authErrorPasswordsDoNotMatch);
       return;
     }
     setState(() => _confirmPasswordError = null);
@@ -47,6 +49,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     final authState = ref.watch(authControllerProvider);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: isDark ? MqColors.charcoal900 : MqColors.alabaster,
@@ -66,7 +69,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                 const Icon(Icons.explore, size: 56, color: MqColors.red),
                 const SizedBox(height: 8),
                 Text(
-                  'MQ Navigation',
+                  l10n.appName,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -75,7 +78,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  'Create Account',
+                  l10n.authSignupTitle,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleLarge?.copyWith(
                     color: isDark ? Colors.white : MqColors.contentPrimary,
@@ -83,7 +86,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Use your account or create one to save favourite buildings.',
+                  l10n.authSubtitle,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isDark
@@ -164,7 +167,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
                 const SizedBox(height: 24),
                 MqButton(
-                  label: 'Create Account',
+                  label: l10n.authSignUpButton,
                   onPressed: _submit,
                   isLoading: authState.isLoading,
                 ),
@@ -174,7 +177,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Already have an account? ',
+                      "${l10n.authHasAccount} ",
                       style: TextStyle(
                         color: isDark
                             ? MqColors.contentSecondaryDark
@@ -185,9 +188,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       onTap: authState.isLoading
                           ? null
                           : () => context.go('/auth/login'),
-                      child: const Text(
-                        'Sign in instead',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.authSignInInstead,
+                        style: const TextStyle(
                           color: MqColors.red,
                           fontWeight: FontWeight.w600,
                         ),
@@ -203,3 +206,4 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     );
   }
 }
+

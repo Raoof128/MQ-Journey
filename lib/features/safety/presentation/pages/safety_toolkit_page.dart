@@ -31,13 +31,14 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
   }
 
   Future<void> _toggleFlashlight() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       if (mounted) {
         setState(() => _flashlightOn = !_flashlightOn);
       }
     } catch (_) {
       if (mounted) {
-        context.showSnackBar('Flashlight unavailable on this device');
+        context.showSnackBar(l10n.safetyFlashlightUnavailable);
       }
     }
   }
@@ -75,7 +76,7 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: MqSpacing.space4),
         child: Text(
-          'No locations available',
+          l10n.safetyNoLocations,
           style: TextStyle(
             color: isDark
                 ? Colors.white.withValues(alpha: 0.4)
@@ -143,6 +144,7 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
   Widget _buildEmergencyContact(
     BuildContext context,
     bool isDark,
+    AppLocalizations l10n,
     EmergencyContact contact,
   ) {
     return Padding(
@@ -154,13 +156,38 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
         icon: contact.isEmergency
             ? Icons.warning_amber_rounded
             : Icons.phone_in_talk,
-        title: contact.label,
-        subtitle: contact.description,
+        title: _resolveContactLabel(l10n, contact),
+        subtitle: _resolveContactDescription(l10n, contact),
         value: contact.phoneNumber,
         isDestructive: contact.isEmergency,
         onTap: () => _callNumber(contact.phoneNumber),
       ),
     );
+  }
+
+  String _resolveContactLabel(AppLocalizations l10n, EmergencyContact contact) {
+    if (contact.label.contains('Emergency')) return l10n.safetyEmergencyLabel;
+    if (contact.label.contains('Campus Security')) {
+      return l10n.safetySecurityLabel;
+    }
+    if (contact.label.contains('Health Service')) return l10n.safetyHealthLabel;
+    if (contact.label.contains('Afterhours Support')) {
+      return l10n.safetySupportLabel;
+    }
+    return contact.label;
+  }
+
+  String? _resolveContactDescription(
+    AppLocalizations l10n,
+    EmergencyContact contact,
+  ) {
+    if (contact.description == null) return null;
+    final d = contact.description!;
+    if (d.contains('Life-threatening')) return l10n.safetyEmergencyDesc;
+    if (d.contains('24/7 campus security')) return l10n.safetySecurityDesc;
+    if (d.contains('Health Service appointments')) return l10n.safetyHealthDesc;
+    if (d.contains('1800 CRISIS')) return l10n.safetySupportDesc;
+    return d;
   }
 
   @override
@@ -228,7 +255,7 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
               ),
 
               // Quick Actions
-              _buildSectionHeader(context, 'Quick Actions', isDark),
+              _buildSectionHeader(context, l10n.safetyQuickActions, isDark),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: MqSpacing.space4,
@@ -242,7 +269,7 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
                       title: _flashlightOn
                           ? l10n.safetyFlashlightOn
                           : l10n.safetyFlashlight,
-                      subtitle: 'Use device camera flash as light',
+                      subtitle: l10n.safetyFlashlightDesc,
                       isActive: _flashlightOn,
                       onTap: _toggleFlashlight,
                     ),
@@ -250,11 +277,9 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
                     SafetyActionCard(
                       icon: Icons.navigation,
                       title: l10n.safetyNavigateToSecurity,
-                      subtitle: 'Open campus map to security office',
+                      subtitle: l10n.safetyNavigateToSecurityDesc,
                       onTap: () {
-                        context.showSnackBar(
-                          'Navigate to Security — opening campus map',
-                        );
+                        context.showSnackBar(l10n.safetyNavigateToSecurityToast);
                       },
                     ),
                   ],
@@ -262,9 +287,9 @@ class _SafetyToolkitPageState extends State<SafetyToolkitPage> {
               ),
 
               // Emergency Contacts
-              _buildSectionHeader(context, 'Emergency Contacts', isDark),
+              _buildSectionHeader(context, l10n.safetyEmergencyContacts, isDark),
               ..._source.emergencyContacts.map(
-                (c) => _buildEmergencyContact(context, isDark, c),
+                (c) => _buildEmergencyContact(context, isDark, l10n, c),
               ),
 
               // Shuttle Info
