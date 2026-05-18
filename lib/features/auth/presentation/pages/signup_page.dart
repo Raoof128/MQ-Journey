@@ -177,7 +177,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "${l10n.authHasAccount} ",
+                      '${l10n.authHasAccount} ',
                       style: TextStyle(
                         color: isDark
                             ? MqColors.contentSecondaryDark

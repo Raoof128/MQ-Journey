@@ -48,7 +48,7 @@ void main() {
     expect(find.text(l10n.authPasswordLabel), findsWidgets);
     expect(find.text(l10n.authConfirmPasswordLabel), findsOneWidget);
     expect(find.text(l10n.authSignUpButton), findsWidgets);
-    expect(find.text("${l10n.authHasAccount} "), findsOneWidget);
+    expect(find.text('${l10n.authHasAccount} '), findsOneWidget);
   });
 
   testWidgets('shows error when passwords do not match', (tester) async {

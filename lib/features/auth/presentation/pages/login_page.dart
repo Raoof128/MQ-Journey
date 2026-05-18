@@ -158,7 +158,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "${l10n.authNoAccount} ",
+                      '${l10n.authNoAccount} ',
                       style: TextStyle(
                         color: isDark
                             ? MqColors.contentSecondaryDark

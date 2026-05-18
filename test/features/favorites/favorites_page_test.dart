@@ -47,7 +47,7 @@ Widget buildApp({
   final router = GoRouter(
     initialLocation: '/favorites',
     routes: [
-      GoRoute(path: '/favorites', builder: (_, __) => FavoritesPage()),
+      GoRoute(path: '/favorites', builder: (_, _) => const FavoritesPage()),
       GoRoute(
         path: '/map/building/:buildingId',
         builder: (_, state) => Scaffold(
