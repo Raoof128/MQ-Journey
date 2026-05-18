@@ -8,9 +8,7 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 
 ProviderContainer makeContainer(AuthRepository repository) {
   return ProviderContainer(
-    overrides: [
-      authRepositoryProvider.overrideWithValue(repository),
-    ],
+    overrides: [authRepositoryProvider.overrideWithValue(repository)],
   );
 }
 
@@ -26,10 +24,12 @@ void main() {
     test('emits authenticated state on success', () async {
       when(() => mockRepository.isAuthenticated).thenReturn(false);
       when(() => mockRepository.userId).thenReturn('user-1');
-      when(() => mockRepository.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => AuthResult.success());
+      when(
+        () => mockRepository.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => AuthResult.success());
 
       final container = makeContainer(mockRepository);
       addTearDown(() => container.dispose());
@@ -43,10 +43,12 @@ void main() {
     });
 
     test('emits error state on failure', () async {
-      when(() => mockRepository.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer(
+      when(
+        () => mockRepository.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer(
         (_) async => AuthResult.failure('Email or password is incorrect.'),
       );
 
@@ -69,10 +71,12 @@ void main() {
     test('emits authenticated state on success', () async {
       when(() => mockRepository.isAuthenticated).thenReturn(false);
       when(() => mockRepository.userId).thenReturn('user-1');
-      when(() => mockRepository.signUp(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => AuthResult.success());
+      when(
+        () => mockRepository.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => AuthResult.success());
 
       final container = makeContainer(mockRepository);
       addTearDown(() => container.dispose());
@@ -104,10 +108,12 @@ void main() {
     test('sets isLoading true during signIn', () async {
       when(() => mockRepository.isAuthenticated).thenReturn(false);
       when(() => mockRepository.userId).thenReturn('user-1');
-      when(() => mockRepository.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async {
+      when(
+        () => mockRepository.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async {
         await Future.delayed(const Duration(milliseconds: 1));
         return AuthResult.success();
       });

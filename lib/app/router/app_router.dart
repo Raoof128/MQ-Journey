@@ -55,7 +55,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // Authenticated users on auth route → redirect to home or onboarding
       if (isAuthed && isAuthRoute) {
         final settingsAsync = ref.read(settingsControllerProvider);
-        final hasCompleted = settingsAsync.value?.hasCompletedOnboarding ?? false;
+        final hasCompleted =
+            settingsAsync.value?.hasCompletedOnboarding ?? false;
         return hasCompleted ? '/home' : '/onboarding';
       }
 
@@ -63,7 +64,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (!isOnboardingRoute) {
         final settingsAsync = ref.read(settingsControllerProvider);
         if (settingsAsync.isLoading) return null;
-        final hasCompleted = settingsAsync.value?.hasCompletedOnboarding ?? false;
+        final hasCompleted =
+            settingsAsync.value?.hasCompletedOnboarding ?? false;
         if (!hasCompleted) {
           return '/onboarding';
         }
@@ -145,10 +147,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: RouteNames.signup,
         builder: (context, state) => const SignupPage(),
       ),
-      GoRoute(
-        path: '/auth',
-        redirect: (context, state) => '/auth/login',
-      ),
+      GoRoute(path: '/auth', redirect: (context, state) => '/auth/login'),
       // Favorites page
       GoRoute(
         path: '/favorites',

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mq_navigation/shared/widgets/mq_input.dart';
 
 class AuthForm extends StatelessWidget {
@@ -74,7 +73,9 @@ class AuthForm extends StatelessWidget {
             prefixIcon: Icons.lock_outlined,
             suffixIcon: IconButton(
               icon: Icon(
-                obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                obscureConfirmPassword
+                    ? Icons.visibility_off
+                    : Icons.visibility,
               ),
               onPressed: onToggleObscureConfirmPassword,
             ),

@@ -37,10 +37,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       return;
     }
     setState(() => _confirmPasswordError = null);
-    ref.read(authControllerProvider.notifier).signUp(
-      email: _emailController.text.trim(),
-      password: password,
-    );
+    ref
+        .read(authControllerProvider.notifier)
+        .signUp(email: _emailController.text.trim(), password: password);
   }
 
   @override
@@ -87,7 +86,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   'Use your account or create one to save favourite buildings.',
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDark ? MqColors.contentSecondaryDark : MqColors.contentSecondary,
+                    color: isDark
+                        ? MqColors.contentSecondaryDark
+                        : MqColors.contentSecondary,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -99,18 +100,36 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     decoration: BoxDecoration(
                       color: MqColors.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: MqColors.error.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: MqColors.error.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline, color: MqColors.error, size: 20),
+                        const Icon(
+                          Icons.error_outline,
+                          color: MqColors.error,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text(authState.error!, style: const TextStyle(color: MqColors.error, fontSize: 14)),
+                          child: Text(
+                            authState.error!,
+                            style: const TextStyle(
+                              color: MqColors.error,
+                              fontSize: 14,
+                            ),
+                          ),
                         ),
                         GestureDetector(
-                          onTap: () => ref.read(authControllerProvider.notifier).clearError(),
-                          child: const Icon(Icons.close, color: MqColors.error, size: 18),
+                          onTap: () => ref
+                              .read(authControllerProvider.notifier)
+                              .clearError(),
+                          child: const Icon(
+                            Icons.close,
+                            color: MqColors.error,
+                            size: 18,
+                          ),
                         ),
                       ],
                     ),
@@ -122,8 +141,11 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   confirmPasswordController: _confirmPasswordController,
                   obscurePassword: _obscurePassword,
                   obscureConfirmPassword: _obscureConfirmPassword,
-                  onToggleObscurePassword: () => setState(() => _obscurePassword = !_obscurePassword),
-                  onToggleObscureConfirmPassword: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                  onToggleObscurePassword: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                  onToggleObscureConfirmPassword: () => setState(
+                    () => _obscureConfirmPassword = !_obscureConfirmPassword,
+                  ),
                   isSignup: true,
                   isLoading: authState.isLoading,
                 ),
@@ -133,7 +155,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     padding: const EdgeInsets.only(top: 8, left: 16),
                     child: Text(
                       _confirmPasswordError!,
-                      style: const TextStyle(color: MqColors.error, fontSize: 12),
+                      style: const TextStyle(
+                        color: MqColors.error,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
 
@@ -151,14 +176,21 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     Text(
                       'Already have an account? ',
                       style: TextStyle(
-                        color: isDark ? MqColors.contentSecondaryDark : MqColors.contentSecondary,
+                        color: isDark
+                            ? MqColors.contentSecondaryDark
+                            : MqColors.contentSecondary,
                       ),
                     ),
                     GestureDetector(
-                      onTap: authState.isLoading ? null : () => context.go('/auth/login'),
-                      child: Text(
+                      onTap: authState.isLoading
+                          ? null
+                          : () => context.go('/auth/login'),
+                      child: const Text(
                         'Sign in instead',
-                        style: const TextStyle(color: MqColors.red, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: MqColors.red,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],

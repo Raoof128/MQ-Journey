@@ -29,7 +29,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
     if (email.isEmpty || password.isEmpty) return;
-    ref.read(authControllerProvider.notifier).signIn(email: email, password: password);
+    ref
+        .read(authControllerProvider.notifier)
+        .signIn(email: email, password: password);
   }
 
   @override
@@ -76,7 +78,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   'Use your account or create one to save favourite buildings.',
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDark ? MqColors.contentSecondaryDark : MqColors.contentSecondary,
+                    color: isDark
+                        ? MqColors.contentSecondaryDark
+                        : MqColors.contentSecondary,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -88,18 +92,36 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     decoration: BoxDecoration(
                       color: MqColors.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: MqColors.error.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: MqColors.error.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline, color: MqColors.error, size: 20),
+                        const Icon(
+                          Icons.error_outline,
+                          color: MqColors.error,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text(authState.error!, style: const TextStyle(color: MqColors.error, fontSize: 14)),
+                          child: Text(
+                            authState.error!,
+                            style: const TextStyle(
+                              color: MqColors.error,
+                              fontSize: 14,
+                            ),
+                          ),
                         ),
                         GestureDetector(
-                          onTap: () => ref.read(authControllerProvider.notifier).clearError(),
-                          child: const Icon(Icons.close, color: MqColors.error, size: 18),
+                          onTap: () => ref
+                              .read(authControllerProvider.notifier)
+                              .clearError(),
+                          child: const Icon(
+                            Icons.close,
+                            color: MqColors.error,
+                            size: 18,
+                          ),
                         ),
                       ],
                     ),
@@ -109,7 +131,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   emailController: _emailController,
                   passwordController: _passwordController,
                   obscurePassword: _obscurePassword,
-                  onToggleObscurePassword: () => setState(() => _obscurePassword = !_obscurePassword),
+                  onToggleObscurePassword: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                   isLoading: authState.isLoading,
                 ),
 
@@ -135,14 +158,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     Text(
                       "Don't have an account? ",
                       style: TextStyle(
-                        color: isDark ? MqColors.contentSecondaryDark : MqColors.contentSecondary,
+                        color: isDark
+                            ? MqColors.contentSecondaryDark
+                            : MqColors.contentSecondary,
                       ),
                     ),
                     GestureDetector(
-                      onTap: authState.isLoading ? null : () => context.go('/auth/signup'),
-                      child: Text(
+                      onTap: authState.isLoading
+                          ? null
+                          : () => context.go('/auth/signup'),
+                      child: const Text(
                         'Create one',
-                        style: const TextStyle(color: MqColors.red, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: MqColors.red,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],

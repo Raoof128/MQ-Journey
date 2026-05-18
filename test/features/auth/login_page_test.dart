@@ -19,9 +19,7 @@ void main() {
   Widget buildTestApp() {
     return MaterialApp(
       home: ProviderScope(
-        overrides: [
-          authRepositoryProvider.overrideWithValue(mockRepository),
-        ],
+        overrides: [authRepositoryProvider.overrideWithValue(mockRepository)],
         child: const LoginPage(),
       ),
     );
@@ -39,10 +37,12 @@ void main() {
   });
 
   testWidgets('calls signIn on submit', (tester) async {
-    when(() => mockRepository.signIn(
-      email: any(named: 'email'),
-      password: any(named: 'password'),
-    )).thenAnswer((_) async => AuthResult.success());
+    when(
+      () => mockRepository.signIn(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenAnswer((_) async => AuthResult.success());
     when(() => mockRepository.userId).thenReturn('user-1');
 
     await tester.pumpWidget(buildTestApp());
@@ -53,14 +53,20 @@ void main() {
     await tester.tap(find.text('Sign In'));
     await tester.pump();
 
-    verify(() => mockRepository.signIn(email: 'a@b.com', password: 'pass123')).called(1);
+    verify(
+      () => mockRepository.signIn(email: 'a@b.com', password: 'pass123'),
+    ).called(1);
   });
 
   testWidgets('shows error banner on auth failure', (tester) async {
-    when(() => mockRepository.signIn(
-      email: any(named: 'email'),
-      password: any(named: 'password'),
-    )).thenAnswer((_) async => AuthResult.failure('Email or password is incorrect.'));
+    when(
+      () => mockRepository.signIn(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenAnswer(
+      (_) async => AuthResult.failure('Email or password is incorrect.'),
+    );
 
     await tester.pumpWidget(buildTestApp());
     await tester.pump();

@@ -4,7 +4,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mq_navigation/features/auth/domain/services/auth_service.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
+
 class MockGoTrueClient extends Mock implements GoTrueClient {}
+
 class MockSession extends Mock implements Session {}
 
 void main() {
@@ -22,32 +24,37 @@ void main() {
   group('AuthService', () {
     test('signIn calls signInWithPassword', () async {
       final fakeResponse = AuthResponse(user: null, session: null);
-      when(() => mockGoTrue.signInWithPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => fakeResponse);
+      when(
+        () => mockGoTrue.signInWithPassword(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => fakeResponse);
 
       await authService.signIn(email: 'a@b.com', password: 'pass123');
 
-      verify(() => mockGoTrue.signInWithPassword(
-        email: 'a@b.com',
-        password: 'pass123',
-      )).called(1);
+      verify(
+        () => mockGoTrue.signInWithPassword(
+          email: 'a@b.com',
+          password: 'pass123',
+        ),
+      ).called(1);
     });
 
     test('signUp calls signUp', () async {
       final fakeResponse = AuthResponse(user: null, session: null);
-      when(() => mockGoTrue.signUp(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => fakeResponse);
+      when(
+        () => mockGoTrue.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => fakeResponse);
 
       await authService.signUp(email: 'a@b.com', password: 'pass123');
 
-      verify(() => mockGoTrue.signUp(
-        email: 'a@b.com',
-        password: 'pass123',
-      )).called(1);
+      verify(
+        () => mockGoTrue.signUp(email: 'a@b.com', password: 'pass123'),
+      ).called(1);
     });
 
     test('signOut calls signOut', () async {
@@ -59,8 +66,9 @@ void main() {
     });
 
     test('resetPassword calls resetPasswordForEmail', () async {
-      when(() => mockGoTrue.resetPasswordForEmail(any()))
-          .thenAnswer((_) async {});
+      when(
+        () => mockGoTrue.resetPasswordForEmail(any()),
+      ).thenAnswer((_) async {});
 
       await authService.resetPassword(email: 'a@b.com');
 
