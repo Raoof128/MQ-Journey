@@ -46,7 +46,7 @@ void main() {
     expect(find.text(l10n.authPasswordLabel), findsOneWidget);
     // Use findsAtLeastNWidgets(2) because "Sign In" appears as both page title and button label
     expect(find.text(l10n.authSignInButton), findsAtLeastNWidgets(2));
-    expect(find.text("${l10n.authNoAccount} "), findsOneWidget);
+    expect(find.text('${l10n.authNoAccount} '), findsOneWidget);
     expect(find.text(l10n.authCreateOne), findsOneWidget);
   });
 

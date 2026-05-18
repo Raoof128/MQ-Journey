@@ -48,7 +48,7 @@ void main() {
           authRepositoryProvider.overrideWithValue(mockAuthRepo),
           favoriteBuildingRepositoryProvider.overrideWithValue(mockFavRepo),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           home: Scaffold(
             body: FavoriteButton(buildingId: 'BLD', buildingName: 'Library'),
           ),
@@ -72,7 +72,7 @@ void main() {
           authRepositoryProvider.overrideWithValue(mockAuthRepo),
           favoriteBuildingRepositoryProvider.overrideWithValue(mockFavRepo),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           home: Scaffold(
             body: FavoriteButton(buildingId: 'BLD', buildingName: 'Library'),
           ),
@@ -102,7 +102,7 @@ void main() {
           authRepositoryProvider.overrideWithValue(mockAuthRepo),
           favoriteBuildingRepositoryProvider.overrideWithValue(mockFavRepo),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           home: Scaffold(
             body: FavoriteButton(buildingId: 'BLD', buildingName: 'Library'),
           ),
@@ -141,7 +141,7 @@ void main() {
           authRepositoryProvider.overrideWithValue(mockAuthRepo),
           favoriteBuildingRepositoryProvider.overrideWithValue(mockFavRepo),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           home: Scaffold(
             body: FavoriteButton(buildingId: 'BLD', buildingName: 'Library'),
           ),
