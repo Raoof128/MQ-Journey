@@ -1,6 +1,6 @@
 # MQ Navigation
 
-A production-ready Flutter client for Macquarie University's campus — dual-renderer maps, turn-by-turn routing, compass mode, safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: zero account, zero tracking, zero location history.**
+A production-ready Flutter client for Macquarie University's campus — dual-renderer maps, turn-by-turn routing, compass mode, safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: optional anonymous account, zero tracking, zero location history.**
 
 Part of a **two frontends, one backend** architecture sharing a Supabase backend with the Next.js web application.
 
@@ -10,7 +10,8 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 
 ### Map & Navigation
 - **Dual-Renderer Maps** — Google Maps (`google_maps_flutter` 2.15) with traffic/map-type/clustering **and** illustrated Campus Map (`flutter_map` 8.2 with `CrsSimple` calibrated raster). Shared state, frictionless switching.
-- **Building Registry** — 161 buildings with search, category browse (Faculty / Student Services / Campus Hub / Overlays), and favorites.
+- **Building Registry** — 161 buildings with search, category browse (Faculty / Student Services / Campus Hub / Overlays), and personal favorites.
+- **Favorites** — Heart-toggle bookmarking on building search results; dedicated Favorites page with pull-to-refresh, swipe-to-delete, note editing, and one-tap navigation to building on map.
 - **Turn-by-Turn Routing** — Server-side routing via Supabase Edge Functions (Google Routes API + Directions API fallback). Walking, driving, cycling, transit modes. Arrival detection and off-route recalculation.
 - **Compass Mode** — Real-time heading via `flutter_compass` 0.8, animated bearing arrow (`AnimatedRotation` 250ms ease-in-out), heading accuracy display, cardinal marker. **All on-device — no data leaves the phone.**
 
@@ -30,6 +31,16 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 - **Quick Access** — Bento grid for Student Services, Faculty, Parking, Campus Hub, Food & Drink.
 - **Open Day** — Dynamic event cards, study interest picker, reminder scheduling.
 
+### Authentication
+- **Email/Password Auth** — Supabase-powered sign-up and login with session persistence via `supabase_flutter` and `flutter_secure_storage`.
+- **Protected Routes** — GoRouter auth gate redirects unauthenticated users to the login/signup screen.
+- **Account Management** — Email display and sign-out in the Settings page. **Fully optional** — the app works without an account.
+
+### Favorites
+- **Building Bookmarks** — Heart-toggle on building search results, persisted to Supabase `favorite_buildings` table.
+- **Favorites Page** — Dedicated list with pull-to-refresh, swipe-to-delete, note editing, and navigation to building on map.
+- **State Management** — Riverpod 3 `Notifier` with optimistic UI updates and error handling.
+
 ### Notifications
 - **Inbox** — Supabase-backed persistent notifications with read/unread state.
 - **Local Reminders** — Daily study prompt scheduling via `flutter_local_notifications`.
@@ -43,7 +54,7 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 ### Privacy by Design
 | Principle | Enforcement |
 |-----------|------------|
-| No account system | App starts at `/home` — no login, no signup, no email |
+| Optional account | Auth is **fully optional** — app works at `/home` without login. Account only needed for cloud-synced favorites |
 | Zero tracking | No analytics, telemetry, or crash reporting packages (blocked by CI guard) |
 | No location history | GPS used ephemerally — never stored, never transmitted |
 | No data collection | All preferences stored locally via `SharedPreferences` + `FlutterSecureStorage` |
@@ -80,12 +91,14 @@ lib/
 ├── core/          → Config, error handling, logging, networking, security
 ├── shared/        → Extensions, models, widgets (MqButton, MqCard, MqInput)
 └── features/
+    ├── auth/          → Supabase Auth (login, signup, session persistence, auth gate)
+    ├── favorites/     → Building favorites CRUD (controller, repository, datasource, UI)
     ├── home/          → Welcome dashboard, onboarding, metro countdown
-    ├── map/           → Dual-renderer, routing, compass mode, building search
+    ├── map/           → Dual-renderer, routing, compass mode, building search, favorites page
     ├── safety/        → Safety toolkit, emergency contacts, first aid/AED
     ├── notifications/ → FCM push, local reminders, inbox
     ├── open_day/      → Open Day events, study interest, reminders
-    ├── settings/      → All preferences, privacy badge, data wipe
+    ├── settings/      → All preferences, privacy badge, data wipe, account management
     ├── transit/       → Metro/bus/train search, commute prefs
     ├── timetable/     → Unit and class schedule management
     └── deep_link/     → Syllabus Sync deep link contract
@@ -175,7 +188,7 @@ Contributions must pass the automated check suite:
 | `flutter pub get` | Valid dependency resolution |
 | `dart format` | Code formatting (`lib/`, `test/`, `scripts/`, `integration_test/`) |
 | `flutter analyze` | Static analysis with hardened lint rules |
-| `flutter test` | **228** tests — 100% pass required |
+| `flutter test` | **270** tests — 100% pass required |
 | `flutter gen-l10n` | Localisation generation (35 locales) |
 | Untranslated check | `.dart_tool/untranslated.json` — new keys tracked as non-blocking |
 | **Privacy guard** | **Blocks** `firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events` |
