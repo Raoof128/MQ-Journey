@@ -2,7 +2,7 @@
 
 This documents the **shared Supabase backend schema** used by both the web app and the Flutter app.
 
-> **Flutter app scope:** After removing auth, calendar, feed, and profile features, the Flutter app only interacts with `user_fcm_tokens` (push tokens), `notifications` (inbox), and `rate_limits` (map routing throttle). The building registry is loaded from a bundled JSON asset, not from Supabase. All other tables below are used by the web app only.
+> **Flutter app scope:** The Flutter app interacts with Supabase Auth for optional accounts, `favorite_buildings` (user bookmarks), `user_fcm_tokens` (push tokens), `notifications` (inbox), and `rate_limits` (map routing throttle). The building registry is loaded from a bundled JSON asset, not from Supabase. All other tables below are primarily used by the web app.
 
 Source: `lib/supabase/database.types.ts` in the web app.
 
@@ -20,6 +20,17 @@ Source: `lib/supabase/database.types.ts` in the web app.
 | course | text | yes | |
 | year | text | yes | |
 | created_at | timestamptz | yes | |
+| updated_at | timestamptz | yes | |
+
+### favorite_buildings
+| Column | Type | Nullable | Notes |
+|--------|------|----------|-------|
+| id | uuid (PK) | no | |
+| user_id | uuid (FK) | no | → profiles.id |
+| building_id | text | no | e.g. "LIB" |
+| building_name | text | no | |
+| note | text | yes | User-provided note |
+| created_at | timestamptz | no | |
 | updated_at | timestamptz | yes | |
 
 ### units

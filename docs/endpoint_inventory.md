@@ -1,19 +1,28 @@
 # Endpoint Inventory — API Routes → Flutter Mapping
 
-Maps web API routes to their Flutter equivalents. After auth/calendar/feed removal, the Flutter app primarily uses the Maps & Notifications endpoints.
+Maps web API routes to their Flutter equivalents.
 
 **Legend:**
 - **SDK** = Call directly from Flutter via supabase_flutter (no server proxy needed)
 - **EF** = Requires a Supabase Edge Function (server-side logic or secret keys)
 - **N/A** = Not used by the Flutter app (web-only)
 
+## Auth (Used by Flutter)
+
+| Web Route | Method | Flutter Approach | Notes |
+|-----------|--------|-----------------|-------|
+| `/api/auth/signin` | POST | **SDK: `supabase.auth.signInWithPassword()`** | Handled by `supabase_flutter` |
+| `/api/auth/signup` | POST | **SDK: `supabase.auth.signUp()`** | Handled by `supabase_flutter` |
+| `/api/auth/signout` | POST | **SDK: `supabase.auth.signOut()`** | Handled by `supabase_flutter` |
+
 ## Maps & Navigation (Used by Flutter)
 
 | Web Route | Method | Flutter Approach | Notes |
 |-----------|--------|-----------------|-------|
 | `/api/maps/routes` | POST | **EF: `maps-routes`** | Flutter uses the Supabase Edge Function for both campus and Google routing |
+| `/api/maps/place-search` | GET | **EF: `maps-places`** | Search suggestions with rate limiting |
 
-> Flutter now sends a normalized route request to `maps-routes` with
+> Flutter sends a normalized route request to `maps-routes` with
 > `renderer`, `origin`, `destination`, and `travelMode`. The Edge Function
 > dispatches to Google Routes for Google mode and to the campus walking backend
 > for campus mode.
@@ -29,15 +38,13 @@ Maps web API routes to their Flutter equivalents. After auth/calendar/feed remov
 
 ## Web-Only Endpoints (Not Used by Flutter)
 
-The following endpoints exist in the web app but are not used by the Flutter app after auth, calendar, feed, and profile features were removed:
+The following endpoints exist in the web app but are not yet used by the Flutter app:
 
 | Category | Web Routes | Reason Not Used |
 |----------|-----------|-----------------|
-| Auth | `/api/auth/*` (signin, signup, signout, password, email, mfa, passkey) | Auth removed from Flutter |
-| Content | `/api/units`, `/api/deadlines`, `/api/events`, `/api/todos` | Calendar/content features removed |
-| Profiles | `/api/profiles`, `/api/user-preferences` | Profile management removed |
+| Content | `/api/units`, `/api/deadlines`, `/api/events`, `/api/todos` | Calendar/content features web-only |
+| Profiles | `/api/profiles`, `/api/user-preferences` | Profile management web-only |
 | Gamification | `/api/gamification/*` | Gamification not implemented |
-| Places | `/api/maps/place-search`, `/api/maps/place-details` | Not used by current map |
 | Weather | `/api/weather` | Not used by current map |
 | Security | `/api/security/*`, `/api/audit` | Web-only security tools |
 | Sync | `/api/sync` | Realtime not used in current scope |

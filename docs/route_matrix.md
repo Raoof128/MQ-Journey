@@ -7,10 +7,17 @@ All routes in the MQ Navigation Flutter app.
 | Flutter Route | go_router Name | Description |
 |---------------|----------------|-------------|
 | `/home` | `home` | Welcome hub (shell tab 0) |
-| `/map` | `map` | Campus map with building search (shell tab 1) |
+| `/map` | `map` | Campus map with dual renderer and search (shell tab 1) |
 | `/map/building/:buildingId` | `building-detail` | Deep link to a specific building on the map |
-| `/settings` | `settings` | Theme, language, notification preferences (shell tab 2) |
-| `/notifications` | `notifications` | Notification inbox (pushed on top of shell) |
+| `/favorites` | `favorites` | List of favorited buildings (shell tab 2) |
+| `/settings` | `settings` | Theme, language, account, data prefs (shell tab 3) |
+| `/auth/login` | `login` | Email/password sign in page |
+| `/auth/signup` | `signup` | New account creation page |
+| `/safety` | `safety` | Safety toolkit (standalone page) |
+| `/notifications` | `notifications` | Notification inbox (covers shell) |
+| `/open-day` | `open-day` | Open Day event browsing and scheduling |
+| `/onboarding` | `onboarding` | First-launch welcome and setup flow |
+| `/meet` | `meet` | Map view focused on a shared point (lat/lng) |
 
 ## Shell Navigation (bottom nav)
 
@@ -18,16 +25,23 @@ All routes in the MQ Navigation Flutter app.
 |-----|-------|-------|------|
 | Home | 0 | `/home` | home |
 | Map | 1 | `/map` | map |
-| Settings | 2 | `/settings` | settings |
+| Favorites | 2 | `/favorites` | favorite |
+| Settings | 3 | `/settings` | settings |
+
+## Shared Contract Routes
+
+| Route Prefix | Feature | Contract Description |
+|--------------|---------|----------------------|
+| `/open/*` | Syllabus Sync | Deep link entry point for external unit schedules |
+| `/map/meet/*` | Meet-at-Point | Temporary location sharing coordinate payload |
 
 ## Routes NOT Migrated from Web
 
 | Web Route | Reason |
 |-----------|--------|
-| `/login`, `/signup`, `/verify`, `/reset-password` | Auth removed from Flutter app |
-| `/calendar` | Calendar feature removed |
-| `/feed` | Event feed feature removed |
-| `/manage-profiles` | Profile management removed |
-| `/map/position-editor` | Admin-only web tool |
-| `/offline` | Flutter uses connectivity banner overlay |
-| `/api/*` | API routes → SDK calls or Edge Functions |
+| `/calendar` | Personal calendar features remain web-only for now |
+| `/feed` | Event feed replaced by Home dashboard and Open Day module |
+| `/manage-profiles` | Multi-profile management is a web-only admin feature |
+| `/map/position-editor` | Admin-only building coordinate calibration tool |
+| `/offline` | Flutter uses local-first caching and connectivity banners |
+| `/api/*` | Handled via direct SDK calls or serverless Edge Functions |
