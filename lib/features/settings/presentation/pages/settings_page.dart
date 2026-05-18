@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
 import 'package:mq_navigation/core/utils/haptics.dart';
+import 'package:mq_navigation/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/features/map/data/services/offline_maps_service.dart';
@@ -675,6 +677,32 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ],
                       ),
                     ),
+                  ),
+                  const SizedBox(height: MqSpacing.space6),
+
+                  // ── Account section ──────────────────────────
+                  _SectionHeader(title: l10n.account),
+                  _SettingsCard(
+                    children: [
+                      _InfoRow(
+                        icon: Icons.person_outline,
+                        label: l10n.signedInAs,
+                        subtitle:
+                            Supabase.instance.client.auth.currentUser?.email ??
+                            '',
+                      ),
+                      _TapRow(
+                        icon: Icons.logout_rounded,
+                        label: l10n.signOut,
+                        value: '',
+                        hapticsEnabled: preferences.hapticsEnabled,
+                        onTap: () async {
+                          await ref
+                              .read(authControllerProvider.notifier)
+                              .signOut();
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: MqSpacing.space6),
 
