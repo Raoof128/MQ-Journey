@@ -56,6 +56,13 @@ lib/
 **Verification:** `flutter test test/features/auth/` (17/17 passed).
 **Follow-ups:** Wire AuthController into login/signup UI pages.
 
+### Raouf: 2026-05-18 (AEST) — Auth Screens (Login + Signup) with widget tests
+**Scope:** Auth feature — Login and Signup UI pages.
+**Summary:** Added `AuthForm` widget (email, password, optional confirm password with visibility toggles), `LoginPage`, and `SignupPage`. Both pages follow the app's brand (MqColors theme, MqButton/MqInput shared widgets, dark/light mode support). Login page: email/password fields, error banner, submit triggers `AuthController.signIn`. Signup page: email/password/confirm fields, client-side password mismatch validation, submit triggers `AuthController.signUp`. Both pages navigate between each other via `context.go()`. 6 widget tests cover: field rendering, signIn call on submit, error banner display, signup field rendering, password mismatch error, signUp call on valid submit.
+**Files Changed:** `lib/features/auth/presentation/widgets/auth_form.dart` (new), `lib/features/auth/presentation/pages/login_page.dart` (new), `lib/features/auth/presentation/pages/signup_page.dart` (new), `test/features/auth/login_page_test.dart` (new), `test/features/auth/signup_page_test.dart` (new), `AGENT.md`, `CHANGELOG.md`
+**Verification:** `flutter test test/features/auth/` (23/23 passed, 6 new).
+**Follow-ups:** Wire auth pages into GoRouter; add auth flow to app startup.
+
 ### Raouf: 2026-05-18 (AEST) — Auth Repository with error mapping layer
 **Scope:** Auth feature — `lib/features/auth/data/repositories/auth_repository.dart`.
 **Summary:** Added `AuthRepository` class wrapping `AuthService` with error mapping layer. Defines `AuthResult` union type (success + optional error message). Maps Supabase `AuthException` codes to user-facing strings. Covers: sign in, sign up, sign out, reset password, auth state stream, and 6 unit tests for success + error paths.
