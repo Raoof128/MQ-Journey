@@ -4,15 +4,19 @@ import 'package:go_router/go_router.dart';
 import 'package:mq_navigation/app/router/app_shell.dart';
 import 'package:mq_navigation/app/router/route_names.dart';
 import 'package:mq_navigation/core/config/env_config.dart';
+import 'package:mq_navigation/features/auth/presentation/pages/login_page.dart';
+import 'package:mq_navigation/features/auth/presentation/pages/signup_page.dart';
 import 'package:mq_navigation/features/deep_link/deep_link_contract.dart';
 import 'package:mq_navigation/features/home/presentation/pages/home_page.dart';
 import 'package:mq_navigation/features/home/presentation/pages/onboarding_page.dart';
 import 'package:mq_navigation/features/map/presentation/pages/map_page.dart';
+import 'package:mq_navigation/features/map/presentation/pages/favorites_page.dart';
 import 'package:mq_navigation/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:mq_navigation/features/open_day/presentation/pages/open_day_page.dart';
 import 'package:mq_navigation/features/safety/presentation/pages/safety_toolkit_page.dart';
 import 'package:mq_navigation/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:mq_navigation/features/settings/presentation/pages/settings_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -36,27 +40,35 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/home',
     debugLogDiagnostics: EnvConfig.isDevelopment,
     redirect: (context, state) {
-      final isOnboardingRoute = state.uri.path == '/onboarding';
+      final session = Supabase.instance.client.auth.currentSession;
+      final isAuthed = session != null;
+      final path = state.matchedLocation;
 
-      // If already on onboarding or settings are loading, don't redirect
-      if (isOnboardingRoute) {
-        return null;
+      final isAuthRoute = path.startsWith('/auth');
+      final isOnboardingRoute = path == '/onboarding';
+
+      // Unauthenticated users go to auth
+      if (!isAuthed && !isAuthRoute) {
+        return '/auth/login';
       }
 
-      // Read latest settings inside the redirect — this does NOT subscribe
-      // the provider to settings changes; it only reads the current value.
-      final settingsAsync = ref.read(settingsControllerProvider);
-
-      // If settings haven't loaded yet, don't redirect - let them load first
-      if (settingsAsync.isLoading) {
-        return null;
+      // Authenticated users on auth route → redirect to home or onboarding
+      if (isAuthed && isAuthRoute) {
+        final settingsAsync = ref.read(settingsControllerProvider);
+        final hasCompleted = settingsAsync.value?.hasCompletedOnboarding ?? false;
+        return hasCompleted ? '/home' : '/onboarding';
       }
 
-      final hasCompleted = settingsAsync.value?.hasCompletedOnboarding ?? false;
-
-      if (!hasCompleted) {
-        return '/onboarding';
+      // Onboarding gate
+      if (!isOnboardingRoute) {
+        final settingsAsync = ref.read(settingsControllerProvider);
+        if (settingsAsync.isLoading) return null;
+        final hasCompleted = settingsAsync.value?.hasCompletedOnboarding ?? false;
+        if (!hasCompleted) {
+          return '/onboarding';
+        }
       }
+
       return null;
     },
     // Re-run the redirect whenever the onboarding-completion bit flips.
@@ -121,6 +133,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/safety',
         name: RouteNames.safetyToolkit,
         builder: (context, state) => const SafetyToolkitPage(),
+      ),
+      // Auth routes (public, outside shell)
+      GoRoute(
+        path: '/auth/login',
+        name: RouteNames.login,
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/auth/signup',
+        name: RouteNames.signup,
+        builder: (context, state) => const SignupPage(),
+      ),
+      GoRoute(
+        path: '/auth',
+        redirect: (context, state) => '/auth/login',
+      ),
+      // Favorites page
+      GoRoute(
+        path: '/favorites',
+        name: RouteNames.favorites,
+        builder: (context, state) => const FavoritesPage(),
       ),
       // The shell route handles the bottom navigation bar and nested routing.
       StatefulShellRoute.indexedStack(
