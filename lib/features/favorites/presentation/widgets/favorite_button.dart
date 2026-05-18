@@ -17,9 +17,8 @@ class FavoriteButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isFav = ref
-        .watch(favoritesControllerProvider.notifier)
-        .isFavorited(buildingId);
+    final state = ref.watch(favoritesControllerProvider);
+    final isFav = state.favoritedBuildingIds.contains(buildingId);
 
     return IconButton(
       icon: Icon(
