@@ -206,4 +206,3 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     );
   }
 }
-

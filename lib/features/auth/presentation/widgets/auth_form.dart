@@ -91,4 +91,3 @@ class AuthForm extends StatelessWidget {
     );
   }
 }
-
