@@ -5,6 +5,13 @@
 **Verification:** `flutter test test/features/auth/` (17/17 passed).
 **Follow-ups:** Wire AuthController into login/signup UI pages.
 
+### Raouf: 2026-05-18 (AEST) — Auth Screens (Login + Signup) with widget tests
+**Scope:** Auth feature — Login and Signup UI pages with `AuthForm` widget.
+**Summary:** Added `AuthForm` widget (`lib/features/auth/presentation/widgets/auth_form.dart`) with email, password, optional confirm password fields and visibility toggles. `LoginPage`: email/password form, error banner, "Forgot password?" link, "Create one" navigation link. `SignupPage`: email/password/confirm form, client-side password mismatch validation, "Sign in instead" navigation link. Both pages follow brand styling (MqColors, MqButton, MqInput), support dark/light mode, and integrate with `AuthController` (Riverpod). Added 6 widget tests: login field rendering, signIn call, error banner; signup field rendering, password mismatch error, signUp call.
+**Files Changed:** `lib/features/auth/presentation/widgets/auth_form.dart` (new), `lib/features/auth/presentation/pages/login_page.dart` (new), `lib/features/auth/presentation/pages/signup_page.dart` (new), `test/features/auth/login_page_test.dart` (new), `test/features/auth/signup_page_test.dart` (new), `AGENT.md`, `CHANGELOG.md`
+**Verification:** `flutter test test/features/auth/` (23/23 passed, +6 new).
+**Follow-ups:** Wire auth pages into GoRouter; add auth flow to app startup.
+
 ### Raouf: 2026-05-18 (AEST) — Auth Repository with error mapping layer
 **Scope:** Auth feature — data layer repository wrapping AuthService.
 **Summary:** Implemented `AuthRepository` (`lib/features/auth/data/repositories/auth_repository.dart`) with `AuthResult` success/failure union type. Maps `AuthException` errors to user-friendly messages: invalid credentials, duplicate signup, weak password, email not confirmed, network errors. Methods: `signIn`, `signUp`, `signOut`, `resetPassword`, `isAuthenticated`, `userId`, `authStateChanges`. Added 6 mock-based tests in `test/features/auth/auth_repository_test.dart` covering success and all error paths.
