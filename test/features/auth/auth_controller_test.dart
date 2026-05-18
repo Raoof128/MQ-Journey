@@ -87,6 +87,30 @@ void main() {
       expect(container.read(authControllerProvider).isAuthenticated, isTrue);
       expect(container.read(authControllerProvider).isLoading, isFalse);
     });
+
+    test('emits error state on failure', () async {
+      when(
+        () => mockRepository.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            AuthResult.failure('An account already exists for this email.'),
+      );
+
+      final container = makeContainer(mockRepository);
+      addTearDown(() => container.dispose());
+      final controller = container.read(authControllerProvider.notifier);
+
+      await controller.signUp(email: 'a@b.com', password: 'pass');
+
+      expect(container.read(authControllerProvider).isAuthenticated, isFalse);
+      expect(
+        container.read(authControllerProvider).error,
+        'An account already exists for this email.',
+      );
+    });
   });
 
   group('signOut', () {
@@ -101,6 +125,41 @@ void main() {
       await controller.signOut();
 
       expect(container.read(authControllerProvider).isAuthenticated, isFalse);
+    });
+  });
+
+  group('clearError', () {
+    test('clears error without affecting isLoading', () async {
+      when(
+        () => mockRepository.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => AuthResult.failure('Something went wrong.'));
+
+      final container = makeContainer(mockRepository);
+      addTearDown(() => container.dispose());
+      final controller = container.read(authControllerProvider.notifier);
+
+      await controller.signIn(email: 'a@b.com', password: 'wrong');
+      expect(container.read(authControllerProvider).error, isNotNull);
+
+      controller.clearError();
+
+      expect(container.read(authControllerProvider).error, isNull);
+    });
+
+    test('keeps isAuthenticated unchanged after clear', () async {
+      when(() => mockRepository.isAuthenticated).thenReturn(true);
+      when(() => mockRepository.userId).thenReturn('user-1');
+
+      final container = makeContainer(mockRepository);
+      addTearDown(() => container.dispose());
+      final controller = container.read(authControllerProvider.notifier);
+
+      controller.clearError();
+
+      expect(container.read(authControllerProvider).isAuthenticated, isTrue);
     });
   });
 

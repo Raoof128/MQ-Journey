@@ -115,4 +115,82 @@ void main() {
       verify(() => mockAuthService.signOut()).called(1);
     });
   });
+
+  group('error mapping', () {
+    test('returns email not confirmed message', () async {
+      when(
+        () => mockAuthService.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(
+        const AuthException('Email not confirmed', statusCode: '400'),
+      );
+
+      final result = await authRepository.signIn(
+        email: 'a@b.com',
+        password: 'pass123',
+      );
+
+      expect(result.success, isFalse);
+      expect(result.error, 'Please verify your email before signing in.');
+    });
+
+    test('returns catch-all message for unknown error', () async {
+      when(
+        () => mockAuthService.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(const AuthException('Some unknown error', statusCode: '500'));
+
+      final result = await authRepository.signIn(
+        email: 'a@b.com',
+        password: 'pass123',
+      );
+
+      expect(result.success, isFalse);
+      expect(result.error, 'Something went wrong. Please try again.');
+    });
+
+    test('returns network error on non-AuthException in signIn', () async {
+      when(
+        () => mockAuthService.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(Exception('SocketException: connection refused'));
+
+      final result = await authRepository.signIn(
+        email: 'a@b.com',
+        password: 'pass123',
+      );
+
+      expect(result.success, isFalse);
+      expect(
+        result.error,
+        'Network error. Check your connection and try again.',
+      );
+    });
+
+    test('returns network error on non-AuthException in signUp', () async {
+      when(
+        () => mockAuthService.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(Exception('SocketException: connection refused'));
+
+      final result = await authRepository.signUp(
+        email: 'a@b.com',
+        password: 'pass123',
+      );
+
+      expect(result.success, isFalse);
+      expect(
+        result.error,
+        'Network error. Check your connection and try again.',
+      );
+    });
+  });
 }
