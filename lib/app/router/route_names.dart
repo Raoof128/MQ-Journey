@@ -15,4 +15,12 @@ abstract final class RouteNames {
 
   // Safety
   static const String safetyToolkit = 'safety';
+
+  // Auth
+  static const String auth = 'auth';
+  static const String login = 'login';
+  static const String signup = 'signup';
+
+  // Favorites
+  static const String favorites = 'favorites';
 }
