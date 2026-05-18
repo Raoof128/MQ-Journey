@@ -21,7 +21,9 @@ class AuthRepository {
     } on AuthException catch (e) {
       return AuthResult.failure(_mapAuthError(e));
     } catch (e) {
-      return AuthResult.failure('Network error. Check your connection and try again.');
+      return AuthResult.failure(
+        'Network error. Check your connection and try again.',
+      );
     }
   }
 
@@ -35,7 +37,9 @@ class AuthRepository {
     } on AuthException catch (e) {
       return AuthResult.failure(_mapAuthError(e));
     } catch (e) {
-      return AuthResult.failure('Network error. Check your connection and try again.');
+      return AuthResult.failure(
+        'Network error. Check your connection and try again.',
+      );
     }
   }
 
@@ -48,7 +52,9 @@ class AuthRepository {
     } on AuthException catch (e) {
       return AuthResult.failure(_mapAuthError(e));
     } catch (e) {
-      return AuthResult.failure('Network error. Check your connection and try again.');
+      return AuthResult.failure(
+        'Network error. Check your connection and try again.',
+      );
     }
   }
 
@@ -76,5 +82,6 @@ class AuthResult {
   final String? error;
 
   factory AuthResult.success() => const AuthResult._(success: true);
-  factory AuthResult.failure(String error) => AuthResult._(success: false, error: error);
+  factory AuthResult.failure(String error) =>
+      AuthResult._(success: false, error: error);
 }

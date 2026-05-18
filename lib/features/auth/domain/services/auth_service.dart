@@ -17,20 +17,14 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    return _supabase.auth.signUp(
-      email: email,
-      password: password,
-    );
+    return _supabase.auth.signUp(email: email, password: password);
   }
 
   Future<AuthResponse> signIn({
     required String email,
     required String password,
   }) async {
-    return _supabase.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+    return _supabase.auth.signInWithPassword(email: email, password: password);
   }
 
   Future<void> signOut() async {

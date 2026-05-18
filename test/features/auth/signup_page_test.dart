@@ -20,15 +20,15 @@ void main() {
   Widget buildTestApp() {
     return MaterialApp(
       home: ProviderScope(
-        overrides: [
-          authRepositoryProvider.overrideWithValue(mockRepository),
-        ],
+        overrides: [authRepositoryProvider.overrideWithValue(mockRepository)],
         child: const SignupPage(),
       ),
     );
   }
 
-  testWidgets('renders email, password, and confirm password fields', (tester) async {
+  testWidgets('renders email, password, and confirm password fields', (
+    tester,
+  ) async {
     await tester.pumpWidget(buildTestApp());
     await tester.pump();
 
@@ -53,10 +53,12 @@ void main() {
   });
 
   testWidgets('calls signUp on valid submit', (tester) async {
-    when(() => mockRepository.signUp(
-      email: any(named: 'email'),
-      password: any(named: 'password'),
-    )).thenAnswer((_) async => AuthResult.success());
+    when(
+      () => mockRepository.signUp(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      ),
+    ).thenAnswer((_) async => AuthResult.success());
     when(() => mockRepository.userId).thenReturn('user-1');
 
     await tester.pumpWidget(buildTestApp());
@@ -68,6 +70,8 @@ void main() {
     await tester.tap(find.widgetWithText(MqButton, 'Create Account'));
     await tester.pump();
 
-    verify(() => mockRepository.signUp(email: 'a@b.com', password: 'pass1234')).called(1);
+    verify(
+      () => mockRepository.signUp(email: 'a@b.com', password: 'pass1234'),
+    ).called(1);
   });
 }

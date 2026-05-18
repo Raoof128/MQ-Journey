@@ -26,10 +26,7 @@ class AuthController extends Notifier<AuthScreenState> {
   AuthRepository get _repository => ref.read(authRepositoryProvider);
   bool _disposed = false;
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     final repository = _repository;
     state = state.copyWith(isLoading: true, error: null);
     final result = await repository.signIn(email: email, password: password);
@@ -41,10 +38,7 @@ class AuthController extends Notifier<AuthScreenState> {
     }
   }
 
-  Future<void> signUp({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signUp({required String email, required String password}) async {
     final repository = _repository;
     state = state.copyWith(isLoading: true, error: null);
     final result = await repository.signUp(email: email, password: password);
@@ -79,10 +73,8 @@ class AuthScreenState {
     this.error,
   });
 
-  factory AuthScreenState.initial() => const AuthScreenState._(
-    isAuthenticated: false,
-    isLoading: false,
-  );
+  factory AuthScreenState.initial() =>
+      const AuthScreenState._(isAuthenticated: false, isLoading: false);
 
   factory AuthScreenState.authenticated({required String userId}) =>
       AuthScreenState._(
@@ -96,10 +88,7 @@ class AuthScreenState {
   final String? userId;
   final String? error;
 
-  AuthScreenState copyWith({
-    bool? isLoading,
-    String? error,
-  }) {
+  AuthScreenState copyWith({bool? isLoading, String? error}) {
     return AuthScreenState._(
       isAuthenticated: isAuthenticated,
       userId: userId,

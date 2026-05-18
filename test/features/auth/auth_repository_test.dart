@@ -19,13 +19,16 @@ void main() {
 
   group('signIn', () {
     test('returns success on valid credentials', () async {
-      when(() => mockAuthService.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => _fakeResponse);
+      when(
+        () => mockAuthService.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => _fakeResponse);
 
       final result = await authRepository.signIn(
-        email: 'a@b.com', password: 'pass123',
+        email: 'a@b.com',
+        password: 'pass123',
       );
 
       expect(result.success, isTrue);
@@ -33,15 +36,18 @@ void main() {
     });
 
     test('returns friendly message on invalid credentials', () async {
-      when(() => mockAuthService.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenThrow(const AuthException(
-        'Invalid login credentials', statusCode: '400',
-      ));
+      when(
+        () => mockAuthService.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(
+        const AuthException('Invalid login credentials', statusCode: '400'),
+      );
 
       final result = await authRepository.signIn(
-        email: 'a@b.com', password: 'wrong',
+        email: 'a@b.com',
+        password: 'wrong',
       );
 
       expect(result.success, isFalse);
@@ -49,15 +55,18 @@ void main() {
     });
 
     test('returns friendly message on duplicate signup', () async {
-      when(() => mockAuthService.signUp(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenThrow(const AuthException(
-        'User already registered', statusCode: '422',
-      ));
+      when(
+        () => mockAuthService.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(
+        const AuthException('User already registered', statusCode: '422'),
+      );
 
       final result = await authRepository.signUp(
-        email: 'a@b.com', password: 'pass123',
+        email: 'a@b.com',
+        password: 'pass123',
       );
 
       expect(result.success, isFalse);
@@ -65,15 +74,21 @@ void main() {
     });
 
     test('returns friendly message on weak password', () async {
-      when(() => mockAuthService.signUp(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenThrow(const AuthException(
-        'Password length should be at least 8 characters', statusCode: '422',
-      ));
+      when(
+        () => mockAuthService.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(
+        const AuthException(
+          'Password length should be at least 8 characters',
+          statusCode: '422',
+        ),
+      );
 
       final result = await authRepository.signUp(
-        email: 'a@b.com', password: '123',
+        email: 'a@b.com',
+        password: '123',
       );
 
       expect(result.success, isFalse);
