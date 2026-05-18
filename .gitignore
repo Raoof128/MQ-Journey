@@ -77,3 +77,7 @@ android/secrets.properties
 # Codex desktop workspace metadata
 .codex/
 logs/
+
+# AI superpowers / plan artifacts
+.superpowers/
+docs/superpowers/
