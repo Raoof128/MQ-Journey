@@ -54,6 +54,15 @@ class AuthService {
   }
 
   Future<void> resetPassword({required String email}) async {
-    await _supabase.auth.resetPasswordForEmail(email);
+    // redirectTo ensures the password-reset link deep-links back into the app.
+    // Without this, the link in the email is a bare Supabase URL that the OS
+    // cannot route to the app.
+    final redirectTo = kIsWeb
+        ? '${Uri.base.scheme}://${Uri.base.host}'
+              '${Uri.base.hasPort ? ':${Uri.base.port}' : ''}'
+              '/auth/callback'
+        : 'io.mqnavigation://callback';
+
+    await _supabase.auth.resetPasswordForEmail(email, redirectTo: redirectTo);
   }
 }

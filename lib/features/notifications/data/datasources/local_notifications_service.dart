@@ -9,6 +9,23 @@ import 'package:mq_navigation/core/logging/app_logger.dart';
 import 'package:mq_navigation/features/notifications/domain/entities/app_notification.dart';
 import 'package:mq_navigation/features/notifications/domain/entities/reminder_request.dart';
 
+/// Top-level background notification response handler.
+///
+/// Required by `flutter_local_notifications` on iOS/Android when the app is
+/// in the background or terminated and the user taps a local notification.
+/// Must be a top-level function annotated with `@pragma('vm:entry-point')` so
+/// the Dart VM retains it in release-mode tree-shaking.
+///
+/// Navigation is intentionally NOT performed here because the app-router is
+/// not yet mounted in the background isolate. The tap is re-delivered via
+/// [LocalNotificationsService.initialize]'s `onDidReceiveNotificationResponse`
+/// once the app foregrounds.
+@pragma('vm:entry-point')
+void _onNotificationTapBackground(NotificationResponse response) {
+  // Intentionally a no-op: navigation is handled in the foreground handler
+  // registered in LocalNotificationsService.initialize().
+}
+
 /// Wraps `flutter_local_notifications` to schedule and display notifications
 /// generated locally by the device rather than sent from the server.
 ///
@@ -35,7 +52,14 @@ class LocalNotificationsService {
 
     const settings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      iOS: DarwinInitializationSettings(),
+      // requestAlertPermission / requestBadgePermission / requestSoundPermission
+      // are explicitly false here: we ask for permission separately via
+      // FcmService.requestPermission() so the prompt is shown in context.
+      iOS: DarwinInitializationSettings(
+        requestAlertPermission: false,
+        requestBadgePermission: false,
+        requestSoundPermission: false,
+      ),
     );
 
     await _plugin.initialize(
@@ -47,6 +71,11 @@ class LocalNotificationsService {
           await onOpenLink(link);
         }
       },
+      // Required for correct handling when a local notification tap relaunches
+      // the app from a terminated / background state. Without this, some
+      // flutter_local_notifications versions crash or silently drop the response
+      // on real devices.
+      onDidReceiveBackgroundNotificationResponse: _onNotificationTapBackground,
     );
 
     final androidPlugin = _plugin
