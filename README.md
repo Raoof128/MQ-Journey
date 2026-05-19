@@ -1,8 +1,45 @@
 # MQ Navigation
 
-A production-ready Flutter client for Macquarie University's campus — dual-renderer maps, turn-by-turn routing, compass mode, safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: optional account, zero tracking, zero location history.**
+> **Find your way around Macquarie — without selling your data.**
+
+A production-ready Flutter client for Macquarie University's campus — dual-renderer maps, turn-by-turn routing, compass mode, campus safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: optional account, zero tracking, no location history.**
 
 Part of a **two frontends, one backend** architecture sharing a Supabase backend with the Next.js web application.
+
+> **Submitted for COMP3130 Mobile App Development — Major Project (May 2026)**
+> Pitched as the official navigation companion for the **Macquarie University Open Day** experience.
+
+---
+
+## 📌 For Markers — Quick Start
+
+| Step | Action |
+|------|--------|
+| 1 | `flutter pub get && flutter gen-l10n` |
+| 2 | Copy `.env.example` → `.env`. The repo ships with a working Supabase test project anon key — no setup needed for graders. |
+| 3 | `flutter run --dart-define-from-file=.env` (Android emulator or Chrome) |
+| 4 | Sign in with the test credentials below, or tap **Create one** to register a fresh account. |
+| 5 | Tap a building → ❤️ to favourite. Visit the **Favourites** tab to Edit (note) and Delete (kebab menu). |
+
+### Test User Credentials
+
+```
+Email:    marker@mq-navigation.test
+Password: OpenDay2026!
+```
+
+> Use these for the assessment marking pass. A fresh account can also be created from the Sign Up screen — Supabase email-confirmation is disabled on the test project so registration is instant.
+
+### Where to find each rubric requirement
+
+| Requirement | Where it lives |
+|-------------|---------------|
+| **User authentication** | `lib/features/auth/` — Supabase Auth (login, signup, logout, error mapping) |
+| **Remote database (Supabase)** | `favorite_buildings`, `notifications`, `notification_preferences` tables; `lib/features/favorites/data/` and `lib/features/notifications/data/` |
+| **CRUD on a data entity** | Favourites: **Create** via ❤️ on any building, **Read** on the Favourites tab, **Update** via the kebab → Edit note, **Delete** via swipe or kebab → Remove |
+| **Mobile device service** | `geolocator` (GPS), `flutter_compass` (heading), `torch_light` (flashlight) — all in `lib/features/map/` and `lib/features/safety/` |
+| **Widget tests** | `test/features/*/` — 50+ widget tests, including 10 for the Favourites page with full interaction coverage |
+| **Unit tests** | 240+ unit tests across map, auth, favourites, notifications, settings, transit, open day |
 
 ---
 
@@ -48,7 +85,7 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 
 ### Settings
 - Appearance (theme, locale), commute preferences, map defaults, notification toggles, haptics, reduced motion, high-contrast map, low-data mode, offline campus maps, data wipe.
-- **Privacy Badge** — "Private by design: no account, no tracking, no location history."
+- **Privacy Badge** — "Private by design: optional account, zero tracking, no location history."
 - **Dev Diagnostics** — 7-tap easter egg: version, renderer, Edge proxy host.
 
 ### Privacy by Design
@@ -60,6 +97,34 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 | No data collection | All preferences stored locally via `SharedPreferences` + `FlutterSecureStorage` |
 | Safety privacy | Emergency contacts use tap-to-dial — location never shared automatically |
 | Compass privacy | All heading calculation on-device — no data leaves the device |
+
+---
+
+## Who is this for?
+
+We designed MQ Navigation around four real user personas — the people we'd hand a phone to on Open Day and watch them use it.
+
+| Persona | Goals | Why this app over competitors |
+|---------|-------|------------------------------|
+| **"Open Day Olivia"** — Year 12 prospective student visiting campus for the first time. | Find the Faculty of Arts building, the Library, and where her parents parked. Pin places to return to. | Built-for-Macquarie illustrated campus map with 161 named buildings — Google Maps shows roads, not which door is *18 Wally's Walk*. |
+| **"Commuter Chen"** — First-year domestic student catching the Metro from Tallawong. | Know if he's late for his 9am tutorial. Find the nearest defibrillator if a friend collapses at the gym. | Live Macquarie Uni metro countdown on the home screen + the Safety Toolkit one tap away. No other campus app surfaces both. |
+| **"International Isha"** — New PhD student from Mumbai, navigating campus in her second language. | Read the app in Hindi or English. Save the rooms her supervisor mentioned. | Full 35-language i18n (with RTL for Arabic, Farsi, Hebrew, Urdu) — most campus apps are English-only. |
+| **"Accessibility Alex"** — Low-vision student who uses a screen reader. | High-contrast map mode, no flashing animations, predictable navigation. | Reduced-motion toggle, high-contrast map mode, semantic widgets throughout, no analytics/tracking SDKs. |
+
+**Why pick MQ Navigation over Google/Apple Maps?** Google Maps stops at the street. We start at the building entrance — and we promise to never sell where you walked.
+
+---
+
+## Device Compatibility
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| **Android emulator** (API 33+) | ✅ Full | All features verified. Recommended for marking. |
+| **Android physical device** | ✅ Full | Compass, flashlight, GPS, push notifications all functional. |
+| **Chrome (web)** | ✅ Core | Auth, favourites CRUD, maps, routing, transit countdown work. Compass mode and flashlight gracefully degrade — the UI displays an "unsupported on this device" fallback. |
+| **iOS Simulator** | ⚠️ Untested | Should work — repo includes no iOS-specific blockers — but not part of the assignment requirement. |
+
+If a platform-specific issue surfaces during marking, the relevant feature renders a typed `MapStateError` fallback rather than crashing.
 
 ---
 
@@ -188,7 +253,7 @@ Contributions must pass the automated check suite:
 | `flutter pub get` | Valid dependency resolution |
 | `dart format` | Code formatting (`lib/`, `test/`, `scripts/`, `integration_test/`) |
 | `flutter analyze` | Static analysis with hardened lint rules |
-| `flutter test` | **297** tests — 100% pass required |
+| `flutter test` | **305** tests — 100% pass required |
 | `flutter gen-l10n` | Localisation generation (35 locales) |
 | Untranslated check | `.dart_tool/untranslated.json` — new keys tracked as non-blocking |
 | **Privacy guard** | **Blocks** `firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events` |

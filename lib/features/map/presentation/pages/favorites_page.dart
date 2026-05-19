@@ -52,6 +52,34 @@ class _FavoritesPageState extends ConsumerState<FavoritesPage> {
     return confirmed ?? false;
   }
 
+  /// Opens a dialog allowing the user to add or amend the freeform note
+  /// attached to a favourited building. This is the **Update** half of CRUD
+  /// — it round-trips through the controller, which calls Supabase and
+  /// reconciles state on success.
+  ///
+  /// The dialog is cancellable; only an explicit Save commits the change.
+  /// Empty input is allowed — it clears the note server-side.
+  Future<void> _editNote({
+    required String id,
+    required String buildingName,
+    required String? existingNote,
+  }) async {
+    final result = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => _EditNoteDialog(
+        buildingName: buildingName,
+        initialNote: existingNote,
+      ),
+    );
+
+    if (result == null) return; // Cancelled.
+    if (!mounted) return;
+
+    await ref
+        .read(favoritesControllerProvider.notifier)
+        .updateNote(id: id, note: result);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -215,27 +243,86 @@ class _FavoritesPageState extends ConsumerState<FavoritesPage> {
                                 : MqColors.contentPrimary,
                           ),
                         ),
+                        // Subtitle prefers the user's note (the editable
+                        // field) and falls back to the stable building
+                        // code so each row is always identifiable.
                         subtitle: Text(
-                          fav.buildingId,
+                          (fav.note != null && fav.note!.trim().isNotEmpty)
+                              ? fav.note!
+                              : fav.buildingId,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
+                            fontStyle:
+                                (fav.note != null &&
+                                    fav.note!.trim().isNotEmpty)
+                                ? FontStyle.italic
+                                : FontStyle.normal,
                             color: dark
                                 ? Colors.white.withValues(alpha: 0.6)
                                 : MqColors.contentSecondary,
                           ),
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline_rounded),
-                          color: MqColors.red,
-                          onPressed: () async {
-                            final confirmed = await _confirmRemove(
-                              fav.buildingName,
-                            );
-                            if (confirmed && context.mounted) {
-                              await ref
-                                  .read(favoritesControllerProvider.notifier)
-                                  .remove(fav.id);
+                        // Kebab menu surfaces Edit (Update) and Remove
+                        // (Delete) — keeping CRUD verbs first-class to the
+                        // marker without cramping the row.
+                        trailing: PopupMenuButton<_FavoriteRowAction>(
+                          tooltip: l10n.favoritesEditNote,
+                          icon: Icon(
+                            Icons.more_vert_rounded,
+                            color: dark
+                                ? Colors.white.withValues(alpha: 0.7)
+                                : MqColors.contentSecondary,
+                          ),
+                          onSelected: (action) async {
+                            switch (action) {
+                              case _FavoriteRowAction.edit:
+                                await _editNote(
+                                  id: fav.id,
+                                  buildingName: fav.buildingName,
+                                  existingNote: fav.note,
+                                );
+                              case _FavoriteRowAction.remove:
+                                final confirmed = await _confirmRemove(
+                                  fav.buildingName,
+                                );
+                                if (confirmed && context.mounted) {
+                                  await ref
+                                      .read(
+                                        favoritesControllerProvider.notifier,
+                                      )
+                                      .remove(fav.id);
+                                }
                             }
                           },
+                          itemBuilder: (ctx) => [
+                            PopupMenuItem(
+                              value: _FavoriteRowAction.edit,
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.edit_note_rounded,
+                                    color: MqColors.red,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(l10n.favoritesEditNote),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: _FavoriteRowAction.remove,
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: MqColors.red,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(l10n.favoritesDeleteYes),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                         onTap: () =>
                             context.go('/map/building/${fav.buildingId}'),
@@ -247,6 +334,88 @@ class _FavoritesPageState extends ConsumerState<FavoritesPage> {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// Discrete actions the favourite-row kebab menu can dispatch.
+///
+/// Modelled as an enum (rather than free strings) so the `onSelected`
+/// switch is exhaustively checked by the analyzer — adding a new action
+/// becomes a compile-time error if a handler is missed.
+enum _FavoriteRowAction { edit, remove }
+
+/// Standalone stateful dialog that owns its own [TextEditingController].
+///
+/// Pulled out of `_editNote` so the controller's lifecycle is tied to the
+/// widget's `State.dispose()` — never the outer page. Returning the
+/// trimmed note (or `null` on cancel) through `Navigator.pop` is the only
+/// communication surface, keeping this widget reusable and testable.
+class _EditNoteDialog extends StatefulWidget {
+  const _EditNoteDialog({
+    required this.buildingName,
+    required this.initialNote,
+  });
+
+  final String buildingName;
+  final String? initialNote;
+
+  @override
+  State<_EditNoteDialog> createState() => _EditNoteDialogState();
+}
+
+class _EditNoteDialogState extends State<_EditNoteDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialNote ?? '');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final dark = context.isDarkMode;
+    return AlertDialog(
+      backgroundColor: dark ? MqColors.charcoal800 : Colors.white,
+      title: Text(
+        widget.buildingName,
+        style: TextStyle(
+          color: dark ? Colors.white : MqColors.contentPrimary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        maxLines: 3,
+        maxLength: 280,
+        decoration: InputDecoration(
+          hintText: l10n.favoritesNoteHint,
+          border: const OutlineInputBorder(),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: MqColors.red, width: 2),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.favoritesDeleteCancel),
+        ),
+        TextButton(
+          style: TextButton.styleFrom(foregroundColor: MqColors.red),
+          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          child: Text(l10n.favoritesSaveNote),
+        ),
+      ],
     );
   }
 }

@@ -80,6 +80,15 @@ void main() {
     when(() => mockAuthRepo.userId).thenReturn('user-1');
   });
 
+  // The Edit-note dialog auto-focuses a TextField. Flutter's default
+  // test surface (800x600) sometimes triggers caret-positioning
+  // assertions on the EditableText render object before the dialog
+  // is fully attached — explicit surface sizing avoids that race.
+  Future<void> setLargeSurface(WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1024));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  }
+
   testWidgets('shows loading indicator immediately', (tester) async {
     // The load is called in initState via postFrameCallback.
     // Since the controller starts with isLoading=false, the loading
@@ -147,6 +156,148 @@ void main() {
     expect(find.text('Science Building'), findsOneWidget);
     expect(find.text('BLD'), findsOneWidget);
     expect(find.text('SCI'), findsOneWidget);
+  });
+
+  testWidgets('subtitle shows note when present (italic)', (tester) async {
+    final favWithNote = FavoriteBuilding(
+      id: 'fav-3',
+      userId: 'user-1',
+      buildingId: 'LIB',
+      buildingName: 'Library',
+      note: 'Group study area is on level 4',
+      createdAt: _now,
+      updatedAt: _now,
+    );
+    when(
+      () => mockFavRepo.fetchAll(userId: any(named: 'userId')),
+    ).thenAnswer((_) async => FavoritesResult.success([favWithNote]));
+
+    await tester.pumpWidget(
+      buildApp(authRepository: mockAuthRepo, favRepository: mockFavRepo),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.text('Group study area is on level 4'), findsOneWidget);
+    // When a note is shown, the building code is hidden (note takes the row).
+    expect(find.text('LIB'), findsNothing);
+  });
+
+  testWidgets('kebab menu surfaces Edit and Remove actions', (tester) async {
+    when(
+      () => mockFavRepo.fetchAll(userId: any(named: 'userId')),
+    ).thenAnswer((_) async => FavoritesResult.success([_sampleFav]));
+
+    await tester.pumpWidget(
+      buildApp(authRepository: mockAuthRepo, favRepository: mockFavRepo),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    // Open the kebab menu.
+    await tester.tap(find.byIcon(Icons.more_vert_rounded).first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit note'), findsOneWidget);
+    expect(find.text('Yes, remove'), findsOneWidget);
+  });
+
+  testWidgets('edit note dialog persists changes via repository', (
+    tester,
+  ) async {
+    await setLargeSurface(tester);
+    final updated = _sampleFav.copyWith(note: 'New note text');
+    when(
+      () => mockFavRepo.fetchAll(userId: any(named: 'userId')),
+    ).thenAnswer((_) async => FavoritesResult.success([_sampleFav]));
+    when(
+      () => mockFavRepo.updateNote(
+        id: any(named: 'id'),
+        note: any(named: 'note'),
+      ),
+    ).thenAnswer((_) async => FavoritesResult.success(updated));
+
+    await tester.pumpWidget(
+      buildApp(authRepository: mockAuthRepo, favRepository: mockFavRepo),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    await tester.tap(find.byIcon(Icons.more_vert_rounded).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Edit note'));
+    await tester.pumpAndSettle();
+
+    // Dialog text field is auto-focused — type the new note.
+    await tester.enterText(find.byType(TextField), 'New note text');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    verify(
+      () => mockFavRepo.updateNote(id: 'fav-1', note: 'New note text'),
+    ).called(1);
+  });
+
+  testWidgets('remove action shows confirm dialog and calls repository', (
+    tester,
+  ) async {
+    when(
+      () => mockFavRepo.fetchAll(userId: any(named: 'userId')),
+    ).thenAnswer((_) async => FavoritesResult.success([_sampleFav]));
+    when(
+      () => mockFavRepo.remove(any()),
+    ).thenAnswer((_) async => FavoritesResult.success(null));
+
+    await tester.pumpWidget(
+      buildApp(authRepository: mockAuthRepo, favRepository: mockFavRepo),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    // Open kebab → tap the popup-menu Remove item (the only "Yes, remove"
+    // on screen at this point — the confirm dialog isn't shown yet).
+    await tester.tap(find.byIcon(Icons.more_vert_rounded).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Yes, remove'));
+    await tester.pumpAndSettle();
+
+    // The confirm dialog now asks for explicit confirmation.
+    expect(find.text('Remove this favourite?'), findsOneWidget);
+    // After the menu closes there is only one "Yes, remove" — the
+    // confirm button. No `.last` ambiguity needed.
+    await tester.tap(find.text('Yes, remove'));
+    await tester.pumpAndSettle();
+
+    verify(() => mockFavRepo.remove('fav-1')).called(1);
+  });
+
+  testWidgets('edit dialog cancel does not call updateNote', (tester) async {
+    await setLargeSurface(tester);
+    when(
+      () => mockFavRepo.fetchAll(userId: any(named: 'userId')),
+    ).thenAnswer((_) async => FavoritesResult.success([_sampleFav]));
+
+    await tester.pumpWidget(
+      buildApp(authRepository: mockAuthRepo, favRepository: mockFavRepo),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    await tester.tap(find.byIcon(Icons.more_vert_rounded).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Edit note'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'Typed but cancelled');
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    verifyNever(
+      () => mockFavRepo.updateNote(
+        id: any(named: 'id'),
+        note: any(named: 'note'),
+      ),
+    );
   });
 
   testWidgets('retry button reloads on error state', (tester) async {
