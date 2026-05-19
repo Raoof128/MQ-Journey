@@ -230,6 +230,88 @@ void main() {
     });
   });
 
+  group('unauthenticated paths', () {
+    test('load returns to initial state when userId is null', () async {
+      when(() => mockAuthRepo.userId).thenReturn(null);
+
+      final container = makeContainer(
+        authRepository: mockAuthRepo,
+        favRepository: mockFavRepo,
+      );
+      addTearDown(() => container.dispose());
+
+      await container.read(favoritesControllerProvider.notifier).load();
+
+      final state = container.read(favoritesControllerProvider);
+      expect(state.favorites, isEmpty);
+      expect(state.error, isNull);
+      // Critically: the repository must NOT be hit for anonymous users —
+      // otherwise we'd leak Supabase queries on every cold start.
+      verifyNever(() => mockFavRepo.fetchAll(userId: any(named: 'userId')));
+    });
+
+    test('toggle is a no-op when userId is null', () async {
+      when(() => mockAuthRepo.userId).thenReturn(null);
+
+      final container = makeContainer(
+        authRepository: mockAuthRepo,
+        favRepository: mockFavRepo,
+      );
+      addTearDown(() => container.dispose());
+
+      await container
+          .read(favoritesControllerProvider.notifier)
+          .toggle(buildingId: 'BLD', buildingName: 'Library');
+
+      verifyNever(
+        () => mockFavRepo.findFavoriteId(
+          userId: any(named: 'userId'),
+          buildingId: any(named: 'buildingId'),
+        ),
+      );
+    });
+  });
+
+  group('updateNote edge cases', () {
+    test('failure leaves prior favorite untouched in state', () async {
+      when(() => mockAuthRepo.userId).thenReturn('user-1');
+      when(
+        () => mockFavRepo.fetchAll(userId: any(named: 'userId')),
+      ).thenAnswer((_) async => FavoritesResult.success([_sampleFav]));
+      when(
+        () => mockFavRepo.updateNote(
+          id: any(named: 'id'),
+          note: any(named: 'note'),
+        ),
+      ).thenAnswer((_) async => FavoritesResult.failure('Network down.'));
+
+      final container = makeContainer(
+        authRepository: mockAuthRepo,
+        favRepository: mockFavRepo,
+      );
+      addTearDown(() => container.dispose());
+
+      await container.read(favoritesControllerProvider.notifier).load();
+      final beforeNote = container
+          .read(favoritesControllerProvider)
+          .favorites
+          .first
+          .note;
+      await container
+          .read(favoritesControllerProvider.notifier)
+          .updateNote(id: 'fav-1', note: 'attempted note');
+
+      final afterNote = container
+          .read(favoritesControllerProvider)
+          .favorites
+          .first
+          .note;
+      // The state should NOT be optimistically updated on failure —
+      // the note remains whatever it was before the failed call.
+      expect(afterNote, beforeNote);
+    });
+  });
+
   group('isFavorited', () {
     test('returns true for favorited building', () async {
       when(() => mockAuthRepo.userId).thenReturn('user-1');
