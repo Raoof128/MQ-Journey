@@ -10,6 +10,7 @@ import 'package:mq_navigation/features/map/domain/entities/building.dart';
 import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
+import 'package:mq_navigation/features/favorites/presentation/widgets/favorite_button.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/building_search_sheet.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/campus/campus_map_view.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/google/google_map_view.dart';
@@ -849,10 +850,23 @@ class _CategoryBuildingList extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             )
                           : null,
-                      trailing: Icon(
-                        Icons.chevron_right,
-                        size: 20,
-                        color: isDark ? Colors.white : MqColors.charcoal600,
+                      // Heart sits left of the chevron so the row still
+                      // feels navigable (chevron signals "drill in") while
+                      // the favourite action is always one tap away.
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FavoriteButton(
+                            buildingId: building.id,
+                            buildingName: building.name,
+                            size: 20,
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            size: 20,
+                            color: isDark ? Colors.white : MqColors.charcoal600,
+                          ),
+                        ],
                       ),
                       onTap: () => onSelectBuilding(building),
                       shape: RoundedRectangleBorder(

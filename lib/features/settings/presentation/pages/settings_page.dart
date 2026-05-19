@@ -687,9 +687,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       _InfoRow(
                         icon: Icons.person_outline,
                         label: l10n.signedInAs,
+                        // Guard against an empty email in the brief window
+                        // between sign-out and the router redirect firing.
                         subtitle:
-                            Supabase.instance.client.auth.currentUser?.email ??
-                            '',
+                            Supabase
+                                    .instance
+                                    .client
+                                    .auth
+                                    .currentUser
+                                    ?.email
+                                    ?.isNotEmpty ==
+                                true
+                            ? Supabase.instance.client.auth.currentUser!.email!
+                            : l10n.notSignedInLabel,
                       ),
                       _TapRow(
                         icon: Icons.logout_rounded,

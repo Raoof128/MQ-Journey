@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Wraps Supabase auth operations for testability.
@@ -17,7 +18,28 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    return _supabase.auth.signUp(email: email, password: password);
+    // emailRedirectTo tells Supabase where to send the user after they click
+    // the confirmation link in their inbox.
+    //
+    // • Web (Chrome / any browser): use the app's current origin so the PKCE
+    //   confirmation code lands on a URL that Flutter web can handle.
+    //   supabase_flutter auto-exchanges the ?code= param on startup.
+    //   ⚠️  This origin must also be added to the Supabase dashboard under
+    //       Authentication → URL Configuration → Redirect URLs.
+    //
+    // • Native (iOS / Android / macOS / Windows): use the registered custom
+    //   URI scheme so the OS opens the app directly.
+    final emailRedirectTo = kIsWeb
+        ? '${Uri.base.scheme}://${Uri.base.host}'
+              '${Uri.base.hasPort ? ':${Uri.base.port}' : ''}'
+              '/auth/callback'
+        : 'io.mqnavigation://callback';
+
+    return _supabase.auth.signUp(
+      email: email,
+      password: password,
+      emailRedirectTo: emailRedirectTo,
+    );
   }
 
   Future<AuthResponse> signIn({

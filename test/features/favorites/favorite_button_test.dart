@@ -35,6 +35,9 @@ void main() {
     mockAuthRepo = MockAuthRepository();
     mockFavRepo = MockFavoriteBuildingRepository();
     when(() => mockAuthRepo.userId).thenReturn('user-1');
+    // FavoritesController.build() now calls ref.listen(authControllerProvider),
+    // which triggers AuthController.build() → mockAuthRepo.isAuthenticated.
+    when(() => mockAuthRepo.isAuthenticated).thenReturn(false);
   });
 
   testWidgets('shows border heart when not favorited', (tester) async {

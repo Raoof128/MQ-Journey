@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
 import 'package:mq_navigation/features/favorites/presentation/controllers/favorites_controller.dart';
+import 'package:mq_navigation/features/map/presentation/widgets/building_actions_sheet.dart';
 import 'package:mq_navigation/shared/extensions/context_extensions.dart';
 
 class FavoritesPage extends ConsumerStatefulWidget {
@@ -263,69 +263,110 @@ class _FavoritesPageState extends ConsumerState<FavoritesPage> {
                                 : MqColors.contentSecondary,
                           ),
                         ),
-                        // Kebab menu surfaces Edit (Update) and Remove
-                        // (Delete) — keeping CRUD verbs first-class to the
-                        // marker without cramping the row.
-                        trailing: PopupMenuButton<_FavoriteRowAction>(
-                          tooltip: l10n.favoritesEditNote,
-                          icon: Icon(
-                            Icons.more_vert_rounded,
-                            color: dark
-                                ? Colors.white.withValues(alpha: 0.7)
-                                : MqColors.contentSecondary,
-                          ),
-                          onSelected: (action) async {
-                            switch (action) {
-                              case _FavoriteRowAction.edit:
-                                await _editNote(
-                                  id: fav.id,
-                                  buildingName: fav.buildingName,
-                                  existingNote: fav.note,
-                                );
-                              case _FavoriteRowAction.remove:
-                                final confirmed = await _confirmRemove(
-                                  fav.buildingName,
-                                );
-                                if (confirmed && context.mounted) {
-                                  await ref
-                                      .read(
-                                        favoritesControllerProvider.notifier,
-                                      )
-                                      .remove(fav.id);
-                                }
-                            }
-                          },
-                          itemBuilder: (ctx) => [
-                            PopupMenuItem(
-                              value: _FavoriteRowAction.edit,
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.edit_note_rounded,
-                                    color: MqColors.red,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(l10n.favoritesEditNote),
-                                ],
+                        // Trailing row: red directions icon + kebab menu.
+                        //
+                        // • Directions icon (Icons.directions_rounded in red)
+                        //   — same pattern as Open Day event tiles. Opens
+                        //   BuildingActionsSheet so the user can choose
+                        //   Campus Map or Google Maps. Does NOT immediately
+                        //   navigate — the user picks first.
+                        //
+                        // • Kebab menu — note (Add/Edit) and Remove only.
+                        //   "Add note" when the building has no saved note,
+                        //   "Edit note" when one already exists. "Remove"
+                        //   (not "Yes, remove") matches standard UX copy.
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              tooltip: l10n.openDay_directionsTo(
+                                fav.buildingName,
+                              ),
+                              icon: Icon(
+                                Icons.directions_rounded,
+                                color: dark ? MqColors.brightRed : MqColors.red,
+                              ),
+                              onPressed: () => BuildingActionsSheet.show(
+                                context,
+                                buildingId: fav.buildingId,
+                                buildingName: fav.buildingName,
                               ),
                             ),
-                            PopupMenuItem(
-                              value: _FavoriteRowAction.remove,
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.delete_outline_rounded,
-                                    color: MqColors.red,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(l10n.favoritesDeleteYes),
-                                ],
+                            PopupMenuButton<_FavoriteRowAction>(
+                              icon: Icon(
+                                Icons.more_vert_rounded,
+                                color: dark
+                                    ? Colors.white.withValues(alpha: 0.7)
+                                    : MqColors.contentSecondary,
                               ),
+                              onSelected: (action) async {
+                                switch (action) {
+                                  case _FavoriteRowAction.edit:
+                                    await _editNote(
+                                      id: fav.id,
+                                      buildingName: fav.buildingName,
+                                      existingNote: fav.note,
+                                    );
+                                  case _FavoriteRowAction.remove:
+                                    final confirmed = await _confirmRemove(
+                                      fav.buildingName,
+                                    );
+                                    if (confirmed && context.mounted) {
+                                      await ref
+                                          .read(
+                                            favoritesControllerProvider
+                                                .notifier,
+                                          )
+                                          .remove(fav.id);
+                                    }
+                                }
+                              },
+                              itemBuilder: (ctx) {
+                                final hasNote =
+                                    fav.note?.trim().isNotEmpty == true;
+                                return [
+                                  PopupMenuItem(
+                                    value: _FavoriteRowAction.edit,
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.edit_note_rounded,
+                                          color: MqColors.red,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        // Label reflects whether a note
+                                        // already exists so the user
+                                        // always sees the right verb.
+                                        Text(
+                                          hasNote
+                                              ? l10n.favoritesEditNote
+                                              : l10n.favoritesAddNote,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: _FavoriteRowAction.remove,
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.delete_outline_rounded,
+                                          color: MqColors.red,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Text(l10n.favoritesRemove),
+                                      ],
+                                    ),
+                                  ),
+                                ];
+                              },
                             ),
                           ],
                         ),
-                        onTap: () =>
-                            context.go('/map/building/${fav.buildingId}'),
+                        // Row tap is intentionally disabled — navigation is
+                        // triggered exclusively through the red directions
+                        // icon so the user consciously picks their renderer.
+                        onTap: null,
                       ),
                     ),
                   );

@@ -46,6 +46,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Navigate to login page when signup succeeds and email confirmation is
+    // required.  The pendingEmailVerificationProvider is already set to true by
+    // the controller before isPendingVerification flips, so LoginPage will show
+    // the green "check your inbox" banner as soon as it mounts.
+    ref.listen<AuthScreenState>(authControllerProvider, (prev, next) {
+      if (next.isPendingVerification &&
+          !(prev?.isPendingVerification ?? false) &&
+          context.mounted) {
+        // Reset signup state so pressing "Back" to signup later starts fresh.
+        ref.read(authControllerProvider.notifier).clearError();
+        context.go('/auth/login');
+      }
+    });
+
     final authState = ref.watch(authControllerProvider);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;

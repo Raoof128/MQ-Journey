@@ -150,6 +150,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SignupPage(),
       ),
       GoRoute(path: '/auth', redirect: (context, state) => '/auth/login'),
+      // Web email-confirmation callback (PKCE flow).
+      //
+      // After a user clicks the link in their confirmation email, Supabase
+      // redirects the browser to `{emailRedirectTo}?code=<pkce_code>`.
+      // supabase_flutter automatically exchanges that code for a session during
+      // Supabase.initialize() (before runApp is called).  By the time GoRouter
+      // evaluates this route, the session is already present and the global
+      // redirect fires, sending the user to /onboarding or /home.
+      //
+      // This route therefore acts as a safe landing page: if the exchange is
+      // still in-flight it shows a brief loading spinner; once the auth-state
+      // stream fires (via _OnboardingFlagListenable) the router takes over.
+      GoRoute(
+        path: '/auth/callback',
+        name: RouteNames.authCallback,
+        builder: (context, state) => const _AuthCallbackPage(),
+      ),
       // Favorites page
       GoRoute(
         path: '/favorites',
@@ -242,3 +259,32 @@ class _OnboardingFlagListenable extends ChangeNotifier {
   StreamSubscription<AuthState>? _authSub;
   ProviderSubscription<({bool isLoading, bool hasCompleted})>? _settingsSub;
 }
+
+/// Transitional page shown at `/auth/callback` while supabase_flutter
+/// exchanges the PKCE code from the confirmation-email link for a session.
+///
+/// In practice this is almost invisible on fast connections — `Supabase
+/// .initialize()` (called before `runApp`) already exchanges the code
+/// synchronously, so [_OnboardingFlagListenable] fires and the router
+/// redirects before the first frame is painted.  The spinner is only visible
+/// on very slow connections or when the exchange races with startup.
+class _AuthCallbackPage extends StatelessWidget {
+  const _AuthCallbackPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Confirming your email…'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

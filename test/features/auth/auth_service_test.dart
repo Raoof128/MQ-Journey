@@ -47,13 +47,18 @@ void main() {
         () => mockGoTrue.signUp(
           email: any(named: 'email'),
           password: any(named: 'password'),
+          emailRedirectTo: any(named: 'emailRedirectTo'),
         ),
       ).thenAnswer((_) async => fakeResponse);
 
       await authService.signUp(email: 'a@b.com', password: 'pass123');
 
       verify(
-        () => mockGoTrue.signUp(email: 'a@b.com', password: 'pass123'),
+        () => mockGoTrue.signUp(
+          email: 'a@b.com',
+          password: 'pass123',
+          emailRedirectTo: any(named: 'emailRedirectTo'),
+        ),
       ).called(1);
     });
 

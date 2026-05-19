@@ -163,7 +163,8 @@ class _PreviewCard extends StatelessWidget {
     final dateText = OpenDayTime.formatShortDate(openDayDate);
 
     return MqTactileButton(
-      onTap: () => context.goNamed(RouteNames.openDay),
+      // push so Open Day sits on top of Home and can be back-navigated.
+      onTap: () => context.pushNamed(RouteNames.openDay),
       borderRadius: MqSpacing.radiusXl,
       child: Container(
         padding: const EdgeInsetsDirectional.all(MqSpacing.space4),
