@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -60,8 +62,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return hasCompleted ? '/home' : '/onboarding';
       }
 
-      // Onboarding gate
-      if (!isOnboardingRoute) {
+      // Onboarding gate — only applies to authenticated users
+      if (isAuthed && !isOnboardingRoute) {
         final settingsAsync = ref.read(settingsControllerProvider);
         if (settingsAsync.isLoading) return null;
         final hasCompleted =
@@ -202,27 +204,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Tiny [Listenable] adapter for `GoRouter.refreshListenable`.
+/// [Listenable] adapter for `GoRouter.refreshListenable`.
 ///
-/// The redirect cares about exactly two pieces of settings state:
-///   1. `s.isLoading`  — while loading we don't redirect at all
-///   2. `s.value?.hasCompletedOnboarding` — drives the onboarding gate
+/// Fires whenever EITHER of these changes:
+///   1. Supabase auth state (sign-in / sign-out) — so the router re-evaluates
+///      the redirect immediately after a successful login or logout.
+///   2. The onboarding-completion flag in settings — so the router redirects
+///      away from /onboarding once the user finishes it.
 ///
-/// We listen to a record of *both* projected via `.select()` so the
-/// listener fires when EITHER changes:
-///   - first launch: `(loading=true, _)` → `(loading=false, false)` →
-///     redirect re-runs and bounces to `/onboarding`. (Without listening
-///     to `isLoading`, the projected onboarding bool would stay `false`
-///     across the loading→data transition and the redirect would never
-///     fire — the user would land on `/home` instead of `/onboarding`.)
-///   - completion: `hasCompleted` flips `false → true`, redirect re-runs
-///     and stops bouncing back.
-///
-/// Records use value-equality, so unrelated settings changes (theme,
-/// locale, bachelor, …) keep this listener silent and the router stable.
+/// Records use value-equality for the settings projection, so unrelated
+/// preference changes (theme, locale, bachelor, …) keep this listener
+/// silent and avoid spurious router rebuilds.
 class _OnboardingFlagListenable extends ChangeNotifier {
   _OnboardingFlagListenable(Ref ref) {
-    _sub = ref.listen<({bool isLoading, bool hasCompleted})>(
+    // Listen to Supabase auth state changes (login / logout).
+    _authSub = Supabase.instance.client.auth.onAuthStateChange.listen(
+      (_) => notifyListeners(),
+    );
+
+    // Listen to the onboarding flag (and its loading state).
+    _settingsSub = ref.listen<({bool isLoading, bool hasCompleted})>(
       settingsControllerProvider.select(
         (s) => (
           isLoading: s.isLoading,
@@ -232,8 +233,12 @@ class _OnboardingFlagListenable extends ChangeNotifier {
       (_, _) => notifyListeners(),
       fireImmediately: false,
     );
-    ref.onDispose(() => _sub?.close());
+    ref.onDispose(() {
+      _authSub?.cancel();
+      _settingsSub?.close();
+    });
   }
 
-  ProviderSubscription<({bool isLoading, bool hasCompleted})>? _sub;
+  StreamSubscription<AuthState>? _authSub;
+  ProviderSubscription<({bool isLoading, bool hasCompleted})>? _settingsSub;
 }
