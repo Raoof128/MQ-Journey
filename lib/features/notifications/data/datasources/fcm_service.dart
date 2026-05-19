@@ -33,16 +33,22 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 ///
 /// Handles background handlers, permission requests, token acquisition,
 /// and token syncing to the Supabase backend.
+///
+/// [messaging] is nullable: when [Firebase.apps] is empty (i.e. the native
+/// Firebase config file is absent from the bundle), the provider passes `null`
+/// and every FCM method becomes a safe no-op.  This keeps the app fully
+/// functional on Supabase while FCM is treated as an optional capability.
 class FcmService {
   FcmService({
-    required FirebaseMessaging messaging,
+    required FirebaseMessaging? messaging,
     required NotificationRemoteSource remoteSource,
     required LocalNotificationsService localNotificationsService,
   }) : _messaging = messaging,
        _remoteSource = remoteSource,
        _localNotificationsService = localNotificationsService;
 
-  final FirebaseMessaging _messaging;
+  /// Null when Firebase was not initialised (e.g. missing GoogleService-Info.plist).
+  final FirebaseMessaging? _messaging;
   final NotificationRemoteSource _remoteSource;
   final LocalNotificationsService _localNotificationsService;
   StreamSubscription<String>? _tokenRefreshSubscription;
@@ -50,8 +56,12 @@ class FcmService {
   StreamSubscription<RemoteMessage>? _openAppSubscription;
   bool _isInitialised = false;
 
+  /// True only when the platform is supported AND Firebase was successfully
+  /// initialised.  When [_messaging] is null (Firebase config absent), every
+  /// public method returns early so no Firebase API is ever called.
   bool get _isSupported =>
       !kIsWeb &&
+      _messaging != null &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS);
 
@@ -78,7 +88,7 @@ class FcmService {
       }
     });
 
-    final initialMessage = await _messaging.getInitialMessage();
+    final initialMessage = await _messaging!.getInitialMessage();
     final link = initialMessage?.data['link'] as String?;
     if (link != null && link.isNotEmpty) {
       await onOpenLink(link);
@@ -105,7 +115,7 @@ class FcmService {
       }
     }
 
-    final settings = await _messaging.getNotificationSettings();
+    final settings = await _messaging!.getNotificationSettings();
     return switch (settings.authorizationStatus) {
       AuthorizationStatus.authorized => NotificationPermissionStatus.granted,
       AuthorizationStatus.provisional =>
@@ -130,7 +140,7 @@ class FcmService {
       }
     }
 
-    final settings = await _messaging.requestPermission(
+    final settings = await _messaging!.requestPermission(
       alert: true,
       badge: true,
       sound: true,
@@ -154,7 +164,10 @@ class FcmService {
 
     _currentUserId = userId;
 
-    final token = await _messaging.getToken();
+    // Promote to a local non-nullable variable so the Dart analyser does not
+    // complain about repeated null-asserted field access below.
+    final fcm = _messaging!;
+    final token = await fcm.getToken();
     if (token == null || token.isEmpty) {
       return;
     }
@@ -165,7 +178,7 @@ class FcmService {
       platform: defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android',
     );
 
-    _tokenRefreshSubscription ??= _messaging.onTokenRefresh.listen((
+    _tokenRefreshSubscription ??= fcm.onTokenRefresh.listen((
       token,
     ) async {
       final currentId = _currentUserId;
@@ -191,7 +204,7 @@ class FcmService {
       return;
     }
 
-    final token = await _messaging.getToken();
+    final token = await _messaging!.getToken();
     if (token != null && token.isNotEmpty) {
       await _remoteSource.deleteFcmToken(userId: userId, token: token);
     }
@@ -205,8 +218,13 @@ class FcmService {
 }
 
 final fcmServiceProvider = Provider<FcmService>((ref) {
+  // Guard: FirebaseMessaging.instance throws if Firebase.initializeApp() was
+  // never called (e.g. GoogleService-Info.plist / google-services.json absent).
+  // Passing null lets FcmService treat every FCM operation as a safe no-op,
+  // keeping the Supabase-first app fully functional without a Firebase config.
+  final messaging = Firebase.apps.isNotEmpty ? FirebaseMessaging.instance : null;
   final service = FcmService(
-    messaging: FirebaseMessaging.instance,
+    messaging: messaging,
     remoteSource: ref.watch(notificationRemoteSourceProvider),
     localNotificationsService: ref.watch(localNotificationsServiceProvider),
   );

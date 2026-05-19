@@ -57,8 +57,18 @@ class _MqNavigationAppState extends ConsumerState<MqNavigationApp> {
       return;
     }
 
-    final lat = uri.queryParameters['lat'];
-    final lng = uri.queryParameters['lng'];
+    final latStr = uri.queryParameters['lat'];
+    final lngStr = uri.queryParameters['lng'];
+
+    // Guard: both parameters must be present and parseable.
+    // Previously null values produced '/meet?lat=null&lng=null', which
+    // navigated to MapPage with null coords and silently ignored navigation.
+    final lat = latStr != null ? double.tryParse(latStr) : null;
+    final lng = lngStr != null ? double.tryParse(lngStr) : null;
+    if (lat == null || lng == null) {
+      return;
+    }
+
     final router = ref.read(appRouterProvider);
     router.go('/meet?lat=$lat&lng=$lng');
   }

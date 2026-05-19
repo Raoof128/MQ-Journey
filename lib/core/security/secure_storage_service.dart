@@ -36,7 +36,17 @@ class SecureStorageService {
       _prefs ??= await SharedPreferences.getInstance();
 
   FlutterSecureStorage get _secure =>
-      _explicitStorage ?? const FlutterSecureStorage();
+      _explicitStorage ??
+      // Use afterFirstUnlock so the Keychain items remain accessible after
+      // the device has been unlocked at least once. The default
+      // (whenUnlockedThisDeviceOnly) would lock items when the app is
+      // briefly in the background during a cold-start lifecycle edge case,
+      // potentially causing a read failure that wipes all preferences.
+      const FlutterSecureStorage(
+        iOptions: IOSOptions(
+          accessibility: KeychainAccessibility.unlocked_this_device,
+        ),
+      );
 
   // ── Public API ─────────────────────────────────────────────────────────
 

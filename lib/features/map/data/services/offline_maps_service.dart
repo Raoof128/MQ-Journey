@@ -71,12 +71,30 @@ class OfflineMapsService {
       return;
     }
     try {
-      await FMTCObjectBoxBackend().initialise();
+      // Impose a timeout so that a hung/corrupted ObjectBox store cannot block
+      // the entire bootstrap sequence before the first frame is drawn. iOS's
+      // watchdog kills the process after ~20 s of startup work; 8 s here leaves
+      // plenty of headroom for the rest of the bootstrap.
+      await FMTCObjectBoxBackend().initialise().timeout(
+        const Duration(seconds: 8),
+        onTimeout: () {
+          AppLogger.warning(
+            'Offline map backend init timed out after 8 s — '
+            'continuing with network-only tiles.',
+          );
+        },
+      );
       _fmtcObjectBoxBackendReady = true;
     } catch (error, stackTrace) {
+      // ObjectBox can throw platform exceptions on first launch, after a
+      // crash-corrupted database, or in certain iOS sandbox configurations.
+      // We intentionally swallow the exception so the app remains usable
+      // with online-only tiles.
       AppLogger.warning(
         'Offline map backend init skipped — desktop OSM will use online tiles '
-        'only until ObjectBox can start (check macOS sandbox / app group).',
+        'only until ObjectBox can start (check macOS sandbox / app group). '
+        'If this persists after a clean install the ObjectBox store file may '
+        'be corrupted; deleting the app and reinstalling should clear it.',
         error,
         stackTrace,
       );

@@ -1,6 +1,12 @@
-# Supabase Edge Functions configuration
-# https://supabase.com/docs/guides/functions
+# Supabase local development configuration.
+# ⚠️  This file ONLY affects the local Supabase emulator (supabase start).
+#     It has NO effect on the remote Supabase project at supabase.co.
+#     Remote settings (email confirmations, redirect URLs, SMTP) must be
+#     configured in the Supabase Dashboard:
+#     https://supabase.com/dashboard/project/cxsqlgvbwtevkkljzolg
+# https://supabase.com/docs/guides/local-development/cli/config
 
+project_id = "mq-navigation"
 
 [api]
 enabled = true
@@ -11,21 +17,26 @@ max_rows = 1000
 
 [auth]
 enabled = true
-site_url = "io.mqnavigation://callback"
+# site_url must be a web URL for the local emulator.
+# The app itself uses the custom scheme io.mqnavigation:// for native deep links.
+site_url = "http://localhost:3000"
 additional_redirect_urls = [
+  # Native deep link — registered in AndroidManifest.xml and iOS Info.plist.
+  # ⚠️  Must ALSO be added in the remote Supabase Dashboard under:
+  #     Authentication → URL Configuration → Redirect URLs
   "io.mqnavigation://callback",
+  # Production web callback (if web build is ever deployed).
   "https://mqnavigation.io/auth/callback",
-  # Web dev — Flutter assigns a random port; allow all localhost origins.
-  # ⚠️  Mirror these in the Supabase dashboard under
-  #     Authentication → URL Configuration → Redirect URLs so the REMOTE
-  #     project also allows them:
-  #       http://localhost
-  #       http://localhost:*/**
+  # Local Flutter web — Flutter dev server uses a random port.
   "http://localhost",
   "http://localhost:*/auth/callback",
 ]
 
 [auth.email]
+# Enable email confirmations for the local emulator so signup→email→deep-link
+# can be tested end-to-end with `supabase start`.
+# ⚠️  For the REMOTE project, enable this in the Supabase Dashboard:
+#     Authentication → Settings → "Enable email confirmations" → ON
 enable_confirmations = true
 
 [auth.external.google]

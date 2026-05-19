@@ -72,12 +72,20 @@ void main() {
 
     test('resetPassword calls resetPasswordForEmail', () async {
       when(
-        () => mockGoTrue.resetPasswordForEmail(any()),
+        () => mockGoTrue.resetPasswordForEmail(
+          any(),
+          redirectTo: any(named: 'redirectTo'),
+        ),
       ).thenAnswer((_) async {});
 
       await authService.resetPassword(email: 'a@b.com');
 
-      verify(() => mockGoTrue.resetPasswordForEmail('a@b.com')).called(1);
+      verify(
+        () => mockGoTrue.resetPasswordForEmail(
+          'a@b.com',
+          redirectTo: any(named: 'redirectTo'),
+        ),
+      ).called(1);
     });
 
     test('isAuthenticated returns true when session exists', () {
