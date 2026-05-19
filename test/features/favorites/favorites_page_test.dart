@@ -78,6 +78,9 @@ void main() {
     mockAuthRepo = MockAuthRepository();
     mockFavRepo = MockFavoriteBuildingRepository();
     when(() => mockAuthRepo.userId).thenReturn('user-1');
+    // FavoritesController.build() now calls ref.listen(authControllerProvider),
+    // which triggers AuthController.build() → mockAuthRepo.isAuthenticated.
+    when(() => mockAuthRepo.isAuthenticated).thenReturn(false);
   });
 
   // The Edit-note dialog auto-focuses a TextField. Flutter's default
@@ -198,8 +201,10 @@ void main() {
     await tester.tap(find.byIcon(Icons.more_vert_rounded).first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Edit note'), findsOneWidget);
-    expect(find.text('Yes, remove'), findsOneWidget);
+    // _sampleFav has no note, so the label should be "Add note"
+    expect(find.text('Add note'), findsOneWidget);
+    // Popup menu shows "Remove" (not "Yes, remove" — that's the confirm dialog)
+    expect(find.text('Remove'), findsOneWidget);
   });
 
   testWidgets('edit note dialog persists changes via repository', (
@@ -225,7 +230,8 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.more_vert_rounded).first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Edit note'));
+    // _sampleFav has no note, so the popup shows "Add note"
+    await tester.tap(find.text('Add note'));
     await tester.pumpAndSettle();
 
     // Dialog text field is auto-focused — type the new note.
@@ -254,11 +260,10 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Open kebab → tap the popup-menu Remove item (the only "Yes, remove"
-    // on screen at this point — the confirm dialog isn't shown yet).
+    // Open kebab → tap the popup-menu "Remove" item.
     await tester.tap(find.byIcon(Icons.more_vert_rounded).first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Yes, remove'));
+    await tester.tap(find.text('Remove'));
     await tester.pumpAndSettle();
 
     // The confirm dialog now asks for explicit confirmation.
@@ -285,7 +290,8 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.more_vert_rounded).first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Edit note'));
+    // _sampleFav has no note, so the popup shows "Add note"
+    await tester.tap(find.text('Add note'));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'Typed but cancelled');

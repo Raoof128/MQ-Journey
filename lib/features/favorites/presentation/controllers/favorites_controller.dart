@@ -21,6 +21,29 @@ class FavoritesController extends Notifier<FavoritesState> {
   @override
   FavoritesState build() {
     ref.onDispose(() => _disposed = true);
+
+    // React to auth state changes so heart icons stay in sync without
+    // requiring the Favourites page to open first.
+    //   • Signed in  → load from Supabase so all FavoriteButton widgets
+    //     across the Map tab immediately show correct filled/unfilled state.
+    //   • Signed out → reset to empty so stale rows from the previous
+    //     session are not shown to a new user on the same device.
+    ref.listen(authControllerProvider, (previous, next) {
+      if (next.isAuthenticated) {
+        load();
+      } else {
+        state = FavoritesState.initial();
+      }
+    });
+
+    // If already authenticated when this provider is first created
+    // (e.g. app cold-started with a valid session), schedule an
+    // immediate load so the first frame already has correct state.
+    final isAuthenticated = ref.read(authControllerProvider).isAuthenticated;
+    if (isAuthenticated) {
+      Future.microtask(load);
+    }
+
     return FavoritesState.initial();
   }
 

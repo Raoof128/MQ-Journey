@@ -20,6 +20,8 @@ abstract final class RouteNames {
   static const String auth = 'auth';
   static const String login = 'login';
   static const String signup = 'signup';
+  /// Web-only route that handles the Supabase email-confirmation PKCE redirect.
+  static const String authCallback = 'auth-callback';
 
   // Favorites
   static const String favorites = 'favorites';

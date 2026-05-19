@@ -116,7 +116,11 @@ class HomePage extends ConsumerWidget {
                         ),
                         const SizedBox(height: MqSpacing.space4),
                         _FavoritesCard(
-                          onTap: () => context.goNamed(RouteNames.favorites),
+                          // push — not go — so the Favourites screen sits on
+                          // top of Home in the navigator stack, giving it an
+                          // automatic back arrow and the correct slide-in /
+                          // slide-back animation pair.
+                          onTap: () => context.pushNamed(RouteNames.favorites),
                         ),
                         const SizedBox(height: MqSpacing.space4),
                         // Open Day enhancement — hides itself when the

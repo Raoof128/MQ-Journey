@@ -43,6 +43,10 @@ void main() {
   setUp(() {
     mockAuthRepo = MockAuthRepository();
     mockFavRepo = MockFavoriteBuildingRepository();
+    // FavoritesController.build() now calls ref.listen(authControllerProvider),
+    // which triggers AuthController.build() → mockAuthRepo.isAuthenticated.
+    // Stub it here so tests don't need Supabase initialised.
+    when(() => mockAuthRepo.isAuthenticated).thenReturn(false);
   });
 
   group('initial state', () {
