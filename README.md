@@ -9,6 +9,8 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 > **Submitted for COMP3130 Mobile App Development — Major Project (May 2026)**
 > Pitched as the official navigation companion for the **Macquarie University Open Day** experience.
 
+> **Read the complete [Project Report](file:///Users/raoof.r12/Desktop/Raouf/Pouya-Raouf-COMP3130/PROJECT_REPORT.md) containing the design overview, target audience personas, and technical specifications.**
+
 ---
 
 ## 📌 For Markers — Quick Start
