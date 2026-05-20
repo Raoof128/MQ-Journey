@@ -96,7 +96,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             DeepLinkSearch(:final query) =>
               '/map?q=${Uri.encodeQueryComponent(query)}',
             DeepLinkMeetAt(:final latitude, :final longitude) =>
-              '/meet?lat=$latitude&lng=$longitude',
+              '/map?lat=$latitude&lng=$longitude',
             DeepLinkFallback() => '/map',
           };
         },
@@ -105,10 +105,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/meet',
         name: RouteNames.meet,
-        builder: (context, state) {
-          final lat = double.tryParse(state.uri.queryParameters['lat'] ?? '');
-          final lng = double.tryParse(state.uri.queryParameters['lng'] ?? '');
-          return MapPage(meetLat: lat, meetLng: lng);
+        redirect: (context, state) {
+          final lat = state.uri.queryParameters['lat'];
+          final lng = state.uri.queryParameters['lng'];
+          if (lat != null && lng != null) {
+            return '/map?lat=$lat&lng=$lng';
+          }
+          return '/map';
         },
       ),
       GoRoute(
@@ -192,8 +195,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/map',
                 name: RouteNames.map,
-                builder: (context, state) =>
-                    MapPage(initialSearchQuery: state.uri.queryParameters['q']),
+                builder: (context, state) => MapPage(
+                  initialSearchQuery: state.uri.queryParameters['q'],
+                  meetLat: double.tryParse(
+                    state.uri.queryParameters['lat'] ?? '',
+                  ),
+                  meetLng: double.tryParse(
+                    state.uri.queryParameters['lng'] ?? '',
+                  ),
+                ),
                 routes: [
                   GoRoute(
                     path: 'building/:buildingId',

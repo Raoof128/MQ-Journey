@@ -201,4 +201,66 @@ void main() {
       expect(router.routeInformationProvider.value.uri.path, equals('/map'));
     },
   );
+
+  testWidgets(
+    'MapPage parses meet coordinates, selects meet point, keeps path as /map, and preserves selection',
+    (tester) async {
+      final router = GoRouter(
+        initialLocation: '/map',
+        routes: [
+          GoRoute(
+            path: '/map',
+            name: RouteNames.map,
+            builder: (context, state) => MapPage(
+              initialSearchQuery: state.uri.queryParameters['q'],
+              meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
+              meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
+            ),
+            routes: [
+              GoRoute(
+                path: 'building/:buildingId',
+                name: RouteNames.buildingDetail,
+                builder: (context, state) => MapPage(
+                  initialBuildingId: state.pathParameters['buildingId'],
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(buildTestApp(router: router));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final element = tester.element(find.byType(MapPage));
+      final container = ProviderScope.containerOf(element);
+
+      // Navigate to meet coordinates
+      router.go('/map?lat=-33.77380&lng=151.11260');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Expect a meet point building to be selected
+      final selected = container
+          .read(mapControllerProvider)
+          .value!
+          .selectedBuilding;
+      expect(selected, isNotNull);
+      expect(selected!.id, startsWith('meet_'));
+      expect(selected.latitude, equals(-33.77380));
+      expect(selected.longitude, equals(151.11260));
+
+      // Route path should remain /map (with query params) rather than pushing buildingDetail path
+      expect(router.routeInformationProvider.value.uri.path, equals('/map'));
+
+      // Re-trigger pump to ensure post-frame callback back-navigation detector does not clear it
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(
+        container.read(mapControllerProvider).value!.selectedBuilding?.id,
+        startsWith('meet_'),
+      );
+    },
+  );
 }

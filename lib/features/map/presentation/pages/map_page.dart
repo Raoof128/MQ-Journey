@@ -156,7 +156,8 @@ class _MapPageState extends ConsumerState<MapPage> {
         if (!context.mounted) return;
         final location = GoRouterState.of(context).matchedLocation;
 
-        if (selectedBuilding != null) {
+        if (selectedBuilding != null &&
+            !selectedBuilding.id.startsWith('meet_')) {
           final targetPath = '/map/building/${selectedBuilding.id}';
           final targetPathUpper = targetPath.toUpperCase();
           final locationUpper = location.toUpperCase();
@@ -180,7 +181,8 @@ class _MapPageState extends ConsumerState<MapPage> {
     // Detect if the user navigated back to /map explicitly (e.g. back button) while a building is still selected
     if (state.hasValue) {
       final selectedBuilding = state.value!.selectedBuilding;
-      if (selectedBuilding != null) {
+      if (selectedBuilding != null &&
+          !selectedBuilding.id.startsWith('meet_')) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!context.mounted) return;
           final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
