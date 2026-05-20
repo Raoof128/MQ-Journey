@@ -68,9 +68,7 @@ Future<void> bootstrap(Widget Function() appBuilder) async {
           // ensures we always proceed. FcmService checks Firebase.apps.isNotEmpty
           // before touching any FCM API, so no FirebaseException can escape into
           // the widget tree.
-          await Firebase.initializeApp().timeout(
-            const Duration(seconds: 5),
-          );
+          await Firebase.initializeApp().timeout(const Duration(seconds: 5));
           FirebaseMessaging.onBackgroundMessage(
             firebaseMessagingBackgroundHandler,
           );

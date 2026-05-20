@@ -287,4 +287,3 @@ class _AuthCallbackPage extends StatelessWidget {
     );
   }
 }
-
