@@ -459,8 +459,13 @@ class MapController extends AsyncNotifier<MapState> {
     if (current == null) {
       return;
     }
+    final upperId = buildingId.toUpperCase();
     final building = current.buildings
-        .where((item) => item.id == buildingId)
+        .where(
+          (item) =>
+              item.id.toUpperCase() == upperId ||
+              item.code.toUpperCase() == upperId,
+        )
         .firstOrNull;
     if (building != null) {
       selectBuilding(building);

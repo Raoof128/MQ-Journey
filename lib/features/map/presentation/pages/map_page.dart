@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mq_navigation/app/router/route_names.dart';
 import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
@@ -68,27 +70,64 @@ class _MapPageState extends ConsumerState<MapPage> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
+  void _handleNavigationParams(MapState mapState) {
     final buildingId = widget.initialBuildingId;
     final meetLat = widget.meetLat;
     final meetLng = widget.meetLng;
     final searchQuery = widget.initialSearchQuery;
+
     if (meetLat != null && meetLng != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref
-            .read(mapControllerProvider.notifier)
-            .selectMeetPoint(latitude: meetLat, longitude: meetLng);
-      });
+      final meetPointCode =
+          '${meetLat.toStringAsFixed(5)}, ${meetLng.toStringAsFixed(5)}';
+      if (mapState.selectedBuilding?.code != meetPointCode) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ref
+              .read(mapControllerProvider.notifier)
+              .selectMeetPoint(latitude: meetLat, longitude: meetLng);
+        });
+      }
     } else if (buildingId != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(mapControllerProvider.notifier).selectBuildingById(buildingId);
-      });
+      final selectedId = mapState.selectedBuilding?.id.toUpperCase();
+      final selectedCode = mapState.selectedBuilding?.code.toUpperCase();
+      final upperId = buildingId.toUpperCase();
+      if (selectedId != upperId && selectedCode != upperId) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ref
+              .read(mapControllerProvider.notifier)
+              .selectBuildingById(buildingId);
+        });
+      }
     } else if (searchQuery != null && searchQuery.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(mapControllerProvider.notifier).updateSearchQuery(searchQuery);
-      });
+      if (mapState.searchQuery != searchQuery) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ref
+              .read(mapControllerProvider.notifier)
+              .updateSearchQuery(searchQuery);
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentState = ref.read(mapControllerProvider).value;
+      if (currentState != null) {
+        _handleNavigationParams(currentState);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant MapPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final currentState = ref.read(mapControllerProvider).value;
+    if (currentState != null) {
+      _handleNavigationParams(currentState);
     }
   }
 
@@ -97,6 +136,63 @@ class _MapPageState extends ConsumerState<MapPage> {
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(mapControllerProvider);
     final isDark = context.isDarkMode;
+
+    ref.listen<AsyncValue<MapState>>(mapControllerProvider, (previous, next) {
+      final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
+      if (!isCurrent) return;
+
+      if (next.hasValue) {
+        final mapState = next.value!;
+
+        // Handle initialization parameters when the controller state changes to loaded
+        if (previous == null || !previous.hasValue) {
+          _handleNavigationParams(mapState);
+          return;
+        }
+
+        // Sync GoRouter route history with the currently selected building state.
+        // We only push a route change if the user selects/deselects a building from the map/UI.
+        final selectedBuilding = mapState.selectedBuilding;
+        if (!context.mounted) return;
+        final location = GoRouterState.of(context).matchedLocation;
+
+        if (selectedBuilding != null) {
+          final targetPath = '/map/building/${selectedBuilding.id}';
+          final targetPathUpper = targetPath.toUpperCase();
+          final locationUpper = location.toUpperCase();
+
+          if (locationUpper != targetPathUpper &&
+              (location == '/map' || location.startsWith('/map/building/'))) {
+            context.goNamed(
+              RouteNames.buildingDetail,
+              pathParameters: {'buildingId': selectedBuilding.id},
+            );
+          }
+        } else {
+          // Only redirect to /map if the current location is on a building detail path
+          if (location.startsWith('/map/building/')) {
+            context.goNamed(RouteNames.map);
+          }
+        }
+      }
+    });
+
+    // Detect if the user navigated back to /map explicitly (e.g. back button) while a building is still selected
+    if (state.hasValue) {
+      final selectedBuilding = state.value!.selectedBuilding;
+      if (selectedBuilding != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
+          if (!isCurrent) return;
+
+          final location = GoRouterState.of(context).matchedLocation;
+          if (location == '/map') {
+            ref.read(mapControllerProvider.notifier).clearSelection();
+          }
+        });
+      }
+    }
 
     return Scaffold(
       body: state.when(
