@@ -357,7 +357,7 @@ class _GoogleMapViewState extends ConsumerState<GoogleMapView> {
           polylines: _buildPolylines(highContrast),
         ),
         PositionedDirectional(
-          top: mq.padding.top + 168,
+          top: mq.padding.top + 212,
           end: MqSpacing.space4,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,

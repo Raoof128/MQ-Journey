@@ -51,6 +51,11 @@ class MapShell extends StatelessWidget {
   /// for the panel.
   static const double _bottomControlsReservedHeight = 80;
 
+  /// Estimated height of the top overlay content (search bar + filter
+  /// chips + renderer toggle) so the footer panel can be constrained
+  /// to stay below it and never overlap.
+  static const double _topOverlayHeight = 180;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -145,6 +150,8 @@ class MapShell extends StatelessWidget {
         // Anchored ABOVE the floating bottom controls so the buttons
         // can stay pinned to their corners; opening the panel must
         // not push the buttons upward.
+        // Constrained to the available space between the top overlay
+        // area and bottom controls so the panel never overflows.
         if (footerWidget != null)
           Positioned(
             bottom: safeBottom + _bottomControlsReservedHeight,
@@ -157,7 +164,24 @@ class MapShell extends StatelessWidget {
                 MqSpacing.space4,
                 MqSpacing.space2,
               ),
-              child: footerWidget,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight:
+                      MediaQuery.of(context).size.height -
+                      safeTop -
+                      safeBottom -
+                      _bottomControlsReservedHeight -
+                      _topOverlayHeight -
+                      MqSpacing
+                          .space4 // overlay Y offset
+                          -
+                      MqSpacing
+                          .space3 // gap between overlay and footer
+                          -
+                      MqSpacing.space2, // footer bottom padding
+                ),
+                child: footerWidget,
+              ),
             ),
           ),
 
