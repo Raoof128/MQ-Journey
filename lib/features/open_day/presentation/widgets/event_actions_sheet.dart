@@ -36,13 +36,27 @@ class EventActionsSheet extends ConsumerWidget {
 
   final OpenDayEvent event;
 
-  static Future<void> show(BuildContext context, OpenDayEvent event) {
-    return showModalBottomSheet(
+  static Future<void> show(BuildContext context, OpenDayEvent event) async {
+    final renderer = await showModalBottomSheet<MapRendererType>(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) => EventActionsSheet(event: event),
     );
+
+    if (renderer != null && context.mounted) {
+      final container = ProviderScope.containerOf(context);
+      container.read(mapControllerProvider.notifier).setRenderer(renderer);
+
+      final buildings = container.read(buildingRegistryProvider).value;
+      final resolved = _resolveBuilding(buildings, event.buildingCode);
+      final targetBuildingId = resolved?.id ?? event.buildingCode!;
+
+      context.goNamed(
+        RouteNames.buildingDetail,
+        pathParameters: {'buildingId': targetBuildingId},
+      );
+    }
   }
 
   @override
@@ -111,11 +125,7 @@ class EventActionsSheet extends ConsumerWidget {
                     ),
                   ),
                   subtitle: Text(l10n.openDay_openInsideMqNav),
-                  onTap: () => _routeToMap(
-                    context,
-                    ref,
-                    renderer: MapRendererType.campus,
-                  ),
+                  onTap: () => Navigator.pop(context, MapRendererType.campus),
                 ),
               ),
               Semantics(
@@ -135,11 +145,7 @@ class EventActionsSheet extends ConsumerWidget {
                     ),
                   ),
                   subtitle: Text(l10n.openDay_openGoogleMapsInsideNav),
-                  onTap: () => _routeToMap(
-                    context,
-                    ref,
-                    renderer: MapRendererType.google,
-                  ),
+                  onTap: () => Navigator.pop(context, MapRendererType.google),
                 ),
               ),
             ] else
@@ -153,36 +159,7 @@ class EventActionsSheet extends ConsumerWidget {
     );
   }
 
-  /// Routes the user to the in-app Navigation tab with the given
-  /// renderer active and the venue selected as the single focused
-  /// destination.
-  ///
-  /// Why both side effects rather than just navigating: the renderer
-  /// state lives on `mapControllerProvider` and persists across route
-  /// transitions, so setting it *before* `goNamed` ensures `MapPage`
-  /// rebuilds in the right mode immediately rather than briefly
-  /// flashing the user's previous default renderer.
-  void _routeToMap(
-    BuildContext context,
-    WidgetRef ref, {
-    required MapRendererType renderer,
-  }) {
-    Navigator.pop(context);
-    ref.read(mapControllerProvider.notifier).setRenderer(renderer);
-    // `/map/building/:id` lives inside the Map shell branch, so
-    // GoRouter switches into the Map tab *and* `MapPage._initState`
-    // reads `initialBuildingId` and calls `selectBuildingById` —
-    // landing the user in single-focused-marker state automatically.
-    Future<void>.delayed(const Duration(milliseconds: 250), () {
-      if (!context.mounted) return;
-      context.goNamed(
-        RouteNames.buildingDetail,
-        pathParameters: {'buildingId': event.buildingCode!},
-      );
-    });
-  }
-
-  Building? _resolveBuilding(List<Building>? buildings, String? code) {
+  static Building? _resolveBuilding(List<Building>? buildings, String? code) {
     if (buildings == null || code == null) return null;
     final upper = code.toUpperCase();
     for (final b in buildings) {

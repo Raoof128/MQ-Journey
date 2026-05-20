@@ -49,6 +49,13 @@ lib/
 - All keys loaded via `--dart-define-from-file=.env` — never hardcoded in source
 - Use `scripts/run.sh` to launch with native key injection for Maps SDKs
 
+### Raouf: 2026-05-20 (AEST) — Fixed Map redirection and GoRouter parameter sync
+**Scope:** Navigation & Map UI — `lib/features/map/presentation/pages/map_page.dart`
+**Summary:** Fixed the bug where clicking "View on Map" from Favorites or Open Day events would not select or focus on the building when MapPage was already cached or initializing. Added `didUpdateWidget` to react to GoRouter parameter changes on the existing MapPage widget state, and added a Riverpod listener `ref.listen` in `build` to handle parameters arriving while `MapController` is loading. Also synchronized GoRouter's route path history (`/map` or `/map/building/:buildingId`) with the controller's `selectedBuilding` state, allowing repeated selections to trigger new parameter changes correctly. Fixed clearing building route sync in `ref.listen` by removing the `initialBuildingId == null` check when selection becomes null, ensuring the route correctly updates back to `/map`.
+**Files Changed:** `lib/features/map/presentation/pages/map_page.dart`, `test/features/map/map_page_test.dart` (new), `AGENT.md`, `CHANGELOG.md`
+**Verification:** Added `test/features/map/map_page_test.dart` containing widget tests. Run `flutter test test/features/map/map_page_test.dart` (all tests passed) and `./scripts/check.sh --quick` (all 8 checks passed).
+**Follow-ups:** None.
+
 ### Raouf: 2026-05-20 (AEST) — i18n localization synchronization, gitignore rules, and CI verification
 **Scope:** i18n / CI checks / repo configurations — sync translated ARBs and ignore workspace metadata.
 **Summary:** Created a Python synchronization script (`tools/sync_arb.py`) to align the 34 non-English localization ARB files with the canonical English master (`app_en.arb`). The script copies over 5 newly-added keys (`notSignedInLabel`, `authResetEmailSent`, `favoritesAddNote`, `favoritesRemove`, `authVerifyEmailMessage`) to all translation files using the English string as a temporary fallback, ensuring exact key parity. Ran `flutter gen-l10n` to rebuild localizations and executed the full CI/CD validation suite via `scripts/check.sh`. All 8 steps passed successfully with 0 warnings or untranslated keys. Also updated `.gitignore` to ignore the `.antigravitycli/` workspace configuration folder.

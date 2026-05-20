@@ -38,8 +38,8 @@ class BuildingActionsSheet extends ConsumerWidget {
     BuildContext context, {
     required String buildingId,
     required String buildingName,
-  }) {
-    return showModalBottomSheet(
+  }) async {
+    final renderer = await showModalBottomSheet<MapRendererType>(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
@@ -48,6 +48,15 @@ class BuildingActionsSheet extends ConsumerWidget {
         buildingName: buildingName,
       ),
     );
+
+    if (renderer != null && context.mounted) {
+      final container = ProviderScope.containerOf(context);
+      container.read(mapControllerProvider.notifier).setRenderer(renderer);
+      context.goNamed(
+        RouteNames.buildingDetail,
+        pathParameters: {'buildingId': buildingId},
+      );
+    }
   }
 
   @override
@@ -93,8 +102,7 @@ class BuildingActionsSheet extends ConsumerWidget {
                   ),
                 ),
                 subtitle: Text(l10n.openDay_openInsideMqNav),
-                onTap: () =>
-                    _routeToMap(context, ref, renderer: MapRendererType.campus),
+                onTap: () => Navigator.pop(context, MapRendererType.campus),
               ),
             ),
             Semantics(
@@ -114,31 +122,12 @@ class BuildingActionsSheet extends ConsumerWidget {
                   ),
                 ),
                 subtitle: Text(l10n.openDay_openGoogleMapsInsideNav),
-                onTap: () =>
-                    _routeToMap(context, ref, renderer: MapRendererType.google),
+                onTap: () => Navigator.pop(context, MapRendererType.google),
               ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  void _routeToMap(
-    BuildContext context,
-    WidgetRef ref, {
-    required MapRendererType renderer,
-  }) {
-    Navigator.pop(context);
-    ref.read(mapControllerProvider.notifier).setRenderer(renderer);
-    // Small delay lets setRenderer settle before the Map tab rebuilds,
-    // matching the same contract used in EventActionsSheet.
-    Future<void>.delayed(const Duration(milliseconds: 250), () {
-      if (!context.mounted) return;
-      context.goNamed(
-        RouteNames.buildingDetail,
-        pathParameters: {'buildingId': buildingId},
-      );
-    });
   }
 }
