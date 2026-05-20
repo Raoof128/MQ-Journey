@@ -81,3 +81,7 @@ logs/
 # AI superpowers / plan artifacts
 .superpowers/
 docs/superpowers/
+
+# Antigravity CLI workspace metadata
+.antigravitycli/
+

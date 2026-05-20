@@ -16,8 +16,8 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 /// user dismisses the banner or successfully signs in.
 final pendingEmailVerificationProvider =
     NotifierProvider<_PendingEmailVerificationNotifier, bool>(
-  _PendingEmailVerificationNotifier.new,
-);
+      _PendingEmailVerificationNotifier.new,
+    );
 
 class _PendingEmailVerificationNotifier extends Notifier<bool> {
   @override
@@ -120,10 +120,10 @@ class AuthScreenState {
 
   /// Sign-up succeeded but email confirmation is required before login.
   factory AuthScreenState.pendingVerification() => const AuthScreenState._(
-        isAuthenticated: false,
-        isLoading: false,
-        isPendingVerification: true,
-      );
+    isAuthenticated: false,
+    isLoading: false,
+    isPendingVerification: true,
+  );
 
   final bool isAuthenticated;
   final bool isLoading;

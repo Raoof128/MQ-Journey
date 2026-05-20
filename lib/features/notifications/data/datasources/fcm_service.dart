@@ -178,9 +178,7 @@ class FcmService {
       platform: defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android',
     );
 
-    _tokenRefreshSubscription ??= fcm.onTokenRefresh.listen((
-      token,
-    ) async {
+    _tokenRefreshSubscription ??= fcm.onTokenRefresh.listen((token) async {
       final currentId = _currentUserId;
       if (token.isEmpty || currentId == null) {
         return;
@@ -222,7 +220,9 @@ final fcmServiceProvider = Provider<FcmService>((ref) {
   // never called (e.g. GoogleService-Info.plist / google-services.json absent).
   // Passing null lets FcmService treat every FCM operation as a safe no-op,
   // keeping the Supabase-first app fully functional without a Firebase config.
-  final messaging = Firebase.apps.isNotEmpty ? FirebaseMessaging.instance : null;
+  final messaging = Firebase.apps.isNotEmpty
+      ? FirebaseMessaging.instance
+      : null;
   final service = FcmService(
     messaging: messaging,
     remoteSource: ref.watch(notificationRemoteSourceProvider),

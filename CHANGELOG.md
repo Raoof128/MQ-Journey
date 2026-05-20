@@ -1,3 +1,10 @@
+### Raouf: 2026-05-20 (AEST) — i18n localization synchronization, gitignore rules, and CI verification
+**Scope:** i18n / CI checks / repo configurations — sync translated ARBs and ignore workspace metadata.
+**Summary:** Created a Python synchronization script (`tools/sync_arb.py`) to align the 34 non-English localization ARB files with the canonical English master (`app_en.arb`). The script copies over 5 newly-added keys (`notSignedInLabel`, `authResetEmailSent`, `favoritesAddNote`, `favoritesRemove`, `authVerifyEmailMessage`) to all translation files using the English string as a temporary fallback, ensuring exact key parity. Ran `flutter gen-l10n` to rebuild localizations and executed the full CI/CD validation suite via `scripts/check.sh`. All 8 steps passed successfully with 0 warnings or untranslated keys. Also updated `.gitignore` to ignore the `.antigravitycli/` workspace configuration folder.
+**Files Changed:** `tools/sync_arb.py` (new), `lib/app/l10n/app_*.arb` (34 locale files), `.gitignore`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** Run `python3 tools/sync_arb.py` then `./scripts/check.sh --quick` (all 8 checks passed). Verify `git status` ignores `.antigravitycli/`.
+**Follow-ups:** None.
+
 ### Raouf: 2026-05-18 (AEST) — AuthController with Riverpod state management
 **Scope:** Auth feature — `AuthController` (Riverpod `Notifier`) managing auth UI state.
 **Summary:** Added `AuthController` (extends Riverpod `Notifier<AuthScreenState>`) with `signIn`, `signUp`, `signOut`, `clearError` methods. Manages `isAuthenticated`, `isLoading`, `error`, `userId` state. Adapted to Riverpod 3.x API (`Notifier`/`NotifierProvider` instead of removed `StateNotifier`). Added `authRepositoryProvider` (Provider<AuthRepository>). Wrote 5 tests covering: signIn success, signIn error, signUp success, signOut reset, loading state during signIn. All 17 auth tests pass.
