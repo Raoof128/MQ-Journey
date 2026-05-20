@@ -49,6 +49,13 @@ lib/
 - All keys loaded via `--dart-define-from-file=.env` — never hardcoded in source
 - Use `scripts/run.sh` to launch with native key injection for Maps SDKs
 
+### Raouf: 2026-05-20 (AEST) — Fixed Map layout overlaps (footer, traffic toggle, top overlay)
+**Scope:** Map UI layout fixes — `lib/features/map/presentation/widgets/map_shell.dart`, `lib/features/map/presentation/widgets/google/google_map_view.dart`
+**Summary:** Fixed three layout overlap issues in the Google Map view and MapShell: (1) MapShell footer overflowed behind bottom nav when navigation route panel was open — added `ConstrainedBox` with `maxHeight` computed as `screenHeight - safeTop - safeBottom - _bottomControlsReservedHeight - _topOverlayHeight - space4 - space3 - space2` so footer always respects available space; (2) traffic/map-type buttons in `google_map_view.dart` overlapped the `MapModeToggle` pill — increased `PositionedDirectional` top offset from `safeTop + 168` to `safeTop + 212`; (3) MapShell footer overlapped the top overlay area (search bar, filter chips, MapModeToggle) — added `_topOverlayHeight = 180` constant. Ran full layout audit of all 16 map/navigation UI files — no additional issues found. Ran `./scripts/check.sh --quick --fix` — all 8 checks passed.
+**Files Changed:** `lib/features/map/presentation/widgets/map_shell.dart`, `lib/features/map/presentation/widgets/google/google_map_view.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `./scripts/check.sh --quick --fix` (8/8 passed): pub get, format, analyze, test (256/256), gen-l10n (0 untranslated), privacy guard, secret scan.
+**Follow-ups:** None.
+
 ### Raouf: 2026-05-20 (AEST) — Created and Linked Professional Project Report in Rubric Table
 **Scope:** Project Documentation — `PROJECT_REPORT.md`, `README.md`
 **Summary:** Created a comprehensive project report (PROJECT_REPORT.md) detailing the app overview, tagline, core capabilities, target audience groups, user personas, competitive analysis, test credentials, and architecture layout. The report follows the stop-slop writing guidelines, eliminating predictable AI patterns, adverbs, and passive voice. Added a row linking the report directly inside the Rubric Table of the main README.md.
