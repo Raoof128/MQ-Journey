@@ -1,6 +1,6 @@
-### Raouf: 2026-05-20 (AEST) — Created and Embedded Professional Project Report under stop-slop Guidelines
+### Raouf: 2026-05-20 (AEST) — Created and Linked Professional Project Report in Rubric Table
 **Scope:** Project Documentation — `PROJECT_REPORT.md`, `README.md`
-**Summary:** Created a comprehensive project report (PROJECT_REPORT.md) and embedded the complete report directly inside the main README.md. The report details the app overview, tagline, core capabilities, target audience groups, user personas, competitive analysis, test credentials, and architecture layout. It follows the stop-slop writing guidelines, eliminating predictable AI patterns, adverbs, and passive voice.
+**Summary:** Created a comprehensive project report (PROJECT_REPORT.md) detailing the app overview, tagline, core capabilities, target audience groups, user personas, competitive analysis, test credentials, and architecture layout. The report follows the stop-slop writing guidelines, eliminating predictable AI patterns, adverbs, and passive voice. Added a row linking the report directly inside the Rubric Table of the main README.md.
 **Files Changed:** `PROJECT_REPORT.md`, `README.md`, `AGENT.md`, `CHANGELOG.md`
 **Verification:** Verified word count (820 words) and link validation.
 **Follow-ups:** None.

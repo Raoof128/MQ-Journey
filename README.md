@@ -42,38 +42,7 @@ Password: OpenDay2026!
 | **Mobile device service** | `geolocator` (GPS), `flutter_compass` (heading), `torch_light` (flashlight) — all in `lib/features/map/` and `lib/features/safety/` |
 | **Widget tests** | `test/features/*/` — 50+ widget tests, including 10 for the Favourites page with full interaction coverage |
 | **Unit tests** | 240+ unit tests across map, auth, favourites, notifications, settings, transit, open day |
-
-## 📝 Project Report
-
-### Application Overview
-The Macquarie University campus contains over 150 buildings spread across a wide area. New students, open day visitors, and temporary staff struggle to locate lecture theaters, first aid rooms, and transit options. MQ Navigation solves this navigation problem. The application displays two map renderers: a Google Maps view for satellite imagery and marker clustering, and a custom illustrated campus map for direct visual navigation. Users can search the building database, calculate walking routes, toggle an on-device compass, and view live train departures.
-
-We designed the application with a focus on user privacy. Unlike commercial mapping services, MQ Navigation does not collect telemetry, location history, or personal identifiers. Users can run the application without registering an account. Those who want to sync bookmarked buildings across devices can create a secure email login, while others run the app without authentication using local device storage.
-
-### Core Capabilities
-MQ Navigation structures its features into five modules:
-
-1. **Dual-Renderer Map Engine**: The user interface displays two coordinate-aligned map views. Users toggle between Google Maps (with traffic layers and building marker clustering) and a calibrated illustrated vector map. State management controllers sync the active camera zoom, target latitude, and selected markers between both renderers.
-2. **Turn-by-Turn Routing**: We query a custom Supabase Edge proxy to fetch walking, driving, and transit routes. The proxy routes requests to the Google Routes API, then transforms the raw coordinates into step-by-step instructions. The application displays navigation updates, computes the walking duration, and detects arrival at the destination entrance.
-3. **Compass Mode**: Devices with magnetometer hardware run an on-device radar view. The application calculates the geometric bearing between the user and their destination, rotating a directional guide arrow via native sensor streams. The compass interface shows heading accuracy limits and cardinal points without transmitting coordinates to external servers.
-4. **Campus Safety Toolkit**: A standalone safety panel lists direct phone links for triple-zero, campus security, and health services. The toolkit integrates a flashlight toggle and maps the coordinates of five campus defibrillators and three first aid rooms. The safety features work without background location tracking.
-5. **Transit Departure Board**: The application displays real-time metro countdowns for Macquarie University Station. Commuters select their travel direction and preferred transit line to save countdown details to local preferences.
-
-### Target Audience and Personas
-We defined three user groups to guide the application design:
-
-1. **First-Year Students**: These users need to locate classrooms within tight gaps between classes. They rely on search aliases (such as "18WW" matching 18 Wally's Walk) to locate entrances.
-2. **Open Day Visitors**: These users arrive on campus with no prior knowledge of the layout. They need immediate access to public events and main campus landmarks without authentication gates.
-3. **Evening Commuters**: Students and staff leaving campus after dark require quick access to safety shuttles, flashlight toggles, and live train timetables.
-
-#### User Persona: Sarah (First-Year Student)
-Sarah has a ten-minute window to walk from a lab in the Business School (4 Eastern Road) to a tutorial in 18 Wally's Walk. General maps bundle building names together without showing entrance locations. Sarah opens MQ Navigation, types "18WW" into the search bar, and starts a walking route. The application guides her through campus walkways, shows her next turn, and alerts her when she reaches the entry doors.
-
-#### User Persona: Marcus (Open Day Visitor)
-Marcus wants to explore the engineering labs. He does not want to register an account or share his location. He opens the app, bypasses sign-up, and views the campus layout on the illustrated map. He marks the Engineering building as a favorite, adding a personal note to visit the robotics display.
-
-#### The Competitive Advantage
-Generic mapping tools lack accurate pedestrian data for campus-specific paths. They direct users to perimeter roads instead of pedestrian plazas. The university's official web map loads with high latency, demands single sign-on credentials, and fails to offer routing. MQ Navigation loads without delay, offers turn-by-turn campus routing, provides safety contacts, and operates without trackers.
+| **Project Report / Essay** | [PROJECT_REPORT.md](file:///Users/raoof.r12/Desktop/Raouf/Pouya-Raouf-COMP3130/PROJECT_REPORT.md) — 820-word essay addressing the required questions (app description, core features, audience personas, competitor advantages, technical credentials, and layout) |
 
 ---
 
