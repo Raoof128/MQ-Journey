@@ -44,6 +44,13 @@ lib/
 ```
 
 
+### Raouf: 2026-05-22 (Australia/Sydney) — Optimized Xcode/LLDB Debug Launch and Symbol Loading
+**Scope:** iOS build settings & dependency compilation optimization — `ios/Podfile`
+**Summary:** Audited app startup configurations and addressed the Xcode debugger warning ("Launching 'Runner' is taking longer than expected..."). Identified that LLDB spent significant time pulling external debug symbols (dSYMs) for heavy third-party framework targets (Firebase and Google Maps SDKs) from the device memory. Fixed this by adding a post-install hook in the CocoaPods `Podfile` that: (1) overrides the `DEBUG_INFORMATION_FORMAT` to `dwarf` (symbols stored directly inside object files rather than external dSYM bundles) for all Pod targets in the `Debug` configuration, and (2) forces `ONLY_ACTIVE_ARCH = YES` for all Pod targets in the `Debug` configuration to avoid compiling redundant architectures during development. This speeds up build/link cycles and prevents LLDB launch timeouts without affecting production Release/Profile configurations.
+**Files Changed:** `ios/Podfile`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** Re-ran `pod install` in the `ios/` folder to generate the modified Xcode configurations, then ran `./scripts/check.sh --quick` confirming all 8/8 pipeline checks (including 307 unit/widget tests and static analysis) passed successfully.
+**Follow-ups:** Inform developers to perform an Xcode clean (`xcodebuild clean` or Command-Shift-K in Xcode) and clear DerivedData to ensure the new symbol format rules apply immediately on next run.
+
 ### Raouf: 2026-05-22 (Australia/Sydney) — Campus map navigation disabled and Google Maps preview mode decoupled
 **Scope:** Map navigation & simplified card UI — `lib/features/map/presentation/pages/map_page.dart`, `lib/features/map/presentation/widgets/route_panel.dart`, `test/features/map/map_page_test.dart`
 **Summary:** (1) Disabled navigation capabilities on the Campus Map by introducing a simplified glassmorphic `_CampusBuildingInfoPanel` containing only building metadata and a close button, replacing the full RoutePanel. (2) Decoupled automatic navigation starting in Google Maps by removing `startNavigation()` from the route parameter handler, allowing users to choose travel modes in preview mode before manually initiating navigation. (3) Updated RoutePanel's start turn-by-turn navigation button to display the correct localized `l10n.startTurnByTurn` label.

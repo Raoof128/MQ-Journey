@@ -47,6 +47,12 @@ post_install do |installer|
       # Fix "double-quoted include in framework header" errors from PromisesObjC and others
       config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
 
+      # Optimize Debug launch performance by disabling dSYMs and only compiling active architecture
+      if config.name == 'Debug'
+        config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf'
+        config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
+      end
+
       # Suppress deprecation and pointer type warnings for specific third-party pods
       if ['geolocator_apple', 'firebase_core', 'firebase_messaging'].include? target.name
         config.build_settings['GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS'] = 'NO'
