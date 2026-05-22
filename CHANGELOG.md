@@ -1,3 +1,21 @@
+### Raouf: 2026-05-22 (AEST) — Added login_background.png to auth pages (login + signup)
+**Scope:** Auth pages — `lib/features/auth/presentation/pages/login_page.dart`, `lib/features/auth/presentation/pages/signup_page.dart`, `assets/images/login_background.png`
+**Summary:** Added the University campus photo as a full-screen blurred background on both the login and signup pages. The `Scaffold` body was changed from a flat color to a `Stack` with three layers: (1) the image with `ImageFiltered` blur (sigma 3), (2) a dark scrim overlay (`0.55` opacity black) for text readability, and (3) the existing form content on top. All text colors were set to white/white-with-opacity since they now sit on a dark scrim. Follows the same pattern as `HomePage._CampusBackground`.
+**Files Changed:** `lib/features/auth/presentation/pages/login_page.dart`, `lib/features/auth/presentation/pages/signup_page.dart`, `assets/images/login_background.png`
+**Verification:** `./scripts/check.sh --quick --fix` (8/8 passed).
+**Follow-ups:** None.
+
+### Raouf: 2026-05-22 (AEST) — Fixed slow app startup + search building actions sheet not appearing
+**Scope:** App bootstrap + map building search — `lib/app/bootstrap/bootstrap.dart`, `lib/features/map/presentation/pages/map_page.dart`
+**Summary:** Two fixes:
+
+**1. Slow app startup (up to 23 s red splash).** Three async initializers ran sequentially before `runApp()`: Firebase (5 s timeout) → Supabase (10 s) → OfflineMaps (8 s). Fixed by (a) running Firebase + Supabase in parallel via `Future.wait` so the blocking cap drops from 15 s to 10 s, and (b) deferring `OfflineMapsService.initializeBackend()` to after `runApp()` so the first Flutter frame is drawn ~8 s sooner. Worst-case pre-runApp blocking is now 10 s instead of 23 s.
+
+**2. Search building actions sheet not appearing.** The approach of passing an `onBuildingSelected` callback into the search sheet didn't work — calling `BuildingActionsSheet.show()` from inside the search sheet's `onTap` (before `Navigator.pop`) caused context/timing issues. Fixed by reverting `BuildingSearchSheet` to its original `selectBuilding` + `pop` flow, then making `_openSearchSheet()` async and awaiting the sheet close. After the sheet closes, the stable MapPage context reads `selectedBuilding` from the controller and shows `BuildingActionsSheet.show()`.
+**Files Changed:** `lib/app/bootstrap/bootstrap.dart`, `lib/features/map/presentation/pages/map_page.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `./scripts/check.sh --quick --fix` (8/8 passed): pub get, format, analyze, test (307/307), gen-l10n, privacy guard, secret scan.
+**Follow-ups:** None.
+
 ### Raouf: 2026-05-22 (AEST) — Fixed Google Maps live navigation (blue dot + location fetch on startup)
 **Scope:** Google Maps live navigation — `lib/features/map/presentation/widgets/google/google_map_view.dart`, `lib/features/map/presentation/controllers/map_controller.dart`, `test/features/map/map_controller_test.dart`
 **Summary:** Fixed two bugs that prevented Google Maps live navigation from working: (1) `myLocationEnabled` was gated on `widget.currentLocation != null` — since `currentLocation` starts null, the Google Maps blue dot never appeared until the user loaded a route or tapped the locate button. Changed to `myLocationEnabled: true` unconditionally, letting Google Maps SDK handle the blue dot internally. (2) The `MapController.build()` method never fetched the user's GPS location on startup — `currentLocation` was always null until `loadRoute()` or `centerOnCurrentLocation()` was explicitly called. Added initial location permission request + getCurrentLocation in `build()`, and starts the location tracking stream when granted. Verified against official Google Maps Flutter docs (pub.dev + developers.google.com) — `myLocationEnabled: true` is the correct API. No Navigation SDK (`google_navigation_flutter`) was needed; the app's custom navigation overlay (camera follow, route splitting, turn-by-turn instructions) is intact. Ran `./scripts/check.sh --quick --fix` — all 8 checks passed (307 tests, 0 failures).
