@@ -356,8 +356,15 @@ class _GoogleMapViewState extends ConsumerState<GoogleMapView> {
           markers: allMarkers,
           polylines: _buildPolylines(highContrast),
         ),
+        // Traffic & map-type controls — anchored well BELOW the top
+        // overlay band (search bar + filter chips + renderer toggle).
+        // [MapShell._topOverlayHeight] = 180 px and the overlay starts at
+        // [safeTop + space4]; we add a comfortable gap so the Traffic
+        // chip never collides with the Campus Map / Google Maps toggle.
+        // Previously this was [safeTop + 212] which sat directly behind
+        // the centred toggle on standard phone widths.
         PositionedDirectional(
-          top: mq.padding.top + 212,
+          top: mq.padding.top + 260,
           end: MqSpacing.space4,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -559,6 +566,21 @@ class _GoogleMapViewState extends ConsumerState<GoogleMapView> {
     unawaited(_controller!.moveCamera(update));
   }
 
+  /// Maximum distance (metres) between the user's GPS and the route polyline
+  /// before we exclude the GPS point from the fit-bounds calculation.
+  ///
+  /// **Why this exists:** previously `_fitRouteBounds` unconditionally
+  /// included `currentLocation` in the bounding box. If GPS returned a
+  /// location far from the route (e.g. a newly added building had
+  /// off-campus coordinates, or the user opened a route preview while
+  /// their last cached GPS fix was in another city), the bounding box
+  /// expanded to contain both points and Google Maps zoomed out to a
+  /// continent-scale view — exactly the screenshot the user reported.
+  ///
+  /// 5 km comfortably covers walking to anywhere on or directly adjacent
+  /// to Macquarie's campus while filtering out clearly nonsensical fixes.
+  static const double _maxLocationFitDistanceMetres = 5000;
+
   void _fitRouteBounds() {
     if (_controller == null || widget.route == null) {
       return;
@@ -580,12 +602,25 @@ class _GoogleMapViewState extends ConsumerState<GoogleMapView> {
       if (p.longitude > maxLng) maxLng = p.longitude;
     }
 
-    if (widget.currentLocation != null) {
-      final loc = widget.currentLocation!;
-      if (loc.latitude < minLat) minLat = loc.latitude;
-      if (loc.latitude > maxLat) maxLat = loc.latitude;
-      if (loc.longitude < minLng) minLng = loc.longitude;
-      if (loc.longitude > maxLng) maxLng = loc.longitude;
+    // Only fold the user's location into the bounds when it's reasonably
+    // close to the route — otherwise we'd zoom out to "continent" scale to
+    // include a stale or off-campus fix.
+    final loc = widget.currentLocation;
+    if (loc != null) {
+      final routeCentreLat = (minLat + maxLat) / 2;
+      final routeCentreLng = (minLng + maxLng) / 2;
+      final distance = haversineMetres(
+        lat1: loc.latitude,
+        lng1: loc.longitude,
+        lat2: routeCentreLat,
+        lng2: routeCentreLng,
+      );
+      if (distance <= _maxLocationFitDistanceMetres) {
+        if (loc.latitude < minLat) minLat = loc.latitude;
+        if (loc.latitude > maxLat) maxLat = loc.latitude;
+        if (loc.longitude < minLng) minLng = loc.longitude;
+        if (loc.longitude > maxLng) maxLng = loc.longitude;
+      }
     }
 
     final bounds = LatLngBounds(

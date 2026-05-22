@@ -10,7 +10,6 @@ import 'package:mq_navigation/features/map/domain/entities/building.dart';
 import 'package:mq_navigation/features/map/domain/entities/nav_instruction.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/shared/extensions/context_extensions.dart';
-import 'package:mq_navigation/features/map/presentation/widgets/compass_mode_view.dart';
 
 /// Floating bottom sheet displaying routing instructions and status.
 ///
@@ -35,8 +34,6 @@ class RoutePanel extends StatefulWidget {
     required this.onStartNavigation,
     required this.onStopNavigation,
     required this.onDismissArrival,
-    required this.onOpenInGoogleMaps,
-    required this.onOpenStreetView,
   });
 
   final Building? selectedBuilding;
@@ -54,8 +51,6 @@ class RoutePanel extends StatefulWidget {
   final VoidCallback onStartNavigation;
   final VoidCallback onStopNavigation;
   final VoidCallback onDismissArrival;
-  final VoidCallback onOpenInGoogleMaps;
-  final VoidCallback onOpenStreetView;
 
   @override
   State<RoutePanel> createState() => _RoutePanelState();
@@ -63,6 +58,31 @@ class RoutePanel extends StatefulWidget {
 
 class _RoutePanelState extends State<RoutePanel> {
   bool _stepsExpanded = true;
+
+  /// Tracks whether the panel is collapsed to a compact "peek" bar so the
+  /// user can see the map while navigation is still active. Only used
+  /// during navigation — outside of navigation the panel is always
+  /// expanded because the user needs to see the action buttons.
+  ///
+  /// **Important UX contract**: minimising does NOT stop navigation. The
+  /// only way to stop navigation is the explicit "Stop navigation" button
+  /// inside the expanded panel.
+  bool _minimized = false;
+
+  @override
+  void didUpdateWidget(covariant RoutePanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Always re-expand when navigation transitions on/off so a stale
+    // minimised state from a previous trip doesn't hide the action
+    // buttons the user now needs.
+    if (oldWidget.isNavigating != widget.isNavigating) {
+      _minimized = false;
+    }
+  }
+
+  void _toggleMinimized() {
+    setState(() => _minimized = !_minimized);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +101,22 @@ class _RoutePanelState extends State<RoutePanel> {
         doneLabel: l10n.done,
         onDismiss: widget.onDismissArrival,
         isDark: isDark,
+      );
+    }
+
+    // Compact "peek" mode while navigating — shows just the next turn so
+    // the user can see the map. A drag-up on the handle, a tap on it, or
+    // the chevron all expand it back. The map's bottom anchors remain
+    // stable because [MapShell] reserves a fixed band regardless of
+    // panel height.
+    if (widget.isNavigating && _minimized) {
+      return _MinimizedNavBar(
+        nextInstructionText:
+            widget.route?.instructions.isNotEmpty == true
+                ? widget.route!.instructions.first.text
+                : widget.selectedBuilding!.name,
+        isDark: isDark,
+        onExpand: _toggleMinimized,
       );
     }
 
@@ -119,16 +155,39 @@ class _RoutePanelState extends State<RoutePanel> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Handle bar
+                // Handle bar — interactive when navigating: a downward
+                // drag or a tap collapses the panel to the compact bar
+                // so the user can see the map without stopping nav.
                 Center(
-                  child: Container(
-                    width: 48,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.2)
-                          : MqColors.black12,
-                      borderRadius: BorderRadius.circular(3),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: widget.isNavigating ? _toggleMinimized : null,
+                    onVerticalDragEnd: widget.isNavigating
+                        ? (details) {
+                            // Positive Y velocity = swipe down → minimise.
+                            if (details.primaryVelocity != null &&
+                                details.primaryVelocity! > 120) {
+                              setState(() => _minimized = true);
+                            }
+                          }
+                        : null,
+                    child: Padding(
+                      // Generous touch padding so the small visual handle
+                      // becomes a comfortable drag/tap target.
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: MqSpacing.space8,
+                        vertical: MqSpacing.space2,
+                      ),
+                      child: Container(
+                        width: 48,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.2)
+                              : MqColors.black12,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -213,17 +272,32 @@ class _RoutePanelState extends State<RoutePanel> {
                         ],
                       ),
                     ),
+                    // Close / minimise affordance.
+                    //
+                    // **During navigation**: this now MINIMISES the panel
+                    // to the compact peek bar instead of stopping
+                    // navigation. The user previously had no way to see
+                    // the map without ending their trip — the X was a
+                    // hidden tripwire. Stopping nav is now an explicit
+                    // dedicated action ("Stop navigation" button below).
+                    //
+                    // **Outside navigation**: still clears the building
+                    // selection as before.
                     IconButton(
                       icon: Icon(
-                        Icons.close,
+                        widget.isNavigating
+                            ? Icons.expand_more
+                            : Icons.close,
                         size: MqSpacing.iconMd,
                         color: isDark
                             ? Colors.white.withValues(alpha: 0.5)
                             : MqColors.contentTertiary,
                       ),
-                      tooltip: l10n.clear,
+                      tooltip: widget.isNavigating
+                          ? l10n.routePanelMinimize
+                          : l10n.clear,
                       onPressed: widget.isNavigating
-                          ? widget.onStopNavigation
+                          ? _toggleMinimized
                           : widget.onClearSelection,
                     ),
                   ],
@@ -293,51 +367,25 @@ class _RoutePanelState extends State<RoutePanel> {
                       onPressed: widget.onStartNavigation,
                     ),
                     const SizedBox(height: MqSpacing.space2),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _GlassOutlinedButton(
-                            label: l10n.clear,
-                            isDark: isDark,
-                            onPressed: widget.onClearRoute,
-                          ),
-                        ),
-                        if (widget.selectedBuilding != null) ...[
-                          const SizedBox(width: MqSpacing.space2),
-                          _GlassCircleAction(
-                            icon: Icons.streetview,
-                            tooltip: l10n.openStreetView,
-                            isDark: isDark,
-                            onPressed: widget.onOpenStreetView,
-                          ),
-                        ],
-                        const SizedBox(width: MqSpacing.space2),
-                        _GlassCircleAction(
-                          icon: Icons.explore,
-                          tooltip: 'Compass Mode',
-                          isDark: isDark,
-                          onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              useSafeArea: true,
-                              builder: (context) => CompassModeView(
-                                currentLocation: widget.currentLocation,
-                                selectedBuilding: widget.selectedBuilding,
-                                route: widget.route,
-                                onClose: () => Navigator.pop(context),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(width: MqSpacing.space2),
-                        _GlassCircleAction(
-                          icon: Icons.open_in_new,
-                          tooltip: l10n.openInGoogleMaps,
-                          isDark: isDark,
-                          onPressed: widget.onOpenInGoogleMaps,
-                        ),
-                      ],
+                    // Action row — Clear only.
+                    //
+                    // Prior iterations of this row stacked optional icon
+                    // buttons here (Street View, Compass Mode, Open in
+                    // Google Maps). The earlier two were removed during
+                    // the first cleanup pass for being either redundant
+                    // (Open in Google Maps when the user is already in
+                    // Google Maps mode) or unlocalised/experimental
+                    // (Compass Mode). Street View is now also removed:
+                    // tappable peeks at the destination are a "weak"
+                    // nice-to-have, and shipping them alongside Clear
+                    // creates the same unlabelled-icon ambiguity the
+                    // user called out. The final route panel is now a
+                    // single primary action (Clear) with no mystery
+                    // controls.
+                    _GlassOutlinedButton(
+                      label: l10n.clear,
+                      isDark: isDark,
+                      onPressed: widget.onClearRoute,
                     ),
                   ],
                 ] else ...[
@@ -888,50 +936,102 @@ class _GlassOutlinedButton extends StatelessWidget {
   }
 }
 
-/// Small circular action icon (street view, google maps link).
-class _GlassCircleAction extends StatelessWidget {
-  const _GlassCircleAction({
-    required this.icon,
-    required this.tooltip,
+
+// ── Minimised navigation bar ───────────────────────────────
+
+/// Compact "peek" bar shown when the user has minimised the route panel
+/// during active navigation. Surfaces just the next turn instruction so
+/// the user can keep following directions while seeing the map. Tapping
+/// or swiping up the bar re-expands the full panel.
+class _MinimizedNavBar extends StatelessWidget {
+  const _MinimizedNavBar({
+    required this.nextInstructionText,
     required this.isDark,
-    required this.onPressed,
+    required this.onExpand,
   });
 
-  final IconData icon;
-  final String tooltip;
+  final String nextInstructionText;
   final bool isDark;
-  final VoidCallback onPressed;
+  final VoidCallback onExpand;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       button: true,
-      label: tooltip,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(MqSpacing.radiusMd),
-          child: Container(
-            constraints: const BoxConstraints(
-              minWidth: MqSpacing.minTapTarget,
-              minHeight: MqSpacing.minTapTarget,
+      label: l10n.routePanelExpand,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onExpand,
+        // Upward swipe restores the full panel — symmetric with the
+        // downward swipe that minimised it.
+        onVerticalDragEnd: (details) {
+          if (details.primaryVelocity != null &&
+              details.primaryVelocity! < -120) {
+            onExpand();
+          }
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(MqSpacing.radiusXl),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: MqSpacing.space3,
+              sigmaY: MqSpacing.space3,
             ),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              border: Border.all(
+            child: Container(
+              decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withValues(alpha: 0.15)
-                    : MqColors.black12,
+                    ? MqColors.charcoal800.withValues(alpha: 0.94)
+                    : Colors.white.withValues(alpha: 0.94),
+                borderRadius: BorderRadius.circular(MqSpacing.radiusXl),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : MqColors.charcoal800.withValues(alpha: 0.06),
+                  width: 0.6,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: MqColors.charcoal800.withValues(
+                      alpha: isDark ? 0.30 : 0.10,
+                    ),
+                    blurRadius: 18,
+                    offset: const Offset(0, -6),
+                  ),
+                ],
               ),
-              borderRadius: BorderRadius.circular(MqSpacing.radiusMd),
-            ),
-            child: Icon(
-              icon,
-              size: MqSpacing.iconMd,
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.7)
-                  : MqColors.contentSecondary,
+              padding: const EdgeInsets.symmetric(
+                horizontal: MqSpacing.space5,
+                vertical: MqSpacing.space3,
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.navigation_rounded,
+                    size: 22,
+                    color: MqColors.red,
+                  ),
+                  const SizedBox(width: MqSpacing.space3),
+                  Expanded(
+                    child: Text(
+                      nextInstructionText,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white : MqColors.contentPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: MqSpacing.space2),
+                  Icon(
+                    Icons.expand_less,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.7)
+                        : MqColors.contentSecondary,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

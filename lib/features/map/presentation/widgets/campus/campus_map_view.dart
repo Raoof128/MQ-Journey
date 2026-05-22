@@ -169,11 +169,24 @@ class _CampusMapViewState extends ConsumerState<CampusMapView> {
 
         final projection = _projection ?? CampusProjectionImpl(meta);
         _projection = projection;
+        // Marker filter — accept any building with usable coordinates.
+        //
+        // Previously we passed `requireCampusCoordinates: true`, which
+        // restricted the list to buildings with baked-in pixel (campusX
+        // / campusY) coordinates. That silently dropped every newly
+        // added building from the markers, because the dataset for new
+        // entries only carries GPS coordinates. The user saw the camera
+        // auto-zoom to the building (the focus path uses the GPS-to-map
+        // projection in [resolveBuildingPoint]) but no marker rendered.
+        //
+        // [CampusMapMarkerLayer.resolveBuildingPoint] already handles
+        // both cases — preferring `campusPoint` when present and
+        // falling back to `projection.gpsToMapPoint` otherwise — so
+        // simply allowing GPS-only buildings here is the complete fix.
         final visibleBuildings = resolveVisibleBuildings(
           searchResults: widget.searchResults,
           searchQuery: widget.searchQuery,
           selectedBuilding: widget.selectedBuilding,
-          requireCampusCoordinates: true,
         );
         final rawRoutePoints = widget.route == null
             ? const <LocationSample>[]

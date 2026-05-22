@@ -34,12 +34,20 @@ class MapPage extends ConsumerStatefulWidget {
     this.initialSearchQuery,
     this.meetLat,
     this.meetLng,
+    this.autoPreviewRoute = false,
   });
 
   final String? initialBuildingId;
   final String? initialSearchQuery;
   final double? meetLat;
   final double? meetLng;
+
+  /// When `true`, immediately request a route preview after the initial
+  /// building selection settles. Used by the "Navigate with Google Maps"
+  /// action which expects a route already visible by the time the user
+  /// reaches the map. The "View in Campus Map" action leaves this `false`
+  /// so the user just sees the destination marker — no auto-navigation.
+  final bool autoPreviewRoute;
 
   @override
   ConsumerState<MapPage> createState() => _MapPageState();
@@ -97,6 +105,12 @@ class _MapPageState extends ConsumerState<MapPage> {
           ref
               .read(mapControllerProvider.notifier)
               .selectBuildingById(buildingId);
+          // "Navigate with Google Maps" requests a route preview straight
+          // away so the user lands on a populated route panel instead of
+          // a bare marker. "View in Campus Map" leaves this flag false.
+          if (widget.autoPreviewRoute) {
+            ref.read(mapControllerProvider.notifier).loadRoute();
+          }
         });
       }
     } else if (searchQuery != null && searchQuery.isNotEmpty) {
@@ -357,8 +371,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                     onStartNavigation: controller.startNavigation,
                     onStopNavigation: controller.stopNavigation,
                     onDismissArrival: controller.dismissArrival,
-                    onOpenInGoogleMaps: controller.openInGoogleMaps,
-                    onOpenStreetView: controller.openStreetView,
                   )
                 : facultyTopLevel
                 ? _BrowseGroupPanel<FacultyGroup>(
