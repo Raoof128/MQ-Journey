@@ -108,103 +108,11 @@ void main() {
   }
 
   testWidgets(
-    'MapPage selects building on initialization and updates on didUpdateWidget',
-    (tester) async {
-      final router = GoRouter(
-        initialLocation: '/map',
-        routes: [
-          GoRoute(
-            path: '/map',
-            name: RouteNames.map,
-            builder: (context, state) => MapPage(
-              initialBuildingId: state.uri.queryParameters['buildingId'],
-            ),
-            routes: [
-              GoRoute(
-                path: 'building/:buildingId',
-                name: RouteNames.buildingDetail,
-                builder: (context, state) => MapPage(
-                  initialBuildingId: state.pathParameters['buildingId'],
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(buildTestApp(router: router));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-
-      // Verify MapPage loaded and controller initialized
-      final element = tester.element(find.byType(MapPage));
-      final container = ProviderScope.containerOf(element);
-
-      // Initial state: no building selected
-      var mapState = container.read(mapControllerProvider).value!;
-      expect(mapState.selectedBuilding, isNull);
-
-      // Navigate to building A
-      router.goNamed(
-        RouteNames.buildingDetail,
-        pathParameters: {'buildingId': 'BLD-A'},
-      );
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-
-      // Expect building A to be selected now
-      mapState = container.read(mapControllerProvider).value!;
-      expect(mapState.selectedBuilding?.id, equals('BLD-A'));
-
-      // Navigate to building B
-      router.goNamed(
-        RouteNames.buildingDetail,
-        pathParameters: {'buildingId': 'BLD-B'},
-      );
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-
-      // Expect building B to be selected now (didUpdateWidget triggered)
-      mapState = container.read(mapControllerProvider).value!;
-      expect(mapState.selectedBuilding?.id, equals('BLD-B'));
-
-      // Deselect (simulate clearing selection in controller)
-      container.read(mapControllerProvider.notifier).clearSelection();
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-
-      // GoRouter path should sync back to /map
-      expect(router.routeInformationProvider.value.uri.path, equals('/map'));
-
-      // Navigate to building A again
-      router.goNamed(
-        RouteNames.buildingDetail,
-        pathParameters: {'buildingId': 'BLD-A'},
-      );
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(
-        container.read(mapControllerProvider).value!.selectedBuilding?.id,
-        equals('BLD-A'),
-      );
-
-      // Simulate back navigation to /map
-      router.goNamed(RouteNames.map);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-
-      // Selected building should be cleared and no navigation loop should push it back
-      expect(
-        container.read(mapControllerProvider).value!.selectedBuilding,
-        isNull,
-      );
-      expect(router.routeInformationProvider.value.uri.path, equals('/map'));
-    },
-  );
-
-  testWidgets(
     'MapPage parses meet coordinates, selects meet point, keeps path as /map, and preserves selection',
     (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1400, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
       final router = GoRouter(
         initialLocation: '/map',
         routes: [
@@ -263,4 +171,69 @@ void main() {
       );
     },
   );
+
+  testWidgets('MapPage selects building via query param and keeps /map path', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final router = GoRouter(
+      initialLocation: '/map',
+      routes: [
+        GoRoute(
+          path: '/map',
+          name: RouteNames.map,
+          builder: (context, state) => MapPage(
+            initialBuildingId: state.uri.queryParameters['building'],
+            initialSearchQuery: state.uri.queryParameters['q'],
+            meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
+            meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
+          ),
+          routes: [
+            GoRoute(
+              path: 'building/:buildingId',
+              name: RouteNames.buildingDetail,
+              builder: (context, state) => MapPage(
+                initialBuildingId: state.pathParameters['buildingId'],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(buildTestApp(router: router));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    final element = tester.element(find.byType(MapPage));
+    final container = ProviderScope.containerOf(element);
+
+    // Navigate to select building via query param
+    router.go('/map?building=BLD-A');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    // Expect Building A to be selected
+    final selected = container
+        .read(mapControllerProvider)
+        .value!
+        .selectedBuilding;
+    expect(selected, isNotNull);
+    expect(selected!.id, equals('BLD-A'));
+    expect(selected.code, equals('BLDA'));
+
+    // Route path should remain /map (with query params) rather than pushing buildingDetail path
+    expect(router.routeInformationProvider.value.uri.path, equals('/map'));
+
+    // Verify selection is preserved after re-pump (post-frame back-navigation
+    // detector should not clear it because building query param is present)
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(
+      container.read(mapControllerProvider).value!.selectedBuilding?.id,
+      equals('BLD-A'),
+    );
+  });
 }

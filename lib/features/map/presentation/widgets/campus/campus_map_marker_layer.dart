@@ -117,6 +117,8 @@ class CampusBuildingMarker extends StatelessWidget {
               ),
               child: Text(
                 building.code,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: foregroundColor,
                   fontWeight: FontWeight.w700,

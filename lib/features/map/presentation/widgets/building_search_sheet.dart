@@ -229,10 +229,7 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
                         true;
                     MqHaptics.selection(haptics);
                     _searchFocusNode.unfocus();
-                    ref
-                        .read(mapControllerProvider.notifier)
-                        .selectBuilding(building);
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(building);
                   },
                 ),
               ),

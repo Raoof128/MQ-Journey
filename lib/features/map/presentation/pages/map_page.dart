@@ -56,19 +56,17 @@ class MapPage extends ConsumerStatefulWidget {
 
 class _MapPageState extends ConsumerState<MapPage> {
   Future<void> _openSearchSheet() async {
-    await showModalBottomSheet<void>(
+    final building = await showModalBottomSheet<Building>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => const BuildingSearchSheet(),
     );
-    if (!context.mounted) return;
-    final selected = ref.read(mapControllerProvider).value?.selectedBuilding;
-    if (selected != null) {
+    if (building != null && context.mounted) {
       BuildingActionsSheet.show(
         context,
-        buildingId: selected.id,
-        buildingName: selected.name,
+        buildingId: building.id,
+        buildingName: building.name,
       );
     }
   }
@@ -174,28 +172,26 @@ class _MapPageState extends ConsumerState<MapPage> {
           return;
         }
 
-        // Sync GoRouter route history with the currently selected building state.
-        // We only push a route change if the user selects/deselects a building from the map/UI.
+        // When a building is selected from the map UI (e.g. category drill-down)
+        // update the URL to `/map?building={id}` so the route stays on the base
+        // `/map` page — no sub-route push that creates a separate page.
+        // When the selection is cleared, remove the query param.
+        // BuildingActionsSheet / EventActionsSheet handle their own navigation
+        // to `/map?building={id}` directly, so this only fires for in-map picks.
         final selectedBuilding = mapState.selectedBuilding;
         if (!context.mounted) return;
         final location = GoRouterState.of(context).matchedLocation;
 
         if (selectedBuilding != null &&
             !selectedBuilding.id.startsWith('meet_')) {
-          final targetPath = '/map/building/${selectedBuilding.id}';
-          final targetPathUpper = targetPath.toUpperCase();
-          final locationUpper = location.toUpperCase();
-
-          if (locationUpper != targetPathUpper &&
-              (location == '/map' || location.startsWith('/map/building/'))) {
+          if (!location.contains('building=')) {
             context.goNamed(
-              RouteNames.buildingDetail,
-              pathParameters: {'buildingId': selectedBuilding.id},
+              RouteNames.map,
+              queryParameters: {'building': selectedBuilding.id},
             );
           }
         } else {
-          // Only redirect to /map if the current location is on a building detail path
-          if (location.startsWith('/map/building/')) {
+          if (location.contains('building=')) {
             context.goNamed(RouteNames.map);
           }
         }
@@ -213,7 +209,10 @@ class _MapPageState extends ConsumerState<MapPage> {
           if (!isCurrent) return;
 
           final location = GoRouterState.of(context).matchedLocation;
-          if (location == '/map') {
+          final hasBuildingParam = GoRouterState.of(
+            context,
+          ).uri.queryParameters.containsKey('building');
+          if (location == '/map' && !hasBuildingParam) {
             ref.read(mapControllerProvider.notifier).clearSelection();
           }
         });
