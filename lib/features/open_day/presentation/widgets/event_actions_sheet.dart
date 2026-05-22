@@ -53,8 +53,8 @@ class EventActionsSheet extends ConsumerWidget {
       final targetBuildingId = resolved?.id ?? event.buildingCode!;
 
       context.goNamed(
-        RouteNames.buildingDetail,
-        pathParameters: {'buildingId': targetBuildingId},
+        RouteNames.map,
+        queryParameters: {'building': targetBuildingId},
       );
     }
   }

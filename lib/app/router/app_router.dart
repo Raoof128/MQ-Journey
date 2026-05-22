@@ -196,6 +196,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: '/map',
                 name: RouteNames.map,
                 builder: (context, state) => MapPage(
+                  initialBuildingId: state.uri.queryParameters['building'],
+                  autoPreviewRoute:
+                      state.uri.queryParameters['preview'] == 'route',
                   initialSearchQuery: state.uri.queryParameters['q'],
                   meetLat: double.tryParse(
                     state.uri.queryParameters['lat'] ?? '',

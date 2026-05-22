@@ -52,21 +52,21 @@ class BuildingActionsSheet extends ConsumerWidget {
     if (renderer != null && context.mounted) {
       final container = ProviderScope.containerOf(context);
       container.read(mapControllerProvider.notifier).setRenderer(renderer);
-      // Distinct behaviour by renderer:
-      //   • Campus Map  → just select the building, marker only, no
-      //     route auto-loaded. The user explicitly taps "Get Directions"
-      //     to start a route.
-      //   • Google Maps → request a route preview straight away so the
-      //     user lands on a populated route panel and can start
-      //     navigation intentionally. Signalled via `?preview=route`;
-      //     [app_router.dart] reads it to set `MapPage.autoPreviewRoute`.
+      // Both Campus Map and Google Maps go to the base `/map` route with
+      // the building as a query parameter — NOT a sub-route — so the
+      // RoutePanel renders as a footer overlay on the same map page
+      // instead of pushing a separate page that "sticks" and requires the
+      // user to navigate back (losing the selection).
+      //
+      // Google Maps additionally passes `?preview=route` so MapPage
+      // calls loadRoute() automatically after selecting the building.
       final isGoogleNavigation = renderer == MapRendererType.google;
       context.goNamed(
-        RouteNames.buildingDetail,
-        pathParameters: {'buildingId': buildingId},
-        queryParameters: isGoogleNavigation
-            ? const {'preview': 'route'}
-            : const {},
+        RouteNames.map,
+        queryParameters: {
+          'building': buildingId,
+          if (isGoogleNavigation) 'preview': 'route',
+        },
       );
     }
   }
