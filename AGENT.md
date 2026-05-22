@@ -43,6 +43,13 @@ lib/
   features/settings/ → Theme, locale, notification preferences (local storage)
 ```
 
+### Raouf: 2026-05-22 (AEST) — Fixed Google Maps live navigation (blue dot + location fetch on startup)
+**Scope:** Google Maps live navigation — `lib/features/map/presentation/widgets/google/google_map_view.dart`, `lib/features/map/presentation/controllers/map_controller.dart`, `test/features/map/map_controller_test.dart`
+**Summary:** Fixed two bugs that prevented Google Maps live navigation from working: (1) `myLocationEnabled` was gated on `widget.currentLocation != null` — since `currentLocation` starts null, the Google Maps blue dot never appeared until the user loaded a route or tapped the locate button. Changed to `myLocationEnabled: true` unconditionally, letting Google Maps SDK handle the blue dot internally. (2) The `MapController.build()` method never fetched the user's GPS location on startup — `currentLocation` was always null until `loadRoute()` or `centerOnCurrentLocation()` was explicitly called. Added initial location permission request + getCurrentLocation in `build()`, and starts the location tracking stream when granted. Verified against official Google Maps Flutter docs (pub.dev + developers.google.com) — `myLocationEnabled: true` is the correct API. No Navigation SDK (`google_navigation_flutter`) was needed; the app's custom navigation overlay (camera follow, route splitting, turn-by-turn instructions) is intact. Ran `./scripts/check.sh --quick --fix` — all 8 checks passed (307 tests, 0 failures).
+**Files Changed:** `lib/features/map/presentation/widgets/google/google_map_view.dart`, `lib/features/map/presentation/controllers/map_controller.dart`, `test/features/map/map_controller_test.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `./scripts/check.sh --quick --fix` (8/8 passed): pub get, format, analyze, test (307/307), gen-l10n (0 untranslated), privacy guard, secret scan.
+**Follow-ups:** None.
+
 ## Key Environment Variables (--dart-define)
 - SUPABASE_URL, SUPABASE_ANON_KEY, GOOGLE_MAPS_API_KEY, APP_ENV
 - DEV_SUPABASE_URL, DEV_SUPABASE_ANON_KEY, DEV_GOOGLE_MAPS_API_KEY (debug-only fallbacks)

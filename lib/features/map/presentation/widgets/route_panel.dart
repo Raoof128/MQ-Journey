@@ -111,10 +111,9 @@ class _RoutePanelState extends State<RoutePanel> {
     // panel height.
     if (widget.isNavigating && _minimized) {
       return _MinimizedNavBar(
-        nextInstructionText:
-            widget.route?.instructions.isNotEmpty == true
-                ? widget.route!.instructions.first.text
-                : widget.selectedBuilding!.name,
+        nextInstructionText: widget.route?.instructions.isNotEmpty == true
+            ? widget.route!.instructions.first.text
+            : widget.selectedBuilding!.name,
         isDark: isDark,
         onExpand: _toggleMinimized,
       );
@@ -285,9 +284,7 @@ class _RoutePanelState extends State<RoutePanel> {
                     // selection as before.
                     IconButton(
                       icon: Icon(
-                        widget.isNavigating
-                            ? Icons.expand_more
-                            : Icons.close,
+                        widget.isNavigating ? Icons.expand_more : Icons.close,
                         size: MqSpacing.iconMd,
                         color: isDark
                             ? Colors.white.withValues(alpha: 0.5)
@@ -935,7 +932,6 @@ class _GlassOutlinedButton extends StatelessWidget {
     );
   }
 }
-
 
 // ── Minimised navigation bar ───────────────────────────────
 

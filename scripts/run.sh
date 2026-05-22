@@ -280,7 +280,62 @@ else
   fi
 fi
 
+# ── Pre-flight checks ─────────────────────────────────────────────
+check_ios_platform() {
+  local device_arg="$1"
+  local device_id="${device_arg#-d }"
+  local device_info
+  device_info="$(flutter devices 2>/dev/null | grep "$device_id" | head -1)" || true
+  if echo "$device_info" | grep -qi "ios"; then
+    local ios_version
+    ios_version=$(echo "$device_info" | grep -oE 'iOS [0-9]+\.[0-9]+' | head -1)
+    if [[ -z "$ios_version" ]]; then
+      ios_version="iOS 26"
+    fi
+    local runtime_ver
+    runtime_ver=$(echo "$ios_version" | grep -oE '[0-9]+\.[0-9]+' | head -1)
+    if ! xcrun simctl list runtimes 2>/dev/null | grep -q "iOS $runtime_ver"; then
+      echo ""
+      echo "  ⚠ $ios_version Simulator Runtime is not installed."
+      echo "    Xcode requires it to recognise iOS $runtime_ver as available."
+      echo ""
+      echo "    Download from:  Xcode > Settings > Components > iOS ${runtime_ver} Simulator Runtime"
+      echo "    Or run:         xcodebuild -downloadPlatform iOS"
+      echo ""
+      echo "    Installed iOS runtimes:"
+      xcrun simctl list runtimes 2>/dev/null | grep "iOS" | while IFS= read -r line; do
+        echo "      • $line"
+      done
+    fi
+  fi
+}
+
+check_ios_signing() {
+  local device_arg="$1"
+  local device_id="${device_arg#-d }"
+  local device_info
+  device_info="$(flutter devices 2>/dev/null | grep "$device_id" | head -1)" || true
+  if echo "$device_info" | grep -qi "ios"; then
+    local team_id
+    team_id=$(grep -m1 'DEVELOPMENT_TEAM' ios/Runner.xcodeproj/project.pbxproj 2>/dev/null | awk -F'=' '{print $2}' | tr -d ';' | xargs)
+    if ! security find-identity -v -p codesigning 2>/dev/null | grep -q "$team_id"; then
+      echo ""
+      echo "  ⚠ Signing: No account found for team \"$team_id\"."
+      echo "    Add your Apple ID in Xcode > Settings > Accounts"
+      echo "    or update DEVELOPMENT_TEAM in ios/Runner.xcodeproj."
+      echo ""
+    fi
+    if [[ ! -d "$HOME/Library/MobileDevice/Provisioning Profiles" ]]; then
+      echo "  ⚠ No provisioning profiles found."
+      echo "    After adding your Apple ID in Xcode, try Product > Build to auto-generate them."
+      echo ""
+    fi
+  fi
+}
+
 echo ""
 echo "Launching with dart-defines from .env..."
+check_ios_platform "$DEVICE_ARG"
+check_ios_signing "$DEVICE_ARG"
 export MACOSX_DEPLOYMENT_TARGET=13.0
 flutter run $DEVICE_ARG --dart-define-from-file="$ENV_FILE" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}

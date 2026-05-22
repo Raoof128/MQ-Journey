@@ -284,6 +284,28 @@ class MapController extends AsyncNotifier<MapState> {
       }
     });
 
+    // Fetch the user's current location on startup so the Google Maps blue dot
+    // and location-based features work immediately — no need to wait for a
+    // route request or a manual locate-tap.
+    var initialPermission = LocationPermissionState.denied;
+    LocationSample? initialLocation;
+    try {
+      initialPermission = await ref
+          .read(mapRepositoryProvider)
+          .ensureLocationPermission();
+      if (initialPermission == LocationPermissionState.granted) {
+        initialLocation = await ref
+            .read(mapRepositoryProvider)
+            .getCurrentLocation();
+        if (initialLocation != null) {
+          await _startLocationTracking();
+        }
+      }
+    } catch (_) {
+      // Non-fatal — the map still works without GPS; location can be
+      // fetched later via centerOnCurrentLocation or loadRoute.
+    }
+
     return MapState(
       renderer: prefs.defaultRenderer,
       buildings: buildings,
@@ -292,7 +314,8 @@ class MapController extends AsyncNotifier<MapState> {
         '',
       ).take(_defaultVisibleBuildings).toList(),
       travelMode: prefs.defaultTravelMode,
-      permissionState: LocationPermissionState.denied,
+      permissionState: initialPermission,
+      currentLocation: initialLocation,
     );
   }
 
