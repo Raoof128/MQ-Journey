@@ -238,7 +238,7 @@ void main() {
   });
 
   testWidgets(
-    'MapPage selects building and auto-starts navigation when preview=route query param is set',
+    'MapPage selects building and loads route preview when preview=route query param is set',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(1400, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -270,18 +270,18 @@ void main() {
       // Navigate to select building and start navigation via query param
       router.go('/map?building=BLD-A&preview=route');
       await tester.pump();
-      // Wait for the async post-frame callback (loadRoute + startNavigation)
+      // Wait for the async post-frame callback (loadRoute)
       await tester.pump(const Duration(milliseconds: 200));
 
       final mapState = container.read(mapControllerProvider).value!;
       expect(mapState.selectedBuilding?.id, equals('BLD-A'));
       expect(mapState.route, isNotNull);
-      expect(mapState.isNavigating, isTrue);
+      expect(mapState.isNavigating, isFalse);
     },
   );
 
   testWidgets(
-    'MapPage auto-starts navigation on building already selected when preview=route is set',
+    'MapPage loads route preview on building already selected when preview=route is set',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(1400, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -323,13 +323,13 @@ void main() {
       // Now navigate with preview=route on the already selected building
       router.go('/map?building=BLD-A&preview=route');
       await tester.pump();
-      // Wait for the async post-frame callback to trigger loadRoute + startNavigation
+      // Wait for the async post-frame callback to trigger loadRoute
       await tester.pump(const Duration(milliseconds: 200));
 
       mapState = container.read(mapControllerProvider).value!;
       expect(mapState.selectedBuilding?.id, equals('BLD-A'));
       expect(mapState.route, isNotNull);
-      expect(mapState.isNavigating, isTrue);
+      expect(mapState.isNavigating, isFalse);
     },
   );
 }

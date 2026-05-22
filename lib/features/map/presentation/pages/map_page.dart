@@ -112,18 +112,15 @@ class _MapPageState extends ConsumerState<MapPage> {
           if (!mounted) return;
           final notifier = ref.read(mapControllerProvider.notifier);
           notifier.selectBuildingById(buildingId);
-          // "Navigate with Google Maps" requests a route preview and starts navigation.
+          // "Navigate with Google Maps" requests a route preview and stays in preview mode.
           // "View in Campus Map" leaves this flag false.
           if (widget.autoPreviewRoute) {
             await notifier.loadRoute();
-            if (mounted) {
-              notifier.startNavigation();
-            }
           }
         });
       } else if (widget.autoPreviewRoute) {
         // Building is already selected, but autoPreviewRoute is requested.
-        // Guard against redundant loading or starting when already active.
+        // Guard against redundant loading when already active.
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (!mounted) return;
           final currentVal = ref.read(mapControllerProvider).value;
@@ -134,11 +131,6 @@ class _MapPageState extends ConsumerState<MapPage> {
               !currentVal.isLoadingRoute &&
               !currentVal.isNavigating) {
             await notifier.loadRoute();
-            if (mounted) {
-              notifier.startNavigation();
-            }
-          } else if (currentVal.route != null && !currentVal.isNavigating) {
-            notifier.startNavigation();
           }
         });
       }
@@ -382,26 +374,28 @@ class _MapPageState extends ConsumerState<MapPage> {
                         : controller.openAppSettings,
                   ),
             footer: mapState.selectedBuilding != null
-                ? RoutePanel(
-                    selectedBuilding: mapState.selectedBuilding,
-                    route: mapState.route,
-                    currentLocation: mapState.currentLocation,
-                    travelMode: mapState.travelMode,
-                    supportedTravelModes:
-                        mapState.renderer == MapRendererType.campus
-                        ? const [TravelMode.walk]
-                        : TravelMode.values,
-                    isLoading: mapState.isLoadingRoute,
-                    isNavigating: mapState.isNavigating,
-                    hasArrived: mapState.hasArrived,
-                    onLoadRoute: controller.loadRoute,
-                    onClearRoute: controller.clearRoute,
-                    onClearSelection: controller.clearSelection,
-                    onTravelModeChanged: controller.setTravelMode,
-                    onStartNavigation: controller.startNavigation,
-                    onStopNavigation: controller.stopNavigation,
-                    onDismissArrival: controller.dismissArrival,
-                  )
+                ? (mapState.renderer == MapRendererType.campus
+                      ? _CampusBuildingInfoPanel(
+                          selectedBuilding: mapState.selectedBuilding!,
+                          onClearSelection: controller.clearSelection,
+                        )
+                      : RoutePanel(
+                          selectedBuilding: mapState.selectedBuilding,
+                          route: mapState.route,
+                          currentLocation: mapState.currentLocation,
+                          travelMode: mapState.travelMode,
+                          supportedTravelModes: TravelMode.values,
+                          isLoading: mapState.isLoadingRoute,
+                          isNavigating: mapState.isNavigating,
+                          hasArrived: mapState.hasArrived,
+                          onLoadRoute: controller.loadRoute,
+                          onClearRoute: controller.clearRoute,
+                          onClearSelection: controller.clearSelection,
+                          onTravelModeChanged: controller.setTravelMode,
+                          onStartNavigation: controller.startNavigation,
+                          onStopNavigation: controller.stopNavigation,
+                          onDismissArrival: controller.dismissArrival,
+                        ))
                 : facultyTopLevel
                 ? _BrowseGroupPanel<FacultyGroup>(
                     title: l10n.home_faculty,
@@ -1349,6 +1343,156 @@ class _CategoryChip extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CampusBuildingInfoPanel extends StatelessWidget {
+  const _CampusBuildingInfoPanel({
+    required this.selectedBuilding,
+    required this.onClearSelection,
+  });
+
+  final Building selectedBuilding;
+  final VoidCallback onClearSelection;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+    final l10n = AppLocalizations.of(context)!;
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(MqSpacing.radiusXl),
+        bottom: Radius.circular(MqSpacing.radiusXl),
+      ),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: MqSpacing.space3,
+          sigmaY: MqSpacing.space3,
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(MqSpacing.space6),
+          decoration: BoxDecoration(
+            color: isDark
+                ? MqColors.charcoal800.withValues(alpha: 0.94)
+                : Colors.white.withValues(alpha: 0.94),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(MqSpacing.radiusXl),
+              bottom: Radius.circular(MqSpacing.radiusXl),
+            ),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : MqColors.charcoal800.withValues(alpha: 0.06),
+              width: 0.6,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: MqColors.charcoal800.withValues(
+                  alpha: isDark ? 0.30 : 0.10,
+                ),
+                blurRadius: 18,
+                offset: const Offset(0, -6),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          selectedBuilding.name,
+                          style: Theme.of(context).textTheme.headlineMedium
+                              ?.copyWith(
+                                color: isDark
+                                    ? Colors.white
+                                    : MqColors.contentPrimary,
+                                letterSpacing: -0.5,
+                              ),
+                        ),
+                        const SizedBox(height: MqSpacing.space1),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text.rich(
+                                TextSpan(
+                                  text: '${l10n.buildingCode}: ',
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: isDark
+                                            ? Colors.white
+                                            : MqColors.contentTertiary,
+                                      ),
+                                  children: [
+                                    TextSpan(
+                                      text: selectedBuilding.code,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : MqColors.contentPrimary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (selectedBuilding.category !=
+                                BuildingCategory.other) ...[
+                              const SizedBox(width: MqSpacing.space2),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: MqSpacing.space3,
+                                  vertical: MqSpacing.space1,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: MqColors.red.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(
+                                    MqSpacing.radiusFull,
+                                  ),
+                                ),
+                                child: Text(
+                                  selectedBuilding.category.name.toUpperCase(),
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: MqColors.red,
+                                        letterSpacing: 1.2,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      size: MqSpacing.iconMd,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.5)
+                          : MqColors.contentTertiary,
+                    ),
+                    tooltip: l10n.clear,
+                    onPressed: onClearSelection,
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
