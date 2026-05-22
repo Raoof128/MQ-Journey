@@ -359,7 +359,7 @@ class _RoutePanelState extends State<RoutePanel> {
                     )
                   else ...[
                     _BrandActionButton(
-                      label: l10n.walkingDirections,
+                      label: l10n.startTurnByTurn,
                       icon: Icons.double_arrow_rounded,
                       onPressed: widget.onStartNavigation,
                     ),
