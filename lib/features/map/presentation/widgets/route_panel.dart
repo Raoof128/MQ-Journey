@@ -57,7 +57,7 @@ class RoutePanel extends StatefulWidget {
 }
 
 class _RoutePanelState extends State<RoutePanel> {
-  bool _stepsExpanded = true;
+  bool _stepsExpanded = false;
 
   /// Tracks whether the panel is collapsed to a compact "peek" bar so the
   /// user can see the map while navigation is still active. Only used
