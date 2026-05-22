@@ -1,3 +1,17 @@
+### Raouf: 2026-05-22 (AEST) — Fixed Xcode debugger launch delay and slow app startup
+**Scope:** App bootstrap and startup lifecycle — `lib/app/bootstrap/bootstrap.dart`, `lib/app/bootstrap/app_initialization.dart` (new), `lib/app/mq_navigation_app.dart`
+**Summary:** Resolved the Xcode/LLDB watchdog launch timeout ("Launching 'Runner' is taking longer than expected...") and slow app startup times. Previously, Firebase (5s timeout), Supabase (10s timeout), and Offline Maps FFI (8s timeout) initialization ran sequentially before `runApp()`, blocking the Flutter engine from mounting and preventing frame rendering on startup, which caused LLDB to time out waiting for the connection handshake. Fixed this by: (1) extracting the asynchronous setup steps into a Riverpod `appInitializationProvider` (`app_initialization.dart`); (2) making `bootstrap.dart` run only synchronous configuration (bindings, timezone databases, error boundaries, env validations) and call `runApp()` immediately on boot, so the Flutter engine mounts on Frame 1 and registers the debug handshake; (3) refactoring `MqNavigationApp` in `mq_navigation_app.dart` to watch `appInitializationProvider` and render a premium native blurred splash view (featuring a blurred campus photo, explorer icon, and progress indicator) while services load in the background, transitioning seamlessly to the main application once ready.
+**Files Changed:** `lib/app/bootstrap/bootstrap.dart`, `lib/app/bootstrap/app_initialization.dart`, `lib/app/mq_navigation_app.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** Ran `./scripts/check.sh --quick --fix` verifying static analysis passes, formatting rules are followed, and all 307 tests pass successfully.
+**Follow-ups:** None.
+
+### Raouf: 2026-05-22 (AEST) — Collapsed step-by-step directions list by default (RoutePanel)
+**Scope:** Route directions UI — `lib/features/map/presentation/widgets/route_panel.dart`
+**Summary:** Changed the default value of `_stepsExpanded` from `true` to `false` in `RoutePanel`. When the route panel is shown on route load, the long list of step-by-step instructions is collapsed by default. This resolves the UX issue where the instructions list blocks the map view, while still keeping the detailed steps fully accessible through the expand/collapse action.
+**Files Changed:** `lib/features/map/presentation/widgets/route_panel.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `./scripts/check.sh --quick` (8/8 passed, 307/307 tests successful).
+**Follow-ups:** None.
+
 ### Raouf: 2026-05-22 (AEST) — Completed Codebase Audit for Map & Navigation Features
 **Scope:** Map & Navigation Audit — Presentation, Data, Domain layer files, and verification scripts
 **Summary:** Completed a comprehensive, file-by-file audit of the MQ Navigation Flutter client's map and navigation codebase. Verified that (1) there is no dead, unused, or redundant code; (2) modern Dart language features (including null-aware map collection elements) compile cleanly; (3) coordination with favorite selections and GoRouter parameters is robust; and (4) the entire suite of 307 unit/widget tests runs successfully with 0 failures or static analysis errors.

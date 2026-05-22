@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mq_navigation/app/bootstrap/app_initialization.dart';
 import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/app/router/app_router.dart';
+import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_theme.dart';
 import 'package:mq_navigation/core/error/error_boundary.dart';
 import 'package:mq_navigation/features/notifications/presentation/controllers/notifications_controller.dart';
@@ -75,49 +78,167 @@ class _MqNavigationAppState extends ConsumerState<MqNavigationApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch global navigation state.
-    final router = ref.watch(appRouterProvider);
+    final initAsync = ref.watch(appInitializationProvider);
 
-    // Watch global preferences (theme, locale) loaded from local storage.
-    final preferences = ref.watch(settingsControllerProvider).value;
+    return initAsync.when(
+      data: (_) {
+        // Watch global navigation state.
+        final router = ref.watch(appRouterProvider);
 
-    // Explicitly watch the notifications controller to keep it alive.
-    // This triggers FCM permission requests and token sync side effects
-    // independently of whether the user is on the notifications page.
-    ref.watch(notificationsControllerProvider);
+        // Watch global preferences (theme, locale) loaded from local storage.
+        final preferences = ref.watch(settingsControllerProvider).value;
 
-    // Keep the Open Day reminder scheduler alive for the app lifetime.
-    // The scheduler installs Riverpod listeners on bachelor selection,
-    // notification toggles, and lead time — so reminders rebuild
-    // automatically whenever the user changes any of those.
-    ref.watch(openDayReminderSchedulerProvider);
+        // Explicitly watch the notifications controller to keep it alive.
+        // This triggers FCM permission requests and token sync side effects
+        // independently of whether the user is on the notifications page.
+        ref.watch(notificationsControllerProvider);
 
-    return MaterialApp.router(
-      // The builder is used to wrap the entire app with a custom error widget.
-      // If a widget fails to build, this prevents the grey "red screen of death"
-      // and shows a friendlier fallback UI instead.
-      builder: (context, child) {
-        ErrorWidget.builder = (details) {
-          final error = buildFrameworkErrorFallback(details.exception);
-          if (child is Scaffold || child is Navigator) {
-            return Scaffold(body: Center(child: error));
-          }
-          return error;
-        };
-        return child ??
-            buildFrameworkErrorFallback(
-              StateError('Application shell failed to build.'),
-            );
+        // Keep the Open Day reminder scheduler alive for the app lifetime.
+        // The scheduler installs Riverpod listeners on bachelor selection,
+        // notification toggles, and lead time — so reminders rebuild
+        // automatically whenever the user changes any of those.
+        ref.watch(openDayReminderSchedulerProvider);
+
+        return MaterialApp.router(
+          // The builder is used to wrap the entire app with a custom error widget.
+          // If a widget fails to build, this prevents the grey "red screen of death"
+          // and shows a friendlier fallback UI instead.
+          builder: (context, child) {
+            ErrorWidget.builder = (details) {
+              final error = buildFrameworkErrorFallback(details.exception);
+              if (child is Scaffold || child is Navigator) {
+                return Scaffold(body: Center(child: error));
+              }
+              return error;
+            };
+            return child ??
+                buildFrameworkErrorFallback(
+                  StateError('Application shell failed to build.'),
+                );
+          },
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
+          debugShowCheckedModeBanner: false,
+          theme: MqTheme.light,
+          darkTheme: MqTheme.dark,
+          themeMode: preferences?.themeMode ?? ThemeMode.system,
+          locale: preferences?.locale,
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        );
       },
-      onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
+      loading: () => const _SplashView(isLoading: true),
+      error: (err, stack) =>
+          _SplashView(isLoading: false, errorMessage: err.toString()),
+    );
+  }
+}
+
+/// A premium, beautiful Flutter-native splash view.
+/// Shows while Firebase and Supabase initialisation completes asynchronously.
+class _SplashView extends StatelessWidget {
+  final bool isLoading;
+  final String? errorMessage;
+
+  const _SplashView({required this.isLoading, this.errorMessage});
+
+  static const _backgroundAsset = 'assets/images/login_background.png';
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: MqTheme.light,
       darkTheme: MqTheme.dark,
-      themeMode: preferences?.themeMode ?? ThemeMode.system,
-      locale: preferences?.locale,
-      routerConfig: router,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        backgroundColor: MqColors.charcoal900,
+        body: Stack(
+          children: [
+            // Background image (blurred, premium)
+            Positioned.fill(
+              child: ImageFiltered(
+                imageFilter: ui.ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                child: Image.asset(
+                  _backgroundAsset,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                ),
+              ),
+            ),
+            // Dark scrim for premium readability
+            Positioned.fill(
+              child: Container(color: Colors.black.withValues(alpha: 0.55)),
+            ),
+            // Centered branding/loading content
+            SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 4,
+                        width: 120,
+                        color: MqColors.red,
+                        margin: const EdgeInsets.only(bottom: 32),
+                      ),
+                      const Icon(Icons.explore, size: 72, color: MqColors.red),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'MQ Navigation',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 48),
+                      if (isLoading) ...[
+                        const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              MqColors.red,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Starting campus navigation...',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ] else ...[
+                        const Icon(
+                          Icons.warning_amber_rounded,
+                          size: 40,
+                          color: MqColors.red,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          errorMessage ?? 'Service initialisation failed.',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
