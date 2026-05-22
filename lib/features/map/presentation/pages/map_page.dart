@@ -13,6 +13,7 @@ import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dar
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
 import 'package:mq_navigation/features/favorites/presentation/widgets/favorite_button.dart';
+import 'package:mq_navigation/features/map/presentation/widgets/building_actions_sheet.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/building_search_sheet.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/campus/campus_map_view.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/google/google_map_view.dart';
@@ -54,13 +55,22 @@ class MapPage extends ConsumerStatefulWidget {
 }
 
 class _MapPageState extends ConsumerState<MapPage> {
-  void _openSearchSheet() {
-    showModalBottomSheet<void>(
+  Future<void> _openSearchSheet() async {
+    await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => const BuildingSearchSheet(),
     );
+    if (!context.mounted) return;
+    final selected = ref.read(mapControllerProvider).value?.selectedBuilding;
+    if (selected != null) {
+      BuildingActionsSheet.show(
+        context,
+        buildingId: selected.id,
+        buildingName: selected.name,
+      );
+    }
   }
 
   void _openOverlayPicker() {
