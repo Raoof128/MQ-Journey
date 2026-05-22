@@ -251,16 +251,33 @@ void main() {
         );
         addTearDown(container.dispose);
 
+        // Build() now calls ensureLocationPermission + getCurrentLocation during
+        // init. Complete the pending ones for build(), then set new ones for
+        // centerOnCurrentLocation to test async preservation.
+        permissionCompleter.complete(LocationPermissionState.granted);
+        locationCompleter.complete(
+          const LocationSample(
+            latitude: -33.77388,
+            longitude: 151.11275,
+            accuracy: 5,
+          ),
+        );
         await container.read(mapControllerProvider.future);
         final notifier = container.read(mapControllerProvider.notifier);
+
+        final permissionCompleter2 = Completer<LocationPermissionState>();
+        final locationCompleter2 = Completer<LocationSample?>();
+        repository.pendingPermissionCompleter = permissionCompleter2;
+        repository.pendingLocationCompleter = locationCompleter2;
+
         final centerFuture = notifier.centerOnCurrentLocation();
 
         // While locate-me is waiting on async permission/location, user selects
         // another building. The locate-me completion must not roll state back.
         notifier.selectBuilding(secondBuilding);
 
-        permissionCompleter.complete(LocationPermissionState.granted);
-        locationCompleter.complete(
+        permissionCompleter2.complete(LocationPermissionState.granted);
+        locationCompleter2.complete(
           const LocationSample(
             latitude: -33.774,
             longitude: 151.113,

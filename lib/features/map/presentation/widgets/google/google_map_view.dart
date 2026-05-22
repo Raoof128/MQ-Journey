@@ -349,7 +349,7 @@ class _GoogleMapViewState extends ConsumerState<GoogleMapView> {
           mapToolbarEnabled: false,
           zoomControlsEnabled: false,
           compassEnabled: false,
-          myLocationEnabled: widget.currentLocation != null,
+          myLocationEnabled: true,
           myLocationButtonEnabled: false,
           indoorViewEnabled: false,
           buildingsEnabled: false,
