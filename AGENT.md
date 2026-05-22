@@ -43,6 +43,21 @@ lib/
   features/settings/ → Theme, locale, notification preferences (local storage)
 ```
 
+
+### Raouf: 2026-05-22 (AEST) — Completed Codebase Audit for Map & Navigation Features
+**Scope:** Map & Navigation Audit — Presentation, Data, Domain layer files, and verification scripts
+**Summary:** Completed a comprehensive, file-by-file audit of the MQ Navigation Flutter client's map and navigation codebase. Verified that (1) there is no dead, unused, or redundant code; (2) modern Dart language features (including null-aware map collection elements) compile cleanly; (3) coordination with favorite selections and GoRouter parameters is robust; and (4) the entire suite of 307 unit/widget tests runs successfully with 0 failures or static analysis errors.
+**Files Changed:** `AGENT.md`, `CHANGELOG.md`
+**Verification:** `./scripts/check.sh --quick` (8/8 passed, 307/307 tests successful).
+**Follow-ups:** None.
+
+### Raouf: 2026-05-22 (AEST) — Fixed Google Maps building navigation auto-start (EventActionsSheet + MapPage)
+**Scope:** Building & Event navigation auto-start — `lib/features/open_day/presentation/widgets/event_actions_sheet.dart`, `lib/features/map/presentation/pages/map_page.dart`, `test/features/map/map_page_test.dart`
+**Summary:** Fixed three issues preventing building/event navigation from starting automatically when selecting "Navigate with Google Maps": (1) `EventActionsSheet` was missing the `'preview': 'route'` parameter when routing via Google Maps, preventing Open Day event navigation from loading routes; (2) `MapPage._handleNavigationParams()` nested the route loading/navigation logic inside a guard that checked if the building was *not* selected. If a building was already selected, it skipped route loading entirely. Decoupled this block to trigger route loading even when the building is already selected, with guards against duplicate calls; (3) Added automatic call to `startNavigation()` on `MapController` once the route loads, so the navigation overlay/instructions appear immediately as expected. Added widget tests for both new and already selected building navigation parameters.
+**Files Changed:** `lib/features/open_day/presentation/widgets/event_actions_sheet.dart`, `lib/features/map/presentation/pages/map_page.dart`, `test/features/map/map_page_test.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `./scripts/check.sh --quick` (8/8 passed).
+**Follow-ups:** None.
+
 ### Raouf: 2026-05-22 (AEST) — Fixed Google Maps live navigation (blue dot + location fetch on startup)
 **Scope:** Google Maps live navigation — `lib/features/map/presentation/widgets/google/google_map_view.dart`, `lib/features/map/presentation/controllers/map_controller.dart`, `test/features/map/map_controller_test.dart`
 **Summary:** Fixed two bugs that prevented Google Maps live navigation from working: (1) `myLocationEnabled` was gated on `widget.currentLocation != null` — since `currentLocation` starts null, the Google Maps blue dot never appeared until the user loaded a route or tapped the locate button. Changed to `myLocationEnabled: true` unconditionally, letting Google Maps SDK handle the blue dot internally. (2) The `MapController.build()` method never fetched the user's GPS location on startup — `currentLocation` was always null until `loadRoute()` or `centerOnCurrentLocation()` was explicitly called. Added initial location permission request + getCurrentLocation in `build()`, and starts the location tracking stream when granted. Verified against official Google Maps Flutter docs (pub.dev + developers.google.com) — `myLocationEnabled: true` is the correct API. No Navigation SDK (`google_navigation_flutter`) was needed; the app's custom navigation overlay (camera follow, route splitting, turn-by-turn instructions) is intact. Ran `./scripts/check.sh --quick --fix` — all 8 checks passed (307 tests, 0 failures).

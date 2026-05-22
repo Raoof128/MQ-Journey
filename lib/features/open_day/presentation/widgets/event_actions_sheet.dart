@@ -52,9 +52,13 @@ class EventActionsSheet extends ConsumerWidget {
       final resolved = _resolveBuilding(buildings, event.buildingCode);
       final targetBuildingId = resolved?.id ?? event.buildingCode!;
 
+      final isGoogleNavigation = renderer == MapRendererType.google;
       context.goNamed(
         RouteNames.map,
-        queryParameters: {'building': targetBuildingId},
+        queryParameters: {
+          'building': targetBuildingId,
+          if (isGoogleNavigation) 'preview': 'route',
+        },
       );
     }
   }

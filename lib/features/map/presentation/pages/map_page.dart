@@ -108,16 +108,37 @@ class _MapPageState extends ConsumerState<MapPage> {
       final selectedCode = mapState.selectedBuilding?.code.toUpperCase();
       final upperId = buildingId.toUpperCase();
       if (selectedId != upperId && selectedCode != upperId) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (!mounted) return;
-          ref
-              .read(mapControllerProvider.notifier)
-              .selectBuildingById(buildingId);
-          // "Navigate with Google Maps" requests a route preview straight
-          // away so the user lands on a populated route panel instead of
-          // a bare marker. "View in Campus Map" leaves this flag false.
+          final notifier = ref.read(mapControllerProvider.notifier);
+          notifier.selectBuildingById(buildingId);
+          // "Navigate with Google Maps" requests a route preview and starts navigation.
+          // "View in Campus Map" leaves this flag false.
           if (widget.autoPreviewRoute) {
-            ref.read(mapControllerProvider.notifier).loadRoute();
+            await notifier.loadRoute();
+            if (mounted) {
+              notifier.startNavigation();
+            }
+          }
+        });
+      } else if (widget.autoPreviewRoute) {
+        // Building is already selected, but autoPreviewRoute is requested.
+        // Guard against redundant loading or starting when already active.
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          if (!mounted) return;
+          final currentVal = ref.read(mapControllerProvider).value;
+          if (currentVal == null) return;
+
+          final notifier = ref.read(mapControllerProvider.notifier);
+          if (currentVal.route == null &&
+              !currentVal.isLoadingRoute &&
+              !currentVal.isNavigating) {
+            await notifier.loadRoute();
+            if (mounted) {
+              notifier.startNavigation();
+            }
+          } else if (currentVal.route != null && !currentVal.isNavigating) {
+            notifier.startNavigation();
           }
         });
       }
