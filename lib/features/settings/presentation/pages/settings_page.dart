@@ -1182,15 +1182,26 @@ class _StopSearchSheetState extends ConsumerState<_StopSearchSheet> {
     final searchResults = ref.watch(
       tfnswStopSearchProvider((mode: widget.mode, query: trimmedQuery)),
     );
-    final sheetHeight =
-        (mediaQuery.size.height -
-                mediaQuery.viewInsets.bottom -
-                mediaQuery.padding.top -
-                mediaQuery.padding.bottom -
-                MqSpacing.space16 -
-                MqSpacing.space12)
-            .clamp(220.0, mediaQuery.size.height * 0.72)
-            .toDouble();
+    // Bottom-sheet height calculation.
+    //
+    // **Critical**: the outer [AnimatedPadding] already pushes content up
+    // by [viewInsets.bottom] (the keyboard height). If we ALSO subtract
+    // [viewInsets.bottom] from the sheet's own height, we double-count
+    // the keyboard — the sheet ends up taller than the visible area and
+    // Flutter prints the yellow/black "BOTTOM OVERFLOWED BY N PIXELS"
+    // overlay. The previous formula did exactly that.
+    //
+    // Correct shape: compute "usable screen" = full height minus safe
+    // areas, then take 72% as our max, then subtract the keyboard ONCE
+    // for the actual layout height. Clamp to a sensible minimum so
+    // very-short sheets don't collapse.
+    final usableHeight =
+        mediaQuery.size.height -
+        mediaQuery.padding.top -
+        mediaQuery.padding.bottom;
+    final sheetHeight = (usableHeight * 0.72 - mediaQuery.viewInsets.bottom)
+        .clamp(220.0, usableHeight * 0.72)
+        .toDouble();
 
     final sheet = AnimatedPadding(
       duration: const Duration(milliseconds: 180),

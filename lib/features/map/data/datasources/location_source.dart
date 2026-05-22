@@ -14,18 +14,20 @@ enum LocationPermissionState {
   unsupported,
 }
 
-/// 18 Wally's Walk entrance — used as fallback when GPS is unavailable
-/// (e.g. emulators, web, or when location services fail).
-const _campusFallback = LocationSample(
-  latitude: -33.77388,
-  longitude: 151.11275,
-  accuracy: 100,
-);
-
 /// Native location service wrapper powered by `geolocator`.
 ///
 /// Handles Android/iOS permission flows, current position retrieval, and
 /// live coordinate streaming during active navigation.
+///
+/// **No silent fallbacks.** Earlier versions of this file returned a
+/// hardcoded "18 Wally's Walk" `LocationSample` whenever the real GPS
+/// failed (web, desktop, or unsupported platforms). That secretly told
+/// every consumer the user was standing on campus when they weren't —
+/// `centerOnLocation` would teleport them to Wally's Walk, route fits
+/// would expand to contain the imaginary fix, and the UI would never
+/// surface the honest "location unavailable" state. Every method now
+/// returns `null` / `unsupported` instead so the controller can show
+/// the correct banner.
 class LocationSource {
   const LocationSource();
   static const double _googleplexLatitude = 37.4219983;
@@ -34,7 +36,6 @@ class LocationSource {
 
   // We explicitly disable native location services on unsupported platforms
   // (like Web or Desktop) to avoid crashes when calling platform channels.
-  // Instead, these platforms transparently use the [_campusFallback] mock data.
   bool get _isSupported =>
       !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
@@ -42,8 +43,11 @@ class LocationSource {
 
   Future<LocationPermissionState> ensurePermission() async {
     if (!_isSupported) {
-      // On web/desktop, treat as "granted" so routing can use the fallback location.
-      return LocationPermissionState.granted;
+      // On web/desktop there is no platform location service to ask.
+      // Report `unsupported` so the controller can show the appropriate
+      // banner — we no longer pretend permission is granted just to keep
+      // a synthetic fallback alive.
+      return LocationPermissionState.unsupported;
     }
 
     final servicesEnabled = await Geolocator.isLocationServiceEnabled();
@@ -68,9 +72,13 @@ class LocationSource {
 
   Future<LocationSample?> getCurrentLocation() async {
     if (!_isSupported) {
-      // Web / desktop / unsupported platforms: return campus center.
-      debugPrint('LocationSource: platform unsupported, using campus fallback');
-      return _campusFallback;
+      // No real GPS available — return null so the controller surfaces
+      // the "location unavailable" banner instead of falsely centering
+      // the map on the campus.
+      debugPrint(
+        'LocationSource: platform unsupported, no GPS — returning null',
+      );
+      return null;
     }
 
     final permission = await ensurePermission();

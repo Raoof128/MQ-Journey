@@ -509,7 +509,9 @@ class MapController extends AsyncNotifier<MapState> {
         .read(mapRepositoryProvider)
         .ensureLocationPermission();
 
-    // Get location — may be real GPS or campus-center fallback.
+    // Get the user's real GPS fix. `LocationSource` no longer fakes a
+    // campus-centre point when GPS is unavailable, so a `null` here is
+    // a true signal that we cannot route — surfaced via the banner.
     final location = await ref.read(mapRepositoryProvider).getCurrentLocation();
     if (!_isRouteRequestCurrent(
       requestId,

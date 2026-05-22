@@ -33,6 +33,8 @@
   "dueDateTime": "Due Date & Time",
   "dueToday": "Due today",
   "clear": "Clear",
+  "routePanelMinimize": "Minimize route panel",
+  "routePanelExpand": "Expand route panel",
   "status": "Status",
   "date": "Date",
   "location": "Location",
