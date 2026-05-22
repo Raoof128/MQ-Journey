@@ -236,4 +236,100 @@ void main() {
       equals('BLD-A'),
     );
   });
+
+  testWidgets(
+    'MapPage selects building and auto-starts navigation when preview=route query param is set',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1400, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      final router = GoRouter(
+        initialLocation: '/map',
+        routes: [
+          GoRoute(
+            path: '/map',
+            name: RouteNames.map,
+            builder: (context, state) => MapPage(
+              initialBuildingId: state.uri.queryParameters['building'],
+              autoPreviewRoute: state.uri.queryParameters['preview'] == 'route',
+              initialSearchQuery: state.uri.queryParameters['q'],
+              meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
+              meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(buildTestApp(router: router));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final element = tester.element(find.byType(MapPage));
+      final container = ProviderScope.containerOf(element);
+
+      // Navigate to select building and start navigation via query param
+      router.go('/map?building=BLD-A&preview=route');
+      await tester.pump();
+      // Wait for the async post-frame callback (loadRoute + startNavigation)
+      await tester.pump(const Duration(milliseconds: 200));
+
+      final mapState = container.read(mapControllerProvider).value!;
+      expect(mapState.selectedBuilding?.id, equals('BLD-A'));
+      expect(mapState.route, isNotNull);
+      expect(mapState.isNavigating, isTrue);
+    },
+  );
+
+  testWidgets(
+    'MapPage auto-starts navigation on building already selected when preview=route is set',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1400, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      final router = GoRouter(
+        initialLocation: '/map',
+        routes: [
+          GoRoute(
+            path: '/map',
+            name: RouteNames.map,
+            builder: (context, state) => MapPage(
+              initialBuildingId: state.uri.queryParameters['building'],
+              autoPreviewRoute: state.uri.queryParameters['preview'] == 'route',
+              initialSearchQuery: state.uri.queryParameters['q'],
+              meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
+              meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(buildTestApp(router: router));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final element = tester.element(find.byType(MapPage));
+      final container = ProviderScope.containerOf(element);
+
+      // First navigate to select the building without previewing the route
+      router.go('/map?building=BLD-A');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      var mapState = container.read(mapControllerProvider).value!;
+      expect(mapState.selectedBuilding?.id, equals('BLD-A'));
+      expect(mapState.route, isNull);
+      expect(mapState.isNavigating, isFalse);
+
+      // Now navigate with preview=route on the already selected building
+      router.go('/map?building=BLD-A&preview=route');
+      await tester.pump();
+      // Wait for the async post-frame callback to trigger loadRoute + startNavigation
+      await tester.pump(const Duration(milliseconds: 200));
+
+      mapState = container.read(mapControllerProvider).value!;
+      expect(mapState.selectedBuilding?.id, equals('BLD-A'));
+      expect(mapState.route, isNotNull);
+      expect(mapState.isNavigating, isTrue);
+    },
+  );
 }

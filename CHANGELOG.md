@@ -1,3 +1,17 @@
+### Raouf: 2026-05-22 (AEST) — Completed Codebase Audit for Map & Navigation Features
+**Scope:** Map & Navigation Audit — Presentation, Data, Domain layer files, and verification scripts
+**Summary:** Completed a comprehensive, file-by-file audit of the MQ Navigation Flutter client's map and navigation codebase. Verified that (1) there is no dead, unused, or redundant code; (2) modern Dart language features (including null-aware map collection elements) compile cleanly; (3) coordination with favorite selections and GoRouter parameters is robust; and (4) the entire suite of 307 unit/widget tests runs successfully with 0 failures or static analysis errors.
+**Files Changed:** `AGENT.md`, `CHANGELOG.md`
+**Verification:** `./scripts/check.sh --quick` (8/8 passed, 307/307 tests successful).
+**Follow-ups:** None.
+
+### Raouf: 2026-05-22 (AEST) — Fixed Google Maps building navigation auto-start (EventActionsSheet + MapPage)
+**Scope:** Building & Event navigation auto-start — `lib/features/open_day/presentation/widgets/event_actions_sheet.dart`, `lib/features/map/presentation/pages/map_page.dart`, `test/features/map/map_page_test.dart`
+**Summary:** Fixed three issues preventing building/event navigation from starting automatically when selecting "Navigate with Google Maps": (1) `EventActionsSheet` was missing the `'preview': 'route'` parameter when routing via Google Maps, preventing Open Day event navigation from loading routes; (2) `MapPage._handleNavigationParams()` nested the route loading/navigation logic inside a guard that checked if the building was *not* selected. If a building was already selected, it skipped route loading entirely. Decoupled this block to trigger route loading even when the building is already selected, with guards against duplicate calls; (3) Added automatic call to `startNavigation()` on `MapController` once the route loads, so the navigation overlay/instructions appear immediately as expected. Added widget tests for both new and already selected building navigation parameters.
+**Files Changed:** `lib/features/open_day/presentation/widgets/event_actions_sheet.dart`, `lib/features/map/presentation/pages/map_page.dart`, `test/features/map/map_page_test.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `./scripts/check.sh --quick` (8/8 passed).
+**Follow-ups:** None.
+
 ### Raouf: 2026-05-22 (AEST) — Fixed search-to-navigation race condition (BuildingActionsSheet + goNamed)
 **Scope:** Map building search — `lib/features/map/presentation/widgets/building_search_sheet.dart`, `lib/features/map/presentation/pages/map_page.dart`
 **Summary:** The search-to-navigation flow had a race condition. When the search sheet called `selectBuilding(building)` and popped, the MapPage's GoRouter listener fired immediately and navigated to `/map/building/{id}` — competing with the `BuildingActionsSheet.show()` that `_openSearchSheet()` tried to show next. This caused the actions sheet to appear briefly on the old MapPage, then get replaced by the building detail route, or the actions sheet to appear on top of the new page and navigate again. Fixed by removing `selectBuilding` from the search sheet's `onTap` entirely. Instead, the search sheet pops with the `Building` object as a result, and `_openSearchSheet()` passes it directly to `BuildingActionsSheet.show()`. BuildingActionsSheet then owns the full flow: `setRenderer()` + `context.goNamed()` to the building detail route. No `selectBuilding` call means no premature GoRouter listener race.
