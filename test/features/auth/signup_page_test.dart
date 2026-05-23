@@ -44,10 +44,13 @@ void main() {
     final BuildContext context = tester.element(find.byType(SignupPage));
     final l10n = AppLocalizations.of(context)!;
 
-    expect(find.text(l10n.authEmailLabel), findsOneWidget);
-    expect(find.text(l10n.authPasswordLabel), findsWidgets);
-    expect(find.text(l10n.authConfirmPasswordLabel), findsOneWidget);
-    expect(find.text(l10n.authSignUpButton), findsWidgets);
+    // The form now uses the existing short-form l10n keys (which are
+    // already translated in every ARB) rather than the `auth*` prefixed
+    // keys (which were English placeholders in most locales).
+    expect(find.text(l10n.email), findsOneWidget);
+    expect(find.text(l10n.password), findsWidgets);
+    expect(find.text(l10n.confirmPassword), findsOneWidget);
+    expect(find.text(l10n.signUp), findsWidgets);
     expect(find.text('${l10n.authHasAccount} '), findsOneWidget);
   });
 
@@ -61,7 +64,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField).at(0), 'a@b.com');
     await tester.enterText(find.byType(TextFormField).at(1), 'pass123');
     await tester.enterText(find.byType(TextFormField).at(2), 'different');
-    await tester.tap(find.widgetWithText(MqButton, l10n.authSignUpButton));
+    await tester.tap(find.widgetWithText(MqButton, l10n.signUp));
     await tester.pump();
 
     expect(find.text(l10n.authErrorPasswordsDoNotMatch), findsOneWidget);
@@ -85,7 +88,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField).at(0), 'a@b.com');
     await tester.enterText(find.byType(TextFormField).at(1), 'pass1234');
     await tester.enterText(find.byType(TextFormField).at(2), 'pass1234');
-    await tester.tap(find.widgetWithText(MqButton, l10n.authSignUpButton));
+    await tester.tap(find.widgetWithText(MqButton, l10n.signUp));
     await tester.pump();
 
     verify(

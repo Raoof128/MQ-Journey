@@ -32,5 +32,27 @@
 	<string>This app uses your location to show your position on the campus map and provide navigation.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app uses your location to show your position on the campus map and provide navigation.</string>
+	<!--
+	  Register the io.mqnavigation:// URL scheme so the macOS app can
+	  receive auth callback deep links (signup confirmation, password
+	  reset) the same way the iOS app does. Without this declaration,
+	  macOS refuses to forward io.mqnavigation://callback redirects
+	  from the system browser and the user lands on the blank Supabase
+	  page. The app_links plugin already handles the incoming URI on
+	  the Dart side via MqNavigationApp._listenForDeepLinks.
+	-->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>io.mqnavigation</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>io.mqnavigation</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

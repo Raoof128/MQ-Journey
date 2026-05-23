@@ -287,7 +287,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ? null
                             : _showForgotPasswordDialog,
                         child: Text(
-                          l10n.authForgotPassword,
+                          // `forgotPassword` is translated in every ARB;
+                          // `authForgotPassword` is still English in most
+                          // non-English locales.
+                          l10n.forgotPassword,
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
@@ -295,7 +298,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     const SizedBox(height: 16),
 
                     MqButton(
-                      label: l10n.authSignInButton,
+                      // Use the existing `signIn` key (translated in every
+                      // ARB) instead of the newer `authSignInButton` which
+                      // is still English in most non-English locales.
+                      label: l10n.signIn,
                       onPressed: _submit,
                       isLoading: authState.isLoading,
                     ),
@@ -305,7 +311,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '${l10n.authNoAccount} ',
+                          // `noAccount` exists translated in every ARB.
+                          '${l10n.noAccount} ',
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.8),
                           ),
