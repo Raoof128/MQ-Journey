@@ -1,0 +1,298 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
+import 'package:mq_navigation/features/auth/data/repositories/auth_repository.dart';
+import 'package:mq_navigation/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:mq_navigation/features/settings/data/repositories/settings_repository.dart';
+import 'package:mq_navigation/features/settings/presentation/pages/settings_page.dart';
+import 'package:mq_navigation/features/map/data/services/offline_maps_service.dart';
+import 'package:mq_navigation/features/open_day/data/open_day_providers.dart';
+import 'package:mq_navigation/features/open_day/domain/entities/open_day_data.dart';
+import 'package:mq_navigation/features/notifications/domain/entities/app_notification.dart';
+import 'package:mq_navigation/features/notifications/data/datasources/fcm_service.dart';
+import 'package:mq_navigation/features/notifications/presentation/controllers/notifications_controller.dart';
+import 'package:mq_navigation/features/transit/domain/entities/transit_stop.dart';
+import 'package:mq_navigation/features/transit/presentation/providers/tfnsw_provider.dart';
+import 'package:mq_navigation/shared/models/user_preferences.dart';
+
+class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockSettingsRepository extends Mock implements SettingsRepository {}
+
+class MockOfflineMapsService extends Mock implements OfflineMapsService {}
+
+class _FakeNotificationsController extends NotificationsController {
+  @override
+  Future<NotificationsState> build() async {
+    return const NotificationsState(
+      permissionStatus: NotificationPermissionStatus.granted,
+      preferences: [],
+    );
+  }
+
+  @override
+  Future<void> updatePreference(NotificationType type, bool enabled) async {
+    // No-op for testing
+  }
+}
+
+void main() {
+  late MockAuthRepository mockAuthRepository;
+  late MockSettingsRepository mockSettingsRepository;
+  late MockOfflineMapsService mockOfflineMapsService;
+
+  setUpAll(() {
+    registerFallbackValue(const UserPreferences());
+  });
+
+  setUp(() {
+    mockAuthRepository = MockAuthRepository();
+    mockSettingsRepository = MockSettingsRepository();
+    mockOfflineMapsService = MockOfflineMapsService();
+
+    // Default mock behavior
+    when(() => mockAuthRepository.isAuthenticated).thenReturn(false);
+    when(() => mockAuthRepository.userId).thenReturn(null);
+    when(() => mockAuthRepository.userEmail).thenReturn(null);
+    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
+
+    when(
+      () => mockSettingsRepository.loadPreferences(),
+    ).thenAnswer((_) async => const UserPreferences());
+    when(() => mockSettingsRepository.savePreferences(any())).thenAnswer(
+      (invocation) async =>
+          invocation.positionalArguments[0] as UserPreferences,
+    );
+    when(
+      () => mockSettingsRepository.wipeAllLocalData(),
+    ).thenAnswer((_) async {});
+
+    when(() => mockOfflineMapsService.isFmtcBackendReady).thenReturn(false);
+    when(
+      () => mockOfflineMapsService.downloadCampusTiles(),
+    ).thenAnswer((_) async {});
+  });
+
+  Widget buildTestApp({Widget? child}) {
+    return ProviderScope(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(mockAuthRepository),
+        settingsRepositoryProvider.overrideWithValue(mockSettingsRepository),
+        offlineMapsServiceProvider.overrideWithValue(mockOfflineMapsService),
+        notificationsControllerProvider.overrideWith(
+          () => _FakeNotificationsController(),
+        ),
+        selectedBachelorProvider.overrideWithValue(null),
+        openDayDataProvider.overrideWith(
+          (ref) async => OpenDayData(
+            openDayDate: DateTime(2026, 8, 22),
+            lastUpdated: DateTime.now(),
+            studyAreas: const [],
+            bachelors: const [],
+            events: const [],
+          ),
+        ),
+        tfnswStopSearchProvider.overrideWith((ref, search) async {
+          return [
+            const TransitStop(
+              id: '10101403',
+              name: 'Macquarie University Station',
+            ),
+            const TransitStop(id: '211310', name: 'Macquarie Park Station'),
+          ];
+        }),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: child ?? const SettingsPage(),
+      ),
+    );
+  }
+
+  void setupLargeViewport(WidgetTester tester) {
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+  }
+
+  group('SettingsPage Widget Tests', () {
+    testWidgets('renders all preference categories', (tester) async {
+      setupLargeViewport(tester);
+      await tester.pumpWidget(buildTestApp());
+      await tester.pumpAndSettle();
+
+      final BuildContext context = tester.element(find.byType(SettingsPage));
+      final l10n = AppLocalizations.of(context)!;
+
+      // Verify page title
+      expect(find.text(l10n.settings.toUpperCase()), findsOneWidget);
+
+      // Verify key section labels exist
+      expect(find.text(l10n.settings_general.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.settings_experience.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.commutePreferences.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.openDay_section.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.accessibility.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.notifications.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.about.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.account.toUpperCase()), findsOneWidget);
+      expect(find.text(l10n.dangerZone.toUpperCase()), findsOneWidget);
+    });
+
+    testWidgets('shows signed out state when user is anonymous', (
+      tester,
+    ) async {
+      setupLargeViewport(tester);
+      when(() => mockAuthRepository.isAuthenticated).thenReturn(false);
+      when(() => mockAuthRepository.userEmail).thenReturn(null);
+
+      await tester.pumpWidget(buildTestApp());
+      await tester.pumpAndSettle();
+
+      final BuildContext context = tester.element(find.byType(SettingsPage));
+      final l10n = AppLocalizations.of(context)!;
+
+      expect(find.text(l10n.notSignedInLabel), findsOneWidget);
+    });
+
+    testWidgets('shows user email when user is authenticated', (tester) async {
+      setupLargeViewport(tester);
+      when(() => mockAuthRepository.isAuthenticated).thenReturn(true);
+      when(() => mockAuthRepository.userId).thenReturn('user-123');
+      when(() => mockAuthRepository.userEmail).thenReturn('student@mq.edu.au');
+
+      await tester.pumpWidget(buildTestApp());
+      await tester.pumpAndSettle();
+
+      expect(find.text('student@mq.edu.au'), findsOneWidget);
+    });
+
+    testWidgets('calls signOut when TapRow for Sign Out is pressed', (
+      tester,
+    ) async {
+      setupLargeViewport(tester);
+      when(() => mockAuthRepository.isAuthenticated).thenReturn(true);
+      when(() => mockAuthRepository.userId).thenReturn('user-123');
+      when(() => mockAuthRepository.userEmail).thenReturn('student@mq.edu.au');
+
+      await tester.pumpWidget(buildTestApp());
+      await tester.pumpAndSettle();
+
+      final BuildContext context = tester.element(find.byType(SettingsPage));
+      final l10n = AppLocalizations.of(context)!;
+
+      final signOutFinder = find.text(l10n.signOut);
+      expect(signOutFinder, findsOneWidget);
+      await tester.tap(signOutFinder);
+      await tester.pumpAndSettle();
+
+      verify(() => mockAuthRepository.signOut()).called(1);
+    });
+
+    testWidgets('toggling haptics switch invokes repository savePreferences', (
+      tester,
+    ) async {
+      setupLargeViewport(tester);
+      await tester.pumpWidget(buildTestApp());
+      await tester.pumpAndSettle();
+
+      final BuildContext context = tester.element(find.byType(SettingsPage));
+      final l10n = AppLocalizations.of(context)!;
+
+      final hapticsTextFinder = find.text(l10n.haptics);
+      expect(hapticsTextFinder, findsOneWidget);
+
+      final rowFinder = find.ancestor(
+        of: hapticsTextFinder,
+        matching: find.byType(Row),
+      );
+      final switchFinder = find.descendant(
+        of: rowFinder,
+        matching: find.byType(Switch),
+      );
+      expect(switchFinder, findsOneWidget);
+
+      // Tap on the switch
+      await tester.tap(switchFinder);
+      await tester.pumpAndSettle();
+
+      // Verify settings repository saved the new preference (hapticsEnabled should toggle to false since default is true)
+      verify(
+        () => mockSettingsRepository.savePreferences(
+          any(
+            that: isA<UserPreferences>().having(
+              (p) => p.hapticsEnabled,
+              'hapticsEnabled',
+              isFalse,
+            ),
+          ),
+        ),
+      ).called(1);
+    });
+
+    testWidgets(
+      'Wipe Local Data displays confirmation dialog and triggers repository wipe on confirm',
+      (tester) async {
+        setupLargeViewport(tester);
+        await tester.pumpWidget(buildTestApp());
+        await tester.pumpAndSettle();
+
+        final BuildContext context = tester.element(find.byType(SettingsPage));
+        final l10n = AppLocalizations.of(context)!;
+
+        final wipeDataFinder = find.text(l10n.wipeData);
+        expect(wipeDataFinder, findsOneWidget);
+
+        await tester.tap(wipeDataFinder);
+        await tester.pumpAndSettle();
+
+        // Dialog should be visible
+        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(AlertDialog),
+            matching: find.text(l10n.wipeDataConfirm),
+          ),
+          findsOneWidget,
+        );
+
+        // Tap cancel
+        final cancelFinder = find.text(l10n.cancel);
+        expect(cancelFinder, findsOneWidget);
+        await tester.tap(cancelFinder);
+        await tester.pumpAndSettle();
+
+        // Dialog should be dismissed, and repository wipe should NOT have been called
+        expect(find.byType(AlertDialog), findsNothing);
+        verifyNever(() => mockSettingsRepository.wipeAllLocalData());
+
+        // Open dialog again
+        await tester.tap(wipeDataFinder);
+        await tester.pumpAndSettle();
+
+        // Tap confirm (l10n.wipeDataAction)
+        final confirmFinder = find.text(l10n.wipeDataAction);
+        expect(confirmFinder, findsOneWidget);
+        await tester.tap(confirmFinder);
+        await tester.pumpAndSettle();
+
+        // Dialog dismissed, repository wipe called once, success snackbar shown
+        expect(find.byType(AlertDialog), findsNothing);
+        verify(() => mockSettingsRepository.wipeAllLocalData()).called(1);
+        expect(find.text(l10n.wipeDataSuccess), findsOneWidget);
+      },
+    );
+  });
+}

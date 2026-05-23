@@ -9,6 +9,7 @@ class AuthRepository {
 
   bool get isAuthenticated => _authService.isAuthenticated;
   String? get userId => _authService.currentUser?.id;
+  String? get userEmail => _authService.currentUser?.email;
   Stream<AuthState> get authStateChanges => _authService.authStateChanges;
 
   Future<AuthResult> signIn({

@@ -62,8 +62,9 @@ class _MapPageState extends ConsumerState<MapPage> {
       backgroundColor: Colors.transparent,
       builder: (_) => const BuildingSearchSheet(),
     );
-    if (building != null && context.mounted) {
-      BuildingActionsSheet.show(
+    if (!mounted) return;
+    if (building != null) {
+      await BuildingActionsSheet.show(
         context,
         buildingId: building.id,
         buildingName: building.name,
