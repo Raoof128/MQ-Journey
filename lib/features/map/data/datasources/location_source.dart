@@ -34,12 +34,20 @@ class LocationSource {
   static const double _googleplexLongitude = -122.084;
   static const double _googleplexTolerance = 0.0025;
 
-  // We explicitly disable native location services on unsupported platforms
-  // (like Web or Desktop) to avoid crashes when calling platform channels.
+  // We explicitly disable native location services on platforms where the
+  // geolocator plugin cannot bind to a real native location service (Web,
+  // Linux, Windows). macOS IS supported: the geolocator package ships a
+  // CoreLocation-backed plugin, and the macOS Runner already declares
+  // both the `NSLocationWhenInUseUsageDescription` Info.plist key AND the
+  // `com.apple.security.personal-information.location` entitlement in
+  // both DebugProfile.entitlements and Release.entitlements. The only
+  // thing blocking macOS until now was this `_isSupported` check
+  // excluding it.
   bool get _isSupported =>
       !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS);
+          defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS);
 
   Future<LocationPermissionState> ensurePermission() async {
     if (!_isSupported) {

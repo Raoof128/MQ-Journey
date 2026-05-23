@@ -207,7 +207,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
                     const SizedBox(height: 24),
                     MqButton(
-                      label: l10n.authSignUpButton,
+                      // `signUp` is translated in every ARB; the newer
+                      // `authSignUpButton` was added as English-only
+                      // placeholder in most non-English ARBs.
+                      label: l10n.signUp,
                       onPressed: _submit,
                       isLoading: authState.isLoading,
                     ),

@@ -42,11 +42,16 @@ void main() {
     final BuildContext context = tester.element(find.byType(LoginPage));
     final l10n = AppLocalizations.of(context)!;
 
-    expect(find.text(l10n.authEmailLabel), findsOneWidget);
-    expect(find.text(l10n.authPasswordLabel), findsOneWidget);
-    // Use findsAtLeastNWidgets(2) because "Sign In" appears as both page title and button label
-    expect(find.text(l10n.authSignInButton), findsAtLeastNWidgets(2));
-    expect(find.text('${l10n.authNoAccount} '), findsOneWidget);
+    // The form now uses the existing short-form l10n keys (which are
+    // already translated in every ARB) rather than the `auth*` prefixed
+    // keys (which were English placeholders in most locales).
+    expect(find.text(l10n.email), findsOneWidget);
+    expect(find.text(l10n.password), findsOneWidget);
+    // "Sign In" still appears twice — as the page title (l10n.authLoginTitle)
+    // and as the button label (l10n.signIn). They happen to render the
+    // same English text but are different translation keys.
+    expect(find.text(l10n.signIn), findsAtLeastNWidgets(1));
+    expect(find.text('${l10n.noAccount} '), findsOneWidget);
     expect(find.text(l10n.authCreateOne), findsOneWidget);
   });
 
@@ -68,7 +73,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField).at(0), 'a@b.com');
     await tester.enterText(find.byType(TextFormField).at(1), 'pass123');
     // Targeted tap on the MqButton to avoid ambiguity with the title text
-    await tester.tap(find.widgetWithText(MqButton, l10n.authSignInButton));
+    await tester.tap(find.widgetWithText(MqButton, l10n.signIn));
     await tester.pump();
 
     verify(
@@ -93,7 +98,7 @@ void main() {
 
     await tester.enterText(find.byType(TextFormField).at(0), 'a@b.com');
     await tester.enterText(find.byType(TextFormField).at(1), 'wrong');
-    await tester.tap(find.widgetWithText(MqButton, l10n.authSignInButton));
+    await tester.tap(find.widgetWithText(MqButton, l10n.signIn));
     await tester.pump();
 
     expect(find.text(errorMsg), findsOneWidget);
