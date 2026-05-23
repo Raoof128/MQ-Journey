@@ -98,13 +98,17 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      height: 4,
-                      color: MqColors.red,
-                      margin: const EdgeInsets.only(bottom: 32),
+                    Image.asset(
+                      'assets/images/mq_logo.png',
+                      height: 56,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.explore,
+                        size: 56,
+                        color: MqColors.red,
+                      ),
                     ),
-                    const Icon(Icons.explore, size: 56, color: MqColors.red),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     Text(
                       l10n.appName,
                       textAlign: TextAlign.center,

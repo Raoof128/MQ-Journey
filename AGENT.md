@@ -44,6 +44,13 @@ lib/
 ```
 
 
+### Raouf: 2026-05-23 (Australia/Sydney) — Added MQ logo and removed red line placeholder on Auth pages
+**Scope:** Authentication UI pages — `lib/features/auth/presentation/pages/login_page.dart`, `lib/features/auth/presentation/pages/signup_page.dart`
+**Summary:** Updated both the Login and Signup pages to replace the temporary design placeholders with official Macquarie University branding: (1) replaced the `Icon(Icons.explore)` placeholder with the official MQ Logo asset (`assets/images/mq_logo.png`) rendering at a height of 56 with fallback error builders, and (2) removed the solid red header line (`Container(height: 4)`) that sat on top of the logo.
+**Files Changed:** `lib/features/auth/presentation/pages/login_page.dart`, `lib/features/auth/presentation/pages/signup_page.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** Ran `./scripts/check.sh --quick --fix` verifying code format, static analysis passes, and all 313 unit/widget tests passing cleanly.
+**Follow-ups:** None.
+
 ### Raouf: 2026-05-23 (Australia/Sydney) — Settings Page Code Audit & Widget Test Suite Implementation
 **Scope:** Settings Page auditing, static analysis hardening, and widget testing — `lib/features/settings/presentation/pages/settings_page.dart`, `lib/features/map/presentation/pages/map_page.dart`, `test/features/settings/settings_page_test.dart` (new)
 **Summary:** Completed a comprehensive, file-by-file audit of the Settings feature set to verify on-device state persistence, validation rules, fallback defaults, and user-authenticated layouts. Addressed and fixed three static analysis warnings/infos: (1) removed the unused `authState` local variable in `settings_page.dart`, and (2) resolved context-safety async gaps and unawaited futures in `map_page.dart`'s building search sheet navigation logic. Created a new comprehensive widget test suite `settings_page_test.dart` to verify isolated layout rendering, anonymous versus user-authenticated email state displays, and interactive user preferences updates (Haptic Feedback toggles, local data wipe dialog confirmations, and SnackBar alerts).
