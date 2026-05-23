@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
@@ -111,6 +110,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final settingsState = ref.watch(settingsControllerProvider);
+    ref.watch(authControllerProvider);
+    final userEmail = ref.watch(authRepositoryProvider).userEmail;
     final dark = context.isDarkMode;
 
     final body = settingsState.when(
@@ -689,16 +690,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         label: l10n.signedInAs,
                         // Guard against an empty email in the brief window
                         // between sign-out and the router redirect firing.
-                        subtitle:
-                            Supabase
-                                    .instance
-                                    .client
-                                    .auth
-                                    .currentUser
-                                    ?.email
-                                    ?.isNotEmpty ==
-                                true
-                            ? Supabase.instance.client.auth.currentUser!.email!
+                        subtitle: userEmail?.isNotEmpty == true
+                            ? userEmail!
                             : l10n.notSignedInLabel,
                       ),
                       _TapRow(
