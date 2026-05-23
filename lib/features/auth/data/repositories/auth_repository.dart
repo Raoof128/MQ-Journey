@@ -33,7 +33,40 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      await _authService.signUp(email: email, password: password);
+      final response = await _authService.signUp(
+        email: email,
+        password: password,
+      );
+
+      // **Silent existing-user detection** — mirrors the same check the
+      // working Syllabus Sync signup uses on the Node side.
+      //
+      // supabase_flutter's `signUp()` has a well-known quirk: when the
+      // email is already registered AND confirmed, Supabase returns a
+      // *successful* `AuthResponse` (no exception thrown) but:
+      //   • `response.user` is non-null
+      //   • `response.user.identities` is the empty list
+      //   • NO confirmation email is sent
+      //
+      // Without this check the controller would flip
+      // `pendingEmailVerificationProvider` to `true` and show the green
+      // "Account created! Check your email…" banner — but no email is
+      // ever delivered, so the user is stranded. This was the primary
+      // user-facing bug we were chasing: signup appearing to succeed
+      // while nothing happens server-side.
+      //
+      // We surface a clear, actionable "already registered" error
+      // instead. (Compared to the more enumeration-resistant generic
+      // success used by Syllabus Sync, we prioritise UX here — this is
+      // a personal-scale student app, not a public service that needs
+      // to defend against email enumeration.)
+      final user = response.user;
+      if (user != null && user.identities != null && user.identities!.isEmpty) {
+        return AuthResult.failure(
+          'An account already exists for this email. Please sign in instead.',
+        );
+      }
+
       return AuthResult.success();
     } on AuthException catch (e) {
       return AuthResult.failure(_mapAuthError(e));
