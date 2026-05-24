@@ -77,7 +77,7 @@ Password: OpenDay2026!
 Existing campus maps either stop at the kerb (Google/Apple Maps don't know which door is *18 Wally's Walk*) or require single sign-on for a poor-quality web experience. MQ Navigation solves this by providing:
 
 - **Dual-Renderer Maps:** Coordinate-aligned switch between Google Maps (traffic, satellite, clustering) and a calibrated illustrated campus raster — both pinpoint the correct **building entrance**, not the road.
-- **Turn-by-Turn Routing:** Server-side routing via Supabase Edge proxy with walking, driving, cycling, and transit modes. Arrival detection, off-route recalculation, and collapsible nav sheet that doesn't stop navigation.
+- **Turn-by-Turn Routing:** Server-side routing via Supabase Edge proxy with walking, driving, cycling, and transit modes. Arrival detection, off-route recalculation, and a collapsible nav sheet that doesn't stop navigation.
 - **Privacy-by-Design Architecture:** Optional account, **zero analytics packages** (CI-enforced), no location history, on-device compass calculation. Encryption via Keychain / Android Keystore.
 - **Open Day Ready:** Branded study-interest picker, dynamic event cards, BuildingActionsSheet shared with [Syllabus Sync](https://github.com/mrpouyaalavi/syllabus-sync) deep-link contract.
 
@@ -133,7 +133,7 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 ║  🚆  Live Macquarie Uni metro countdown via TfNSW Open Data proxy    ║
 ║  🌍  35 locales · Full RTL for ar/fa/he/ur · WCAG-aware semantics    ║
 ║  🔐  Optional auth · Zero analytics · CI-enforced privacy guard      ║
-║  ⚡  323 tests · 0 analyzer issues · 8-step quality gate script      ║
+║  ⚡  323 tests · 0 analyzer issues · 8-step quality gate script       ║
 ╚══════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -375,7 +375,7 @@ Released under the **MIT License**. See [`LICENSE`](LICENSE).
 ### Roadmap & Priorities
 - **P0:** Open Day 2026 demo readiness (DONE).
 - **P1:** Hosted HTTPS callback page so the email-confirmation flow works on desktop browsers without the app installed.
-- **P1:** Translator pass on the remaining 26 locales' auth strings.
+- **P1:** Translator passes on the remaining 26 locales' auth strings.
 - **P2:** Universal Links / App Links for first-class deep linking.
 - **P2:** Voice-guided turn-by-turn for accessibility.
 
@@ -384,7 +384,7 @@ Released under the **MIT License**. See [`LICENSE`](LICENSE).
 | Name | Role |
 |------|------|
 | Pouya Alavi Naeini | Lead — architecture, mapping engine, infrastructure |
-| Mohammad Raouf Abedini | Co-maintainer — security, backend, Supabase Edge Functions |
+| Raouf Abedini | Co-maintainer — security, backend, Supabase Edge Functions |
 
 <br/>
 
@@ -408,7 +408,7 @@ Built with the support of the open-source community. This project benefits from:
 ### `> ping --authors`
 
 ```text
-> Authors    : Pouya Alavi Naeini — Software Engineer | Mohammad Raouf Abedini — Back-End Developer
+> Authors    : Pouya Alavi Naeini — Software Engineer | Raouf Abedini — Back-End Developer
 > University : Macquarie University, Sydney, NSW
 > Unit       : COMP3130 Mobile App Development — Major Project (50%)
 > Submission : [●] READY — 323 tests passing · 0 analyzer issues
