@@ -90,12 +90,7 @@ class AuthForm extends StatelessWidget {
                     : Colors.white.withValues(alpha: 0.92),
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                shadows: const [
-                  Shadow(
-                    color: Colors.black54,
-                    blurRadius: 2,
-                  ),
-                ],
+                shadows: const [Shadow(color: Colors.black54, blurRadius: 2)],
               ),
             ),
           ),

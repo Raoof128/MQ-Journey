@@ -73,47 +73,44 @@ void main() {
       expect(result.error, 'An account already exists for this email.');
     });
 
-    test(
-      'returns "already registered" when Supabase silently returns '
-      'an existing-confirmed user (empty identities list)',
-      () async {
-        // Reproduces the silent-existing-user bug we caught comparing
-        // MQ Navigation against the working Syllabus Sync signup. When
-        // a confirmed email is re-submitted to `supabase_flutter.signUp`,
-        // it returns a non-null `User` whose `identities` list is empty
-        // and sends NO confirmation email. The repository must detect
-        // this and surface a real error instead of letting the UI flash
-        // the misleading "Account created! Check your email…" banner.
-        final existingUser = User(
-          id: 'existing-user-id',
-          appMetadata: const {},
-          userMetadata: const {},
-          aud: 'authenticated',
-          email: 'a@b.com',
-          createdAt: DateTime.now().toIso8601String(),
-          identities: const [],
-        );
-        when(
-          () => mockAuthService.signUp(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          ),
-        ).thenAnswer(
-          (_) async => AuthResponse(user: existingUser, session: null),
-        );
+    test('returns "already registered" when Supabase silently returns '
+        'an existing-confirmed user (empty identities list)', () async {
+      // Reproduces the silent-existing-user bug we caught comparing
+      // MQ Navigation against the working Syllabus Sync signup. When
+      // a confirmed email is re-submitted to `supabase_flutter.signUp`,
+      // it returns a non-null `User` whose `identities` list is empty
+      // and sends NO confirmation email. The repository must detect
+      // this and surface a real error instead of letting the UI flash
+      // the misleading "Account created! Check your email…" banner.
+      final existingUser = User(
+        id: 'existing-user-id',
+        appMetadata: const {},
+        userMetadata: const {},
+        aud: 'authenticated',
+        email: 'a@b.com',
+        createdAt: DateTime.now().toIso8601String(),
+        identities: const [],
+      );
+      when(
+        () => mockAuthService.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer(
+        (_) async => AuthResponse(user: existingUser, session: null),
+      );
 
-        final result = await authRepository.signUp(
-          email: 'a@b.com',
-          password: 'pass123',
-        );
+      final result = await authRepository.signUp(
+        email: 'a@b.com',
+        password: 'pass123',
+      );
 
-        expect(result.success, isFalse);
-        expect(
-          result.error,
-          'An account already exists for this email. Please sign in instead.',
-        );
-      },
-    );
+      expect(result.success, isFalse);
+      expect(
+        result.error,
+        'An account already exists for this email. Please sign in instead.',
+      );
+    });
 
     test('returns friendly message on weak password', () async {
       when(
