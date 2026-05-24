@@ -7,6 +7,7 @@ import 'package:mq_navigation/app/router/app_shell.dart';
 import 'package:mq_navigation/app/router/route_names.dart';
 import 'package:mq_navigation/core/config/env_config.dart';
 import 'package:mq_navigation/features/auth/presentation/pages/login_page.dart';
+import 'package:mq_navigation/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:mq_navigation/features/auth/presentation/pages/signup_page.dart';
 import 'package:mq_navigation/features/deep_link/deep_link_contract.dart';
 import 'package:mq_navigation/features/home/presentation/pages/home_page.dart';
@@ -48,14 +49,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       final isAuthRoute = path.startsWith('/auth');
       final isOnboardingRoute = path == '/onboarding';
+      final isResetRoute = path == '/auth/reset-password';
 
       // Unauthenticated users go to auth
       if (!isAuthed && !isAuthRoute) {
         return '/auth/login';
       }
 
-      // Authenticated users on auth route → redirect to home or onboarding
-      if (isAuthed && isAuthRoute) {
+      // Authenticated users on auth route (excluding reset-password) → redirect to home or onboarding
+      if (isAuthed && isAuthRoute && !isResetRoute) {
         final settingsAsync = ref.read(settingsControllerProvider);
         final hasCompleted =
             settingsAsync.value?.hasCompletedOnboarding ?? false;
@@ -63,7 +65,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       // Onboarding gate — only applies to authenticated users
-      if (isAuthed && !isOnboardingRoute) {
+      if (isAuthed && !isOnboardingRoute && !isResetRoute) {
         final settingsAsync = ref.read(settingsControllerProvider);
         if (settingsAsync.isLoading) return null;
         final hasCompleted =
@@ -151,6 +153,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/auth/signup',
         name: RouteNames.signup,
         builder: (context, state) => const SignupPage(),
+      ),
+      GoRoute(
+        path: '/auth/reset-password',
+        name: RouteNames.resetPassword,
+        builder: (context, state) => const ResetPasswordPage(),
       ),
       GoRoute(path: '/auth', redirect: (context, state) => '/auth/login'),
       // Web email-confirmation callback (PKCE flow).
@@ -255,9 +262,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 class _OnboardingFlagListenable extends ChangeNotifier {
   _OnboardingFlagListenable(Ref ref) {
     // Listen to Supabase auth state changes (login / logout).
-    _authSub = Supabase.instance.client.auth.onAuthStateChange.listen(
-      (_) => notifyListeners(),
-    );
+    _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.passwordRecovery) {
+        _rootNavigatorKey.currentContext?.go('/auth/reset-password');
+      }
+      notifyListeners();
+    });
 
     // Listen to the onboarding flag (and its loading state).
     _settingsSub = ref.listen<({bool isLoading, bool hasCompleted})>(

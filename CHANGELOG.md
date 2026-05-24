@@ -1,3 +1,10 @@
+### Raouf: 2026-05-24 (Australia/Sydney) — Password Recovery Flow Redirection Fix
+**Scope:** Authentication Flow & Routing — `lib/app/router/route_names.dart`, `lib/app/router/app_router.dart`, `lib/features/auth/presentation/pages/reset_password_page.dart`, `test/features/auth/reset_password_page_test.dart`
+**Summary:** Resolved the password recovery redirection bug where Supabase's automatic login authentication intercepted recovery sessions and forced users straight to `/home` or `/onboarding`. Added `resetPassword` to `RouteNames` and registered a new `/auth/reset-password` route. Modified GoRouter's `redirect` callback to exclude the reset-password route from home redirects and onboarding gates, and updated `_OnboardingFlagListenable` to intercept `AuthChangeEvent.passwordRecovery` events to navigate directly to the reset-password page. Designed a premium Macquarie University styled `ResetPasswordPage` screen with length and password-matching validations, and wrote a widget test suite `reset_password_page_test.dart`.
+**Files Changed:** `lib/app/router/route_names.dart`, `lib/app/router/app_router.dart`, `lib/features/auth/presentation/pages/reset_password_page.dart`, `test/features/auth/reset_password_page_test.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** Ran `./scripts/check.sh --quick --fix` verifying code formatting, analyzer passing, and all 317 unit/widget tests passing successfully.
+**Follow-ups:** None.
+
 ### Raouf: 2026-05-24 (Australia/Sydney) — Run code format checks and codebase validation
 **Scope:** Repository-wide styling formatting — `lib/features/auth/presentation/widgets/auth_form.dart`, `test/features/auth/auth_repository_test.dart`
 **Summary:** Executed the comprehensive project verification script (`check.sh`) and auto-formatted style non-compliant source and test files using `dart format fix`.
