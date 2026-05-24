@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Typing animation -->
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=20&duration=2800&pause=700&color=A6192E&center=true&vCenter=true&width=860&lines=Find+Your+Way+Around+Macquarie+%E2%80%94+Without+Selling+Your+Data;Dual-Renderer+Maps+%E2%80%A2+Turn-by-Turn+Routing+%E2%80%A2+Compass+Mode;Flutter+3.11+%E2%80%A2+Riverpod+3+%E2%80%A2+Supabase+%E2%80%A2+35+Languages;Privacy+by+Design+%E2%80%A2+323+Tests+%E2%80%A2+Open+Day+2026+Ready)](https://readme-typing-svg.demolab.com)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=20&duration=2800&pause=700&color=0067a5&center=true&vCenter=true&width=860&lines=Find+Your+Way+Around+Macquarie+%E2%80%94+Without+Selling+Your+Data;Dual-Renderer+Maps+%E2%80%A2+Turn-by-Turn+Routing+%E2%80%A2+Compass+Mode;Flutter+3.11+%E2%80%A2+Riverpod+3+%E2%80%A2+Supabase+%E2%80%A2+35+Languages;Privacy+by+Design+%E2%80%A2+323+Tests+%E2%80%A2+Open+Day+2026+Ready)](https://readme-typing-svg.demolab.com)
 
 <!-- Badges -->
 ![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b?style=for-the-badge)
@@ -15,7 +15,7 @@
 
 </div>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -31,7 +31,7 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -68,7 +68,7 @@ Password: OpenDay2026!
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -93,7 +93,7 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -117,7 +117,7 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -139,7 +139,7 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -193,7 +193,7 @@ graph TD
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -214,7 +214,7 @@ Privacy is a structural constraint, not a feature flag. Every line of code is au
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -233,7 +233,7 @@ We designed MQ Navigation around four real user personas — the people we'd han
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -251,7 +251,7 @@ If a platform-specific issue surfaces during marking, the relevant feature rende
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -286,7 +286,7 @@ scripts/              run.sh, check.sh (quality gate)
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -340,7 +340,7 @@ flutter run --dart-define-from-file=.env
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -363,7 +363,7 @@ flutter run --dart-define-from-file=.env
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -388,7 +388,7 @@ Released under the **MIT License**. See [`LICENSE`](LICENSE).
 
 <br/>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0067a5&height=2" width="100%"/>
 
 <br/>
 
@@ -414,12 +414,6 @@ Built with the support of the open-source community. This project benefits from:
 > Submission : [●] READY — 323 tests passing · 0 analyzer issues
 ```
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-a6192e?style=for-the-badge&logo=linkedin&logoColor=ffffff&labelColor=0f172a)](https://www.linkedin.com/in/pouya-alavi/)
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-fbbf24?style=for-the-badge&logo=github&logoColor=ffffff&labelColor=0f172a)](https://github.com/mrpouyaalavi)
-[![Email](https://img.shields.io/badge/Email-Contact-f59e0b?style=for-the-badge&logo=gmail&logoColor=09090b&labelColor=0f172a)](mailto:pouya@pouyaalavi.dev)
-
 <br/>
-
-*MQ Navigation is an independent open-source student project and is not officially affiliated with Macquarie University.*
 
 </div>
