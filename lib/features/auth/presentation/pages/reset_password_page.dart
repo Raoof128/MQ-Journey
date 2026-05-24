@@ -111,13 +111,14 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                     children: [
                       Image.asset(
                         'assets/images/mq_logo.png',
-                        height: 56,
+                        height: 112,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.explore,
-                          size: 56,
-                          color: MqColors.red,
-                        ),
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.explore,
+                              size: 112,
+                              color: MqColors.red,
+                            ),
                       ),
                       const SizedBox(height: 16),
                       Text(

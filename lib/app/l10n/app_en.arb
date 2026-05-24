@@ -2466,6 +2466,7 @@
   "favoritesError": "Could not load favourites. Tap to retry.",
   "authErrorPasswordsDoNotMatch": "Passwords do not match.",
   "authVerifyEmailMessage": "Account created! Check your email and click the confirmation link before signing in.",
+  "authConfirmingEmail": "Confirming your email…",
   "lang_ar": "العربية",
   "lang_bn": "বাংলা",
   "lang_cs": "Čeština",
