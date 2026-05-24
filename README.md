@@ -9,7 +9,7 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 > **Submitted for COMP3130 Mobile App Development — Major Project (May 2026)**
 > Pitched as the official navigation companion for the **Macquarie University Open Day** experience.
 
-> **Read the complete [Project Report](file:///Users/raoof.r12/Desktop/Raouf/Pouya-Raouf-COMP3130/PROJECT_REPORT.md) containing the design overview, target audience personas, and technical specifications.**
+> **Read the complete [Project Report](PROJECT_REPORT.md) containing the design overview, target audience personas, and technical specifications.**
 
 ---
 
@@ -42,7 +42,7 @@ Password: OpenDay2026!
 | **Mobile device service** | `geolocator` (GPS), `flutter_compass` (heading), `torch_light` (flashlight) — all in `lib/features/map/` and `lib/features/safety/` |
 | **Widget tests** | `test/features/*/` — 50+ widget tests, including 10 for the Favourites page with full interaction coverage |
 | **Unit tests** | 240+ unit tests across map, auth, favourites, notifications, settings, transit, open day |
-| **Project Report / Essay** | [PROJECT_REPORT.md](file:///Users/raoof.r12/Desktop/Raouf/Pouya-Raouf-COMP3130/PROJECT_REPORT.md) — 820-word essay addressing the required questions (app description, core features, audience personas, competitor advantages, technical credentials, and layout) |
+| **Project Report / Essay** | [`PROJECT_REPORT.md`](PROJECT_REPORT.md) — 820-word essay addressing the required questions (app description, core features, audience personas, competitor advantages, technical credentials, and layout) |
 
 ---
 
@@ -128,6 +128,22 @@ We designed MQ Navigation around four real user personas — the people we'd han
 | **iOS Simulator** | ⚠️ Untested | Should work — repo includes no iOS-specific blockers — but not part of the assignment requirement. |
 
 If a platform-specific issue surfaces during marking, the relevant feature renders a typed `MapStateError` fallback rather than crashing.
+
+---
+
+## Screenshots
+
+Full walkthrough of the seven core screens lives under [`screenshots/`](screenshots/). Each capture is from the Android build at submission state.
+
+| Screen | File | What it shows |
+|--------|------|--------------|
+| Login | [`screenshots/01_login_page.png`](screenshots/01_login_page.png) | Email/password sign-in with branded MQ logo, optional "Create one" path |
+| Home | [`screenshots/02_home_page.png`](screenshots/02_home_page.png) | Welcome hero, quick-access bento grid, Open Day events, transit countdown |
+| Map | [`screenshots/03_map_page.png`](screenshots/03_map_page.png) | Dual renderer (Campus / Google Maps toggle), category chips, building markers |
+| Safety | [`screenshots/04_safety_page.png`](screenshots/04_safety_page.png) | Campus Safety Toolkit — emergency contacts, AED locations, flashlight |
+| Favourites | [`screenshots/05_favorites_page.png`](screenshots/05_favorites_page.png) | The full CRUD surface — heart-toggle, swipe-to-delete, edit-note kebab |
+| Notifications | [`screenshots/06_notifications_page.png`](screenshots/06_notifications_page.png) | Inbox with read/unread state, per-type preferences |
+| Settings | [`screenshots/07_settings_page.png`](screenshots/07_settings_page.png) | Theme, locale, commute, privacy badge, data wipe |
 
 ---
 
@@ -256,7 +272,7 @@ Contributions must pass the automated check suite:
 | `flutter pub get` | Valid dependency resolution |
 | `dart format` | Code formatting (`lib/`, `test/`, `scripts/`, `integration_test/`) |
 | `flutter analyze` | Static analysis with hardened lint rules |
-| `flutter test` | **305** tests — 100% pass required |
+| `flutter test` | **323** tests — 100% pass required |
 | `flutter gen-l10n` | Localisation generation (35 locales) |
 | Untranslated check | `.dart_tool/untranslated.json` — new keys tracked as non-blocking |
 | **Privacy guard** | **Blocks** `firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events` |
