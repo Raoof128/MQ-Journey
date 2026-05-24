@@ -7,13 +7,15 @@ The Macquarie University campus contains over 150 buildings spread across a wide
 We designed the application with a focus on user privacy. Unlike commercial mapping services, MQ Navigation does not collect telemetry, location history, or personal identifiers. Users can run the application without registering an account. Those who want to sync bookmarked buildings across devices can create a secure email login, while others run the app without authentication using local device storage.
 
 ### Core Capabilities
-MQ Navigation structures its features into five modules:
+MQ Navigation structures its features into seven modules:
 
-1. **Dual-Renderer Map Engine**: The user interface displays two coordinate-aligned map views. Users toggle between Google Maps (with traffic layers and building marker clustering) and a calibrated illustrated vector map. State management controllers sync the active camera zoom, target latitude, and selected markers between both renderers.
-2. **Turn-by-Turn Routing**: We query a custom Supabase Edge proxy to fetch walking, driving, and transit routes. The proxy routes requests to the Google Routes API, then transforms the raw coordinates into step-by-step instructions. The application displays navigation updates, computes the walking duration, and detects arrival at the destination entrance.
-3. **Compass Mode**: Devices with magnetometer hardware run an on-device radar view. The application calculates the geometric bearing between the user and their destination, rotating a directional guide arrow via native sensor streams. The compass interface shows heading accuracy limits and cardinal points without transmitting coordinates to external servers.
-4. **Campus Safety Toolkit**: A standalone safety panel lists direct phone links for triple-zero, campus security, and health services. The toolkit integrates a flashlight toggle and maps the coordinates of five campus defibrillators and three first aid rooms. The safety features work without background location tracking.
-5. **Transit Departure Board**: The application displays real-time metro countdowns for Macquarie University Station. Commuters select their travel direction and preferred transit line to save countdown details to local preferences.
+1. **Authentication and Account Management**: Users sign up and sign in through Supabase Auth using email and password. The repository layer maps Supabase errors to friendly messages, detects silent existing-user responses (an empty `identities` array on the returned user record), and surfaces edge cases like duplicate accounts, weak passwords, and network failures. The application also supports forgot-password flow via Supabase reset emails. Authentication is **optional** — most of the application runs without an account.
+2. **Building Favorites (CRUD)**: Authenticated users perform full CRUD on the `favorite_buildings` Supabase table. **Create** by tapping the heart icon on any building card, **Read** on the dedicated Favourites page with pull-to-refresh, **Update** by adding or editing a personal note via the kebab menu, and **Delete** by swiping a row or selecting Remove. The controller uses optimistic UI updates with rollback on failure.
+3. **Dual-Renderer Map Engine**: The user interface displays two coordinate-aligned map views. Users toggle between Google Maps (with traffic layers and building marker clustering) and a calibrated illustrated vector map. State management controllers sync the active camera zoom, target latitude, and selected markers between both renderers.
+4. **Turn-by-Turn Routing**: We query a custom Supabase Edge proxy to fetch walking, driving, and transit routes. The proxy routes requests to the Google Routes API, then transforms the raw coordinates into step-by-step instructions. The application displays navigation updates, computes the walking duration, and detects arrival at the destination entrance.
+5. **Compass Mode**: Devices with magnetometer hardware run an on-device radar view. The application calculates the geometric bearing between the user and their destination, rotating a directional guide arrow via native sensor streams. The compass interface shows heading accuracy limits and cardinal points without transmitting coordinates to external servers.
+6. **Campus Safety Toolkit**: A standalone safety panel lists direct phone links for triple-zero, campus security, and health services. The toolkit integrates a flashlight toggle and maps the coordinates of five campus defibrillators and three first aid rooms. The safety features work without background location tracking.
+7. **Transit Departure Board**: The application displays real-time metro countdowns for Macquarie University Station. Commuters select their travel direction and preferred transit line to save countdown details to local preferences.
 
 ### Target Audience and Personas
 We defined three user groups to guide the application design:
@@ -53,7 +55,7 @@ Riverpod 3 manages application state. Controllers extend `Notifier` classes to h
 Markers can execute quality gates using the provided test scripts. Run `./scripts/check.sh --quick` in the repository root to verify:
 - Code formatting and style rules
 - Static analysis checks
-- 103 widget and unit tests
+- **323 widget and unit tests** covering authentication, favourites CRUD, map state, routing, transit, settings, notifications, and shared widgets
 - Localization key alignment across 35 languages
 - Privacy configurations (confirming no analytics tracking packages exist)
 
