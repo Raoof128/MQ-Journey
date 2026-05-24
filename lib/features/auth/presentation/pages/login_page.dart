@@ -148,11 +148,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   children: [
                     Image.asset(
                       'assets/images/mq_logo.png',
-                      height: 56,
+                      height: 112,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(
+                      errorBuilder: (context, error, stackTrace) => const Icon(
                         Icons.explore,
-                        size: 56,
+                        size: 112,
                         color: MqColors.red,
                       ),
                     ),
