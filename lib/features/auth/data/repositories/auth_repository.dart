@@ -92,6 +92,19 @@ class AuthRepository {
     }
   }
 
+  Future<AuthResult> updatePassword({required String newPassword}) async {
+    try {
+      await _authService.updatePassword(newPassword: newPassword);
+      return AuthResult.success();
+    } on AuthException catch (e) {
+      return AuthResult.failure(_mapAuthError(e));
+    } catch (e) {
+      return AuthResult.failure(
+        'Network error. Check your connection and try again.',
+      );
+    }
+  }
+
   String _mapAuthError(AuthException e) {
     final msg = e.message.toLowerCase();
     if (msg.contains('invalid login credentials')) {

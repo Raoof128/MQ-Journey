@@ -90,6 +90,14 @@ class AuthController extends Notifier<AuthScreenState> {
     return result.success ? null : result.error;
   }
 
+  Future<String?> updatePassword({required String newPassword}) async {
+    state = state.copyWith(isLoading: true, error: null);
+    final result = await _repository.updatePassword(newPassword: newPassword);
+    if (_disposed) return result.error;
+    state = state.copyWith(isLoading: false, error: result.error);
+    return result.error;
+  }
+
   void clearError() {
     state = state.copyWith(error: null);
   }
