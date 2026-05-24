@@ -1,17 +1,39 @@
-# MQ Navigation
+<div align="center">
+
+<!-- Typing animation -->
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=20&duration=2800&pause=700&color=A6192E&center=true&vCenter=true&width=860&lines=Find+Your+Way+Around+Macquarie+%E2%80%94+Without+Selling+Your+Data;Dual-Renderer+Maps+%E2%80%A2+Turn-by-Turn+Routing+%E2%80%A2+Compass+Mode;Flutter+3.11+%E2%80%A2+Riverpod+3+%E2%80%A2+Supabase+%E2%80%A2+35+Languages;Privacy+by+Design+%E2%80%A2+323+Tests+%E2%80%A2+Open+Day+2026+Ready)](https://readme-typing-svg.demolab.com)
+
+<!-- Badges -->
+![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b?style=for-the-badge)
+![Flutter](https://img.shields.io/badge/Flutter_3.11+-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart_3-0175C2?style=for-the-badge&logo=dart&logoColor=white)
+![Riverpod](https://img.shields.io/badge/Riverpod_3.2-7C3AED?style=for-the-badge)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Google Maps](https://img.shields.io/badge/Google_Maps-4285F4?style=for-the-badge&logo=googlemaps&logoColor=white)
+![Tests](https://img.shields.io/badge/323_Tests-Flutter_Test-6E9F18?style=for-the-badge)
+![Material 3](https://img.shields.io/badge/Material_3-757575?style=for-the-badge&logo=materialdesign&logoColor=white)
+
+</div>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+# MQ Navigation — Privacy-First Campus Companion
 
 > **Find your way around Macquarie — without selling your data.**
 
 A production-ready Flutter client for Macquarie University's campus — dual-renderer maps, turn-by-turn routing, compass mode, campus safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: optional account, zero tracking, no location history.**
 
-Part of a **two frontends, one backend** architecture sharing a Supabase backend with the Next.js web application.
+Part of a **two frontends, one backend** architecture sharing a Supabase backend with the [Syllabus Sync](https://github.com/mrpouyaalavi/syllabus-sync) Next.js web application. Submitted for **COMP3130 Mobile App Development — Major Project (May 2026)** and pitched as the official navigation companion for the **Macquarie University Open Day** experience.
 
-> **Submitted for COMP3130 Mobile App Development — Major Project (May 2026)**
-> Pitched as the official navigation companion for the **Macquarie University Open Day** experience.
+**[📖 Project Report](PROJECT_REPORT.md)** &nbsp;·&nbsp; **[📸 Screenshots](screenshots/)** &nbsp;·&nbsp; **[🏗️ Architecture](docs/ARCHITECTURE.md)** &nbsp;·&nbsp; **[🔐 Security Posture](docs/SECURITY_POSTURE.md)**
 
-> **Read the complete [Project Report](PROJECT_REPORT.md) containing the design overview, target audience personas, and technical specifications.**
+<br/>
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
 
 ## 📌 For Markers — Quick Start
 
@@ -36,7 +58,7 @@ Password: OpenDay2026!
 
 | Requirement | Where it lives |
 |-------------|---------------|
-| **User authentication** | `lib/features/auth/` — Supabase Auth (login, signup, logout, error mapping) |
+| **User authentication** | `lib/features/auth/` — Supabase Auth (login, signup, logout, error mapping, silent existing-user detection) |
 | **Remote database (Supabase)** | `favorite_buildings`, `notifications`, `notification_preferences` tables; `lib/features/favorites/data/` and `lib/features/notifications/data/` |
 | **CRUD on a data entity** | Favourites: **Create** via ❤️ on any building, **Read** on the Favourites tab, **Update** via the kebab → Edit note, **Delete** via swipe or kebab → Remove |
 | **Mobile device service** | `geolocator` (GPS), `flutter_compass` (heading), `torch_light` (flashlight) — all in `lib/features/map/` and `lib/features/safety/` |
@@ -44,110 +66,88 @@ Password: OpenDay2026!
 | **Unit tests** | 240+ unit tests across map, auth, favourites, notifications, settings, transit, open day |
 | **Project Report / Essay** | [`PROJECT_REPORT.md`](PROJECT_REPORT.md) — 820-word essay addressing the required questions (app description, core features, audience personas, competitor advantages, technical credentials, and layout) |
 
----
+<br/>
 
-## Features
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
 
-### Map & Navigation
-- **Dual-Renderer Maps** — Google Maps (`google_maps_flutter` 2.15) with traffic/map-type/clustering **and** illustrated Campus Map (`flutter_map` 8.2 with `CrsSimple` calibrated raster). Shared state, frictionless switching.
-- **Building Registry** — 161 buildings with search, category browse (Faculty / Student Services / Campus Hub / Overlays), and personal favorites.
-- **Favorites** — Heart-toggle bookmarking on building search results; dedicated Favorites page with pull-to-refresh, swipe-to-delete, note editing, and one-tap navigation to building on map.
-- **Turn-by-Turn Routing** — Server-side routing via Supabase Edge Functions (Google Routes API + Directions API fallback). Walking, driving, cycling, transit modes. Arrival detection and off-route recalculation.
-- **Compass Mode** — Real-time heading via `flutter_compass` 0.8, animated bearing arrow (`AnimatedRotation` 250ms ease-in-out), heading accuracy display, cardinal marker. **All on-device — no data leaves the phone.**
+<br/>
 
-### Campus Safety Toolkit
-- **Emergency Contacts** — Tap-to-dial 000, Campus Security `(02) 9850 7111`, Health Service, 1800 CRISIS.
-- **First Aid & AED Locations** — 3 first aid points (1CC, 18WW, Sport Centre) and 5 defibrillators (LIB, 1CC, Sport, 18WW, C5C) with building codes and descriptions.
-- **Security Shuttle** — Info and call button for 24/7 on-demand campus transport.
-- **Flashlight Toggle** — Device camera flash via `torch_light`.
-- **Privacy-First** — No automatic location sharing. User manually calls or navigates. Permanent privacy badge in Settings.
+## 🎯 High-Level Impact & Value Proposition
 
-### Transit
-- **Metro Countdown** — Live departures from Macquarie University Station (via TfNSW Open Data / Supabase Edge proxy).
-- **Commute Preferences** — Configurable mode (metro/bus/train), line, direction, stop. Persistent across sessions.
+Existing campus maps either stop at the kerb (Google/Apple Maps don't know which door is *18 Wally's Walk*) or require single sign-on for a poor-quality web experience. MQ Navigation solves this by providing:
 
-### Home Dashboard
-- **Hero branding** + welcome copy + animated entrance.
-- **Quick Access** — Bento grid for Student Services, Faculty, Parking, Campus Hub, Food & Drink.
-- **Open Day** — Dynamic event cards, study interest picker, reminder scheduling.
+- **Dual-Renderer Maps:** Coordinate-aligned switch between Google Maps (traffic, satellite, clustering) and a calibrated illustrated campus raster — both pinpoint the correct **building entrance**, not the road.
+- **Turn-by-Turn Routing:** Server-side routing via Supabase Edge proxy with walking, driving, cycling, and transit modes. Arrival detection, off-route recalculation, and collapsible nav sheet that doesn't stop navigation.
+- **Privacy-by-Design Architecture:** Optional account, **zero analytics packages** (CI-enforced), no location history, on-device compass calculation. Encryption via Keychain / Android Keystore.
+- **Open Day Ready:** Branded study-interest picker, dynamic event cards, BuildingActionsSheet shared with [Syllabus Sync](https://github.com/mrpouyaalavi/syllabus-sync) deep-link contract.
 
-### Authentication
-- **Email/Password Auth** — Supabase-powered sign-up and login with session persistence via `supabase_flutter` and `flutter_secure_storage`.
-- **Protected Routes** — GoRouter auth gate redirects unauthenticated users to the login/signup screen for certain features.
-- **Account Management** — Email display and sign-out in the Settings page. **Fully optional** — the app works without an account.
+<br/>
 
-### Favorites
-- **Building Bookmarks** — Heart-toggle on building search results, persisted to Supabase `favorite_buildings` table for authenticated users.
-- **Favorites Page** — Dedicated list with pull-to-refresh, swipe-to-delete, note editing, and navigation to building on map.
-- **State Management** — Riverpod 3 `Notifier` with optimistic UI updates and error handling.
+## Why This Project Matters
 
-### Notifications
-- **Inbox** — Supabase-backed persistent notifications with read/unread state.
-- **Local Reminders** — Daily study prompt scheduling via `flutter_local_notifications`.
-- **Push** — FCM integration for remote notifications.
+Most campus apps are dated, English-only, and trade student data for the convenience of a "free" Google Maps embed. MQ Navigation was built to prove three things:
 
-### Settings
-- Appearance (theme, locale), commute preferences, map defaults, notification toggles, haptics, reduced motion, high-contrast map, low-data mode, offline campus maps, data wipe.
-- **Privacy Badge** — "Private by design: optional account, zero tracking, no location history."
-- **Dev Diagnostics** — 7-tap easter egg: version, renderer, Edge proxy host.
+1. **A privacy-respecting campus app is technically achievable.** Real GPS, real routing, real building markers, real safety contacts — and zero analytics SDKs. The CI privacy guard refuses to compile the app if any tracking package is added.
+2. **Localisation can be a first-class concern, not an afterthought.** 35 ARB locales with full RTL support for Arabic, Farsi, Hebrew, and Urdu. Tested on real screens, not just `flutter gen-l10n` output.
+3. **Two frontends, one backend** is a credible architecture. The same Supabase project powers this Flutter client and the Syllabus Sync Next.js platform — sharing data models, auth users, and Edge Functions without forcing a single UI.
 
-### Privacy by Design
-| Principle | Enforcement |
-|-----------|------------|
-| Optional account | Auth is **fully optional** — app works at `/home` without login. Account only needed for cloud-synced favorites |
-| Zero tracking | No analytics, telemetry, or crash reporting packages (blocked by CI guard) |
-| No location history | GPS used ephemerally — never stored, never transmitted |
-| No data collection | All preferences stored locally via `SharedPreferences` + `FlutterSecureStorage` |
-| Safety privacy | Emergency contacts use tap-to-dial — location never shared automatically |
-| Compass privacy | All heading calculation on-device — no data leaves the device |
+<br/>
 
----
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
 
-## Who is this for?
-
-We designed MQ Navigation around four real user personas — the people we'd hand a phone to on Open Day and watch them use it.
-
-| Persona | Goals | Why this app over competitors |
-|---------|-------|------------------------------|
-| **"Open Day Olivia"** — Year 12 prospective student visiting campus for the first time. | Find the Faculty of Arts building, the Library, and where her parents parked. Pin places to return to. | Built-for-Macquarie illustrated campus map with 161 named buildings — Google Maps shows roads, not which door is *18 Wally's Walk*. |
-| **"Commuter Chen"** — First-year domestic student catching the Metro from Tallawong. | Know if he's late for his 9am tutorial. Find the nearest defibrillator if a friend collapses at the gym. | Live Macquarie Uni metro countdown on the home screen + the Safety Toolkit one tap away. No other campus app surfaces both. |
-| **"International Isha"** — New PhD student from Mumbai, navigating campus in her second language. | Read the app in Hindi or English. Save the rooms her supervisor mentioned. | Full 35-language i18n (with RTL for Arabic, Farsi, Hebrew, Urdu) — most campus apps are English-only. |
-| **"Accessibility Alex"** — Low-vision student who uses a screen reader. | High-contrast map mode, no flashing animations, predictable navigation. | Reduced-motion toggle, high-contrast map mode, semantic widgets throughout, no analytics/tracking SDKs. |
-
-**Why pick MQ Navigation over Google/Apple Maps?** Google Maps stops at the street. We start at the building entrance — and we promise to never sell where you walked.
-
----
-
-## Device Compatibility
-
-| Platform | Status | Notes |
-|----------|--------|-------|
-| **Android emulator** (API 33+) | ✅ Full | All features verified. Recommended for marking. |
-| **Android physical device** | ✅ Full | Compass, flashlight, GPS, push notifications all functional. |
-| **Chrome (web)** | ✅ Core | Auth, favourites CRUD, maps, routing, transit countdown work. Compass mode and flashlight gracefully degrade — the UI displays an "unsupported on this device" fallback. |
-| **iOS Simulator** | ⚠️ Untested | Should work — repo includes no iOS-specific blockers — but not part of the assignment requirement. |
-
-If a platform-specific issue surfaces during marking, the relevant feature renders a typed `MapStateError` fallback rather than crashing.
-
----
+<br/>
 
 ## Screenshots
 
-Full walkthrough of the seven core screens lives under [`screenshots/`](screenshots/). Each capture is from the Android build at submission state.
+<div align="center">
 
-| Screen | File | What it shows |
-|--------|------|--------------|
-| Login | [`screenshots/01_login_page.png`](screenshots/01_login_page.png) | Email/password sign-in with branded MQ logo, optional "Create one" path |
-| Home | [`screenshots/02_home_page.png`](screenshots/02_home_page.png) | Welcome hero, quick-access bento grid, Open Day events, transit countdown |
-| Map | [`screenshots/03_map_page.png`](screenshots/03_map_page.png) | Dual renderer (Campus / Google Maps toggle), category chips, building markers |
-| Safety | [`screenshots/04_safety_page.png`](screenshots/04_safety_page.png) | Campus Safety Toolkit — emergency contacts, AED locations, flashlight |
-| Favourites | [`screenshots/05_favorites_page.png`](screenshots/05_favorites_page.png) | The full CRUD surface — heart-toggle, swipe-to-delete, edit-note kebab |
-| Notifications | [`screenshots/06_notifications_page.png`](screenshots/06_notifications_page.png) | Inbox with read/unread state, per-type preferences |
-| Settings | [`screenshots/07_settings_page.png`](screenshots/07_settings_page.png) | Theme, locale, commute, privacy badge, data wipe |
+| Login | Home |
+|:---:|:---:|
+| <img width="320" alt="Login" src="screenshots/01_login_page.png"/> | <img width="320" alt="Home" src="screenshots/02_home_page.png"/> |
 
----
+| Map | Safety |
+|:---:|:---:|
+| <img width="320" alt="Map" src="screenshots/03_map_page.png"/> | <img width="320" alt="Safety" src="screenshots/04_safety_page.png"/> |
 
-## System Architecture
+| Favourites | Notifications | Settings |
+|:---:|:---:|:---:|
+| <img width="240" alt="Favourites" src="screenshots/05_favorites_page.png"/> | <img width="240" alt="Notifications" src="screenshots/06_notifications_page.png"/> | <img width="240" alt="Settings" src="screenshots/07_settings_page.png"/> |
+
+</div>
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+## Key Features
+
+```text
+╔══════════════════════════════════════════════════════════════════════╗
+║  🗺  Dual-renderer maps: Google Maps + calibrated illustrated campus ║
+║  🧭  On-device compass mode with bearing-to-destination arrow        ║
+║  🛣  Turn-by-turn routing via Supabase Edge proxy → Google Routes V2 ║
+║  ❤️  Favourites CRUD: heart-toggle, edit-note, swipe-to-delete       ║
+║  🚨  Campus Safety Toolkit: 000, AEDs, first aid, shuttle, torch     ║
+║  🚆  Live Macquarie Uni metro countdown via TfNSW Open Data proxy    ║
+║  🌍  35 locales · Full RTL for ar/fa/he/ur · WCAG-aware semantics    ║
+║  🔐  Optional auth · Zero analytics · CI-enforced privacy guard      ║
+║  ⚡  323 tests · 0 analyzer issues · 8-step quality gate script      ║
+╚══════════════════════════════════════════════════════════════════════╝
+```
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+## 🏗️ Technical Architecture Overview
+
+MQ Navigation is built on a modern Flutter stack designed for offline resilience, type safety, and zero-trust privacy.
+
+### System Architecture
 
 ```mermaid
 graph TD
@@ -167,34 +167,7 @@ graph TD
     end
 ```
 
-### Project Structure
-
-```
-lib/
-├── app/           → Bootstrap, router, theme, l10n (35 ARB locales)
-├── core/          → Config, error handling, logging, networking, security
-├── shared/        → Extensions, models, widgets (MqButton, MqCard, MqInput)
-└── features/
-    ├── auth/          → Supabase Auth (login, signup, session persistence, auth gate)
-    ├── favorites/     → Building favorites CRUD (controller, repository, datasource, UI)
-    ├── home/          → Welcome dashboard, onboarding, metro countdown
-    ├── map/           → Dual-renderer, routing, compass mode, building search, favorites page
-    ├── safety/        → Safety toolkit, emergency contacts, first aid/AED
-    ├── notifications/ → FCM push, local reminders, inbox
-    ├── open_day/      → Open Day events, study interest, reminders
-    ├── settings/      → All preferences, privacy badge, data wipe, account management
-    ├── transit/       → Metro/bus/train search, commute prefs
-    ├── timetable/     → Unit and class schedule management
-    └── deep_link/     → Syllabus Sync deep link contract
-```
-
-Detailed architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-Security posture: [`docs/SECURITY_POSTURE.md`](docs/SECURITY_POSTURE.md)
-Endpoint/entity/env inventories: [`docs/`](docs/)
-
----
-
-## Tech Stack (2026)
+### Runtime Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -209,96 +182,244 @@ Endpoint/entity/env inventories: [`docs/`](docs/)
 | **i18n** | flutter_localizations + intl — 35 ARB locales, RTL for ar/fa/he/ur |
 | **Security** | flutter_secure_storage 10 (iOS Keychain / Android Keystore) |
 
----
+### Key Architectural Decisions
 
-## Getting Started
+- **Defensive bootstrap with timeouts:** `Firebase.initializeApp()` and `Supabase.initialize()` are both wrapped in `.timeout()` calls so the app cannot hang on a stalled network during cold start (root cause we hit during Release-mode testing).
+- **Silent existing-user detection:** `AuthRepository.signUp` inspects `response.user.identities` to detect when Supabase silently returns an existing-confirmed account and shows a real error instead of a misleading "Account created" banner.
+- **Renderer-aware Building actions:** `BuildingActionsSheet` distinguishes "View in Campus Map" (marker only) from "Navigate with Google Maps" (route preview auto-loaded) via a `?preview=route` query parameter.
+- **CI privacy guard:** `scripts/check.sh` refuses to compile if any analytics package (`firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events`) is added to `pubspec.yaml`.
+
+> **Deep Dive:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/SECURITY_POSTURE.md`](docs/SECURITY_POSTURE.md) · [`docs/route_matrix.md`](docs/route_matrix.md)
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+## 🔒 Privacy Posture & Hardening
+
+Privacy is a structural constraint, not a feature flag. Every line of code is audited against the **privacy-by-default** principle below.
+
+| Principle | Enforcement |
+|-----------|------------|
+| Optional account | Auth is **fully optional** — the app works at `/home` without login. Account only needed for cloud-synced favourites. |
+| Zero tracking | No analytics, telemetry, or crash reporting packages. CI guard blocks them at PR time. |
+| No location history | GPS used ephemerally — never persisted, never transmitted to any external service. |
+| Local-only preferences | Theme, locale, commute mode, and quiet hours stored via `SharedPreferences` + `FlutterSecureStorage`. |
+| Safety privacy | Emergency contacts use tap-to-dial — location is **never automatically shared**. |
+| Compass privacy | All heading calculation happens on-device. No data leaves the phone. |
+
+> **Defence-in-depth model:** [`docs/SECURITY_POSTURE.md`](docs/SECURITY_POSTURE.md) · [`docs/key_inventory.md`](docs/key_inventory.md)
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+## Who is this for?
+
+We designed MQ Navigation around four real user personas — the people we'd hand a phone to on Open Day and watch them use it.
+
+| Persona | Goals | Why this app over competitors |
+|---------|-------|------------------------------|
+| **"Open Day Olivia"** — Year 12 prospective student visiting campus for the first time. | Find the Faculty of Arts building, the Library, and where her parents parked. Pin places to return to. | Built-for-Macquarie illustrated campus map with 161 named buildings — Google Maps shows roads, not which door is *18 Wally's Walk*. |
+| **"Commuter Chen"** — First-year domestic student catching the Metro from Tallawong. | Know if he's late for his 9am tutorial. Find the nearest defibrillator if a friend collapses at the gym. | Live Macquarie Uni metro countdown on the home screen + the Safety Toolkit one tap away. No other campus app surfaces both. |
+| **"International Isha"** — New PhD student from Mumbai, navigating campus in her second language. | Read the app in Hindi or English. Save the rooms her supervisor mentioned. | Full 35-language i18n (with RTL for Arabic, Farsi, Hebrew, Urdu) — most campus apps are English-only. |
+| **"Accessibility Alex"** — Low-vision student who uses a screen reader. | High-contrast map mode, no flashing animations, predictable navigation. | Reduced-motion toggle, high-contrast map mode, semantic widgets throughout, no analytics/tracking SDKs. |
+
+**Why pick MQ Navigation over Google/Apple Maps?** Google Maps stops at the street. We start at the building entrance — and we promise to never sell where you walked.
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+## Device Compatibility
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| **Android emulator** (API 33+) | ✅ Full | All features verified. Recommended for marking. |
+| **Android physical device** | ✅ Full | Compass, flashlight, GPS, push notifications all functional. |
+| **Chrome (web)** | ✅ Core | Auth, favourites CRUD, maps, routing, transit countdown work. Compass mode and flashlight gracefully degrade — the UI displays an "unsupported on this device" fallback. |
+| **iOS device** | ✅ Full | Native build verified on iPhone (iOS 17+). Custom URL scheme `io.mqnavigation://` registered for auth callbacks. |
+| **macOS desktop** | ✅ Core | Location, auth, and dual-renderer all functional. CFBundleURLTypes registered so auth deep links return to the app. Google Maps falls back to OSM (plugin limitation). |
+
+If a platform-specific issue surfaces during marking, the relevant feature renders a typed `MapStateError` fallback rather than crashing.
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+## Repository Layout
+
+```text
+lib/
+├── app/              Bootstrap, router, theme, l10n (35 ARB locales)
+├── core/             Config, error handling, logging, networking, security
+├── shared/           Extensions, models, widgets (MqButton, MqCard, MqInput)
+└── features/
+    ├── auth/         Supabase Auth (login, signup, session persistence, gate)
+    ├── favorites/    Building favourites CRUD (controller, repo, datasource, UI)
+    ├── home/         Welcome dashboard, onboarding, metro countdown
+    ├── map/          Dual-renderer, routing, compass mode, search, favourites
+    ├── safety/       Safety toolkit, emergency contacts, first aid / AED
+    ├── notifications/ FCM push, local reminders, inbox
+    ├── open_day/     Open Day events, study interest, reminders
+    ├── settings/     Preferences, privacy badge, data wipe, account management
+    ├── transit/      Metro/bus/train search, commute prefs
+    ├── timetable/    Unit and class schedule management
+    └── deep_link/    Syllabus Sync deep link contract
+
+test/                 323 widget & unit tests (Vitest-equivalent suite)
+supabase/             Edge Functions (maps-routes, tfnsw-proxy)
+docs/                 9 reference documents (architecture, security, inventories)
+screenshots/          7 screen captures used in this README
+scripts/              run.sh, check.sh (quality gate)
+```
+
+> **Full Inventory:** [`docs/map_inventory.md`](docs/map_inventory.md) · [`docs/endpoint_inventory.md`](docs/endpoint_inventory.md) · [`docs/entity_inventory.md`](docs/entity_inventory.md)
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+## Quick Start
 
 ### Prerequisites
-- Flutter 3.11+ ([install guide](https://docs.flutter.dev/get-started/install))
+- Flutter `3.11+` ([install guide](https://docs.flutter.dev/get-started/install))
 - Android SDK / Xcode (for device builds)
-- A Supabase project with the [maps-routes Edge Function](supabase/functions/maps-routes/)
+- A Supabase project with the [`maps-routes`](supabase/functions/maps-routes/) Edge Function
 
 ### Setup
-
 ```bash
-# 1. Clone the repository
+# Clone and install
 git clone <repo-url>
 cd mq_navigation
-
-# 2. Copy the environment template
-cp .env.example .env
-
-# 3. Edit .env with your Supabase + Google Maps credentials
-#    See env_inventory.md for the full variable list
-
-# 4. Install dependencies
 flutter pub get
 
-# 5. Generate localisations
+# Configure environment
+cp .env.example .env
+# Edit .env with your Supabase + Google Maps credentials
+# (see docs/env_inventory.md for the full variable list)
+
+# Generate localisations
 flutter gen-l10n
 
-# 6. Run the app (iOS/Android)
-./scripts/run.sh
-
-# Or directly:
+# Run the app
 flutter run --dart-define-from-file=.env
+# Or via convenience script:
+./scripts/run.sh
 ```
 
-### Quick Validation
-
+### Quality Assurance
 ```bash
-# Run the full quality gate
-./scripts/check.sh --quick
-
-# Or with auto-format + verbose output
-./scripts/check.sh --fix --verbose
-```
-
----
-
-## Quality Gate
-
-Contributions must pass the automated check suite:
-
-```bash
-./scripts/check.sh              # 9 steps (includes debug APK build)
-./scripts/check.sh --quick      # 8 steps (skips build)
-./scripts/check.sh --fix        # auto-format instead of read-only check
-./scripts/check.sh --verbose    # stream command logs to terminal
+./scripts/check.sh             # 9 steps (includes debug APK build)
+./scripts/check.sh --quick     # 8 steps (skips build)
+./scripts/check.sh --fix       # auto-format instead of read-only check
+./scripts/check.sh --verbose   # stream command logs to terminal
 ```
 
 | Step | What it enforces |
 |------|-----------------|
 | `flutter pub get` | Valid dependency resolution |
 | `dart format` | Code formatting (`lib/`, `test/`, `scripts/`, `integration_test/`) |
-| `flutter analyze` | Static analysis with hardened lint rules |
-| `flutter test` | **323** tests — 100% pass required |
+| `flutter analyze` | Static analysis with hardened lint rules — **0 issues required** |
+| `flutter test` | **323 tests** — 100% pass required |
 | `flutter gen-l10n` | Localisation generation (35 locales) |
 | Untranslated check | `.dart_tool/untranslated.json` — new keys tracked as non-blocking |
 | **Privacy guard** | **Blocks** `firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events` |
 | **Secret scan** | Flags hardcoded API keys (`sk-*`, `AIza*`) in `lib/` `test/` `scripts/` |
 | `flutter build apk --debug` | Android APK compiles (skipped with `--quick`) |
 
----
+<br/>
 
-## Documentation
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
 
-| File | What it covers |
-|------|---------------|
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Full technical architecture, feature modules, routing, data flow |
-| [`docs/SECURITY_POSTURE.md`](docs/SECURITY_POSTURE.md) | Security model, privacy-by-design, CI/CD security |
-| [`docs/endpoint_inventory.md`](docs/endpoint_inventory.md) | API routes, Edge Functions, web-only endpoints |
-| [`docs/entity_inventory.md`](docs/entity_inventory.md) | Shared Supabase schema |
-| [`docs/env_inventory.md`](docs/env_inventory.md) | Environment variable reference |
-| [`docs/key_inventory.md`](docs/key_inventory.md) | API keys and service accounts |
-| [`docs/map_inventory.md`](docs/map_inventory.md) | Building registry, overlays, renderer specifications |
-| [`docs/notification_matrix.md`](docs/notification_matrix.md) | Notification types and delivery channels |
-| [`docs/route_matrix.md`](docs/route_matrix.md) | GoRouter route table and deep link mapping |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contributing guidelines |
-| [`AGENT.md`](AGENT.md) | Agent rules and change log |
+<br/>
 
----
+## Documentation Map
 
-## License
+| Document | Path |
+|----------|------|
+| Project Report (essay) | [`PROJECT_REPORT.md`](PROJECT_REPORT.md) |
+| Architecture | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Security Posture | [`docs/SECURITY_POSTURE.md`](docs/SECURITY_POSTURE.md) |
+| Endpoint Inventory | [`docs/endpoint_inventory.md`](docs/endpoint_inventory.md) |
+| Entity Inventory | [`docs/entity_inventory.md`](docs/entity_inventory.md) |
+| Environment Variables | [`docs/env_inventory.md`](docs/env_inventory.md) |
+| API Keys & Service Accounts | [`docs/key_inventory.md`](docs/key_inventory.md) |
+| Map Inventory | [`docs/map_inventory.md`](docs/map_inventory.md) |
+| Notification Matrix | [`docs/notification_matrix.md`](docs/notification_matrix.md) |
+| Route Matrix | [`docs/route_matrix.md`](docs/route_matrix.md) |
+| Contributing | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| Agent Rules & Changelog | [`AGENT.md`](AGENT.md) |
 
-Licensed under the MIT License. See [LICENSE](LICENSE) for details.
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+## 🎯 Project Governance
+
+### License
+Released under the **MIT License**. See [`LICENSE`](LICENSE).
+
+### Roadmap & Priorities
+- **P0:** Open Day 2026 demo readiness (DONE).
+- **P1:** Hosted HTTPS callback page so the email-confirmation flow works on desktop browsers without the app installed.
+- **P1:** Translator pass on the remaining 26 locales' auth strings.
+- **P2:** Universal Links / App Links for first-class deep linking.
+- **P2:** Voice-guided turn-by-turn for accessibility.
+
+### Maintainers
+
+| Name | Role |
+|------|------|
+| Pouya Alavi Naeini | Lead — architecture, mapping engine, infrastructure |
+| Mohammad Raouf Abedini | Co-maintainer — security, backend, Supabase Edge Functions |
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0f172a,30:a6192e,60:fbbf24,100:0f172a&height=2" width="100%"/>
+
+<br/>
+
+## Acknowledgements
+
+Built with the support of the open-source community. This project benefits from:
+
+- [Flutter](https://flutter.dev/) — Cross-platform UI toolkit.
+- [Supabase](https://supabase.com/) — Open-source backend with Row-Level Security.
+- [OpenStreetMap](https://www.openstreetmap.org/) — Map tile provider for the Campus Map fallback renderer.
+- [TfNSW Open Data](https://opendata.transport.nsw.gov.au/) — Live metro departures.
+
+<br/>
+
+<div align="center">
+
+### `> ping --authors`
+
+```text
+> Authors    : Pouya Alavi Naeini — Software Engineer | Mohammad Raouf Abedini — Back-End Developer
+> University : Macquarie University, Sydney, NSW
+> Unit       : COMP3130 Mobile App Development — Major Project (50%)
+> Submission : [●] READY — 323 tests passing · 0 analyzer issues
+```
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-a6192e?style=for-the-badge&logo=linkedin&logoColor=ffffff&labelColor=0f172a)](https://www.linkedin.com/in/pouya-alavi/)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-fbbf24?style=for-the-badge&logo=github&logoColor=ffffff&labelColor=0f172a)](https://github.com/mrpouyaalavi)
+[![Email](https://img.shields.io/badge/Email-Contact-f59e0b?style=for-the-badge&logo=gmail&logoColor=09090b&labelColor=0f172a)](mailto:pouya@pouyaalavi.dev)
+
+<br/>
+
+*MQ Navigation is an independent open-source student project and is not officially affiliated with Macquarie University.*
+
+</div>
