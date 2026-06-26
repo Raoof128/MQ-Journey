@@ -54,10 +54,26 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
           ),
         ).timeout(const Duration(seconds: 10));
         AppLogger.info('Supabase asynchronously initialised');
+
+        // Silently mint an anonymous session so all RLS-gated features
+        // (favourites, FCM tokens, notifications) work without login.
+        final auth = Supabase.instance.client.auth;
+        if (auth.currentSession == null) {
+          try {
+            await auth.signInAnonymously().timeout(const Duration(seconds: 8));
+            AppLogger.info('Anonymous session established on launch');
+          } on Exception catch (e, st) {
+            AppLogger.warning(
+              'Anonymous sign-in failed; writes will retry on first use',
+              e,
+              st,
+            );
+          }
+        }
       } catch (error, stackTrace) {
         AppLogger.warning(
           'Supabase initialisation stalled in background — proceeding without cached session. '
-          'User will be redirected to login if not authenticated.',
+          'Running in limited offline mode.',
           error,
           stackTrace,
         );

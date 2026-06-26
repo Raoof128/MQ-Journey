@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mq_journey/core/network/session_guard.dart';
 import 'package:mq_journey/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:mq_journey/features/favorites/data/datasources/favorite_building_source.dart';
 import 'package:mq_journey/features/favorites/data/repositories/favorite_building_repository.dart';
@@ -79,6 +80,7 @@ class FavoritesController extends Notifier<FavoritesState> {
     required String buildingId,
     required String buildingName,
   }) async {
+    if (!await ensureSessionBeforeWrite()) return;
     final userId = _userId;
     if (userId == null) return;
 
