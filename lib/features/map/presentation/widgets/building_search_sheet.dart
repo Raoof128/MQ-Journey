@@ -1,20 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
-import 'package:mq_navigation/app/theme/mq_animations.dart';
 import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
 import 'package:mq_navigation/core/utils/haptics.dart';
-import 'package:mq_navigation/features/map/data/datasources/places_search_source.dart';
 import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/domain/services/building_search.dart';
 import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
 import 'package:mq_navigation/features/favorites/presentation/widgets/favorite_button.dart';
 import 'package:mq_navigation/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:mq_navigation/shared/extensions/context_extensions.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class BuildingSearchSheet extends ConsumerStatefulWidget {
   const BuildingSearchSheet({super.key});
@@ -26,11 +20,7 @@ class BuildingSearchSheet extends ConsumerStatefulWidget {
 
 class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
   late final TextEditingController _controller;
-  Timer? _placesDebounce;
-  List<PlaceSuggestion> _placeSuggestions = const [];
-  bool _isLoadingPlaces = false;
   late final FocusNode _searchFocusNode;
-  int _placesRequestVersion = 0;
 
   @override
   void initState() {
@@ -43,7 +33,6 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
 
   @override
   void dispose() {
-    _placesDebounce?.cancel();
     _searchFocusNode.dispose();
     _controller.dispose();
     super.dispose();
@@ -51,87 +40,6 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
 
   void _onSearchChanged(String value) {
     ref.read(mapControllerProvider.notifier).updateSearchQuery(value);
-    _schedulePlacesSearch(value);
-  }
-
-  void _schedulePlacesSearch(String query) {
-    _placesDebounce?.cancel();
-
-    if (query.trim().length < 3) {
-      _placesRequestVersion += 1;
-      setState(() {
-        _placeSuggestions = const [];
-        _isLoadingPlaces = false;
-      });
-      return;
-    }
-
-    _placesDebounce = Timer(MqAnimations.adaptive(MqAnimations.slow, ref), () {
-      final requestId = ++_placesRequestVersion;
-      _fetchPlaceSuggestions(query, requestId);
-    });
-  }
-
-  Future<void> _fetchPlaceSuggestions(String query, int requestId) async {
-    final lowDataMode =
-        ref.read(settingsControllerProvider).value?.lowDataMode ?? false;
-
-    if (lowDataMode) {
-      return;
-    }
-
-    final state = ref.read(mapControllerProvider).value;
-    final results = state?.searchResults ?? const <Building>[];
-    final normalized = normalizeMapSearch(query);
-
-    final hasStrongMatch = results.any(
-      (building) => isStrongCampusMatch(building, normalized),
-    );
-    if (hasStrongMatch) {
-      if (requestId != _placesRequestVersion || !mounted) {
-        return;
-      }
-      setState(() {
-        _placeSuggestions = const [];
-        _isLoadingPlaces = false;
-      });
-      return;
-    }
-
-    setState(() => _isLoadingPlaces = true);
-
-    final location = state?.currentLocation;
-    final suggestions = await ref
-        .read(placesSearchSourceProvider)
-        .search(
-          query,
-          latitude: location?.latitude,
-          longitude: location?.longitude,
-        );
-
-    if (!mounted ||
-        requestId != _placesRequestVersion ||
-        normalizeMapSearch(_controller.text) != normalized) {
-      return;
-    }
-
-    setState(() {
-      _placeSuggestions = suggestions;
-      _isLoadingPlaces = false;
-    });
-  }
-
-  void _onPlaceTapped(PlaceSuggestion suggestion) {
-    final haptics =
-        ref.read(settingsControllerProvider).value?.hapticsEnabled ?? true;
-    MqHaptics.selection(haptics);
-    _searchFocusNode.unfocus();
-    Navigator.of(context).pop();
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1'
-      '&query=${Uri.encodeComponent(suggestion.description)}',
-    );
-    launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -141,12 +49,6 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
     final state = ref.watch(mapControllerProvider).value;
     final results = state?.searchResults ?? const <Building>[];
     final query = _controller.text.trim();
-    final lowDataMode =
-        ref.watch(settingsControllerProvider).value?.lowDataMode ?? false;
-    final showPlacesSection =
-        !lowDataMode &&
-        query.length >= 3 &&
-        (_placeSuggestions.isNotEmpty || _isLoadingPlaces);
 
     return DraggableScrollableSheet(
       expand: false,
@@ -219,7 +121,7 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
                   },
                 ),
               ),
-              if (results.isEmpty && query.isNotEmpty && !_isLoadingPlaces)
+              if (results.isEmpty && query.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: MqSpacing.space8,
@@ -233,66 +135,6 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
                     ),
                   ),
                 ),
-              if (showPlacesSection) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: MqSpacing.space3,
-                  ),
-                  child: Divider(
-                    color: isDark ? MqColors.charcoal600 : MqColors.sand300,
-                    height: 1,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(
-                    start: MqSpacing.space4,
-                    bottom: MqSpacing.space2,
-                    top: MqSpacing.space1,
-                  ),
-                  child: Text(
-                    l10n.nearbyPlaces,
-                    style: context.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : MqColors.contentSecondary,
-                    ),
-                  ),
-                ),
-                if (_isLoadingPlaces)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: MqSpacing.space4),
-                    child: Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                  )
-                else
-                  ..._placeSuggestions.map(
-                    (suggestion) => ListTile(
-                      leading: Icon(
-                        Icons.place,
-                        color: isDark ? Colors.white : MqColors.contentTertiary,
-                      ),
-                      title: Text(
-                        suggestion.description,
-                        style: TextStyle(
-                          color: isDark
-                              ? Colors.white
-                              : MqColors.contentPrimary,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      minVerticalPadding: MqSpacing.space2,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: MqSpacing.space4,
-                      ),
-                      onTap: () => _onPlaceTapped(suggestion),
-                    ),
-                  ),
-              ],
             ],
           ),
         );
