@@ -76,7 +76,7 @@ void main() {
     test('returns "already registered" when Supabase silently returns '
         'an existing-confirmed user (empty identities list)', () async {
       // Reproduces the silent-existing-user bug we caught comparing
-      // MQ Navigation against the working Syllabus Sync signup. When
+      // MQ Journey against the working Syllabus Sync signup. When
       // a confirmed email is re-submitted to `supabase_flutter.signUp`,
       // it returns a non-null `User` whose `identities` list is empty
       // and sends NO confirmation email. The repository must detect
