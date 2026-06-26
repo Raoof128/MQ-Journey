@@ -7,57 +7,33 @@ import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
 import 'package:mq_navigation/features/map/data/datasources/building_registry_source.dart';
 import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
-import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
 import 'package:mq_navigation/features/open_day/domain/entities/open_day_data.dart';
 import 'package:mq_navigation/shared/extensions/context_extensions.dart';
 import 'package:mq_navigation/shared/widgets/mq_bottom_sheet.dart';
 
-/// Bottom sheet shown when the user taps the direction icon on an event.
-///
-/// Two actions, both routing **through the in-app Navigation tab** —
-/// they differ only in which renderer the user lands inside:
-///   1. **View in Campus Map** → Navigation tab + Campus Map renderer,
-///      single-marker focused state on the venue.
-///   2. **Navigate with Google Maps** → Navigation tab + Google Maps
-///      renderer, single-marker focused state on the venue. The
-///      embedded Google Maps view supports gesture-based zoom/pan and
-///      uses the user's current location for spatial context, while
-///      keeping the user *inside* MQ Navigation rather than booting
-///      out to the OS-level Maps app.
-///
-/// Implementation note: both actions perform two side effects in
-/// sequence — `mapController.setRenderer(...)` then
-/// `goNamed(buildingDetail, …)`. The order matters: setting the
-/// renderer first means the destination page builds in the right mode
-/// from frame zero (no flash of the wrong renderer).
 class EventActionsSheet extends ConsumerWidget {
   const EventActionsSheet({super.key, required this.event});
 
   final OpenDayEvent event;
 
   static Future<void> show(BuildContext context, OpenDayEvent event) async {
-    final renderer = await showModalBottomSheet<MapRendererType>(
+    await showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) => EventActionsSheet(event: event),
     );
 
-    if (renderer != null && context.mounted) {
+    if (context.mounted) {
       final container = ProviderScope.containerOf(context);
-      container.read(mapControllerProvider.notifier).setRenderer(renderer);
-
       final buildings = container.read(buildingRegistryProvider).value;
       final resolved = _resolveBuilding(buildings, event.buildingCode);
       final targetBuildingId = resolved?.id ?? event.buildingCode!;
 
-      final isGoogleNavigation = renderer == MapRendererType.google;
       context.goNamed(
         RouteNames.map,
         queryParameters: {
           'building': targetBuildingId,
-          if (isGoogleNavigation) 'preview': 'route',
         },
       );
     }
@@ -110,9 +86,6 @@ class EventActionsSheet extends ConsumerWidget {
                 ),
               ),
             ),
-            // Both actions are gated on a resolved building — without
-            // a known buildingCode there's nothing to focus, so the
-            // sheet never offers a broken action.
             if (hasResolvedBuilding) ...[
               Semantics(
                 button: true,
@@ -129,27 +102,7 @@ class EventActionsSheet extends ConsumerWidget {
                     ),
                   ),
                   subtitle: Text(l10n.openDay_openInsideMqNav),
-                  onTap: () => Navigator.pop(context, MapRendererType.campus),
-                ),
-              ),
-              Semantics(
-                button: true,
-                label: l10n.openDay_navigateWithGoogleSemantic(event.venueName),
-                child: ListTile(
-                  leading: Icon(
-                    Icons.navigation_rounded,
-                    color: dark
-                        ? Colors.white.withValues(alpha: 0.85)
-                        : MqColors.contentPrimary,
-                  ),
-                  title: Text(
-                    l10n.openDay_navigateWithGoogle,
-                    style: context.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  subtitle: Text(l10n.openDay_openGoogleMapsInsideNav),
-                  onTap: () => Navigator.pop(context, MapRendererType.google),
+                  onTap: () => Navigator.pop(context),
                 ),
               ),
             ] else

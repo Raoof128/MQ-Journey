@@ -9,7 +9,6 @@ import 'package:mq_navigation/app/theme/mq_spacing.dart';
 import 'package:mq_navigation/core/utils/haptics.dart';
 import 'package:mq_navigation/features/map/data/datasources/places_search_source.dart';
 import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/services/building_search.dart';
 import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
 import 'package:mq_navigation/features/favorites/presentation/widgets/favorite_button.dart';
@@ -17,12 +16,6 @@ import 'package:mq_navigation/features/settings/presentation/controllers/setting
 import 'package:mq_navigation/shared/extensions/context_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Draggable bottom sheet for finding campus buildings or nearby places.
-///
-/// Combines a local fuzzy-search of the campus building registry with a
-/// debounced remote call to Google Places. When the user selects a remote place,
-/// the app automatically switches to the Google Maps renderer and deep-links
-/// out for directions, as campus data doesn't cover off-campus spots.
 class BuildingSearchSheet extends ConsumerStatefulWidget {
   const BuildingSearchSheet({super.key});
 
@@ -83,7 +76,6 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
     final lowDataMode =
         ref.read(settingsControllerProvider).value?.lowDataMode ?? false;
 
-    // Low Data Guard: skip calling maps-places Edge Function entirely
     if (lowDataMode) {
       return;
     }
@@ -92,7 +84,6 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
     final results = state?.searchResults ?? const <Building>[];
     final normalized = normalizeMapSearch(query);
 
-    // Only fetch Places suggestions when campus search has no strong matches.
     final hasStrongMatch = results.any(
       (building) => isStrongCampusMatch(building, normalized),
     );
@@ -135,12 +126,7 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
         ref.read(settingsControllerProvider).value?.hapticsEnabled ?? true;
     MqHaptics.selection(haptics);
     _searchFocusNode.unfocus();
-    final controller = ref.read(mapControllerProvider.notifier);
-    controller.setRenderer(MapRendererType.google);
     Navigator.of(context).pop();
-    // Launch Google Maps directions to the place via deep-link.
-    // We don't have GPS coordinates for the place, so use the place
-    // description as a search query in Google Maps.
     final uri = Uri.parse(
       'https://www.google.com/maps/search/?api=1'
       '&query=${Uri.encodeComponent(suggestion.description)}',

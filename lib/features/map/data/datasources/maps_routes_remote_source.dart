@@ -5,20 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:mq_navigation/core/config/env_config.dart';
 import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Calls the `maps-routes` Supabase Edge Function to compute a route.
-///
-/// This architecture keeps the Google Maps/Routes billing API keys strictly
-/// server-side. The mobile app never sees the real Google Routes API key.
-///
-/// Authentication is optional by design — the app has no login requirement
-/// (see AGENT.md: "No auth: App starts directly at /home"). Unauthenticated
-/// requests are rate-limited by client IP (60 req / 60 s); authenticated
-/// requests are rate-limited by user ID. If app-level auth is introduced
-/// later, the Bearer token path below already supports it.
 class MapsRoutesRemoteSource {
   const MapsRoutesRemoteSource({
     http.Client? httpClient,
@@ -35,7 +24,6 @@ class MapsRoutesRemoteSource {
       '${EnvConfig.supabaseUrl}/functions/v1/maps-routes';
 
   Future<MapRoute> getRoute({
-    required MapRendererType renderer,
     required LocationSample origin,
     required Building destination,
     required TravelMode travelMode,
@@ -59,7 +47,6 @@ class MapsRoutesRemoteSource {
     };
 
     final body = {
-      'renderer': renderer.name,
       'origin': {'lat': origin.latitude, 'lng': origin.longitude},
       'destination': {
         'id': destination.id,

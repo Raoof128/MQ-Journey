@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mq_navigation/features/map/data/datasources/location_source.dart';
 import 'package:mq_navigation/features/map/data/repositories/map_repository_impl.dart';
 import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/nav_instruction.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
@@ -29,34 +28,27 @@ void main() {
       'category': 'services',
     });
 
-    test(
-      'defaults to campus renderer and preserves selection when switching',
-      () async {
-        final repository = _FakeMapRepository(buildings: [building]);
-        final container = ProviderContainer(
-          overrides: [
-            mapRepositoryProvider.overrideWithValue(repository),
-            settingsControllerProvider.overrideWith(
-              () => _FakeSettingsController(),
-            ),
-          ],
-        );
-        addTearDown(container.dispose);
+    test('preserves selection when route loads', () async {
+      final repository = _FakeMapRepository(buildings: [building]);
+      final container = ProviderContainer(
+        overrides: [
+          mapRepositoryProvider.overrideWithValue(repository),
+          settingsControllerProvider.overrideWith(
+            () => _FakeSettingsController(),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
 
-        final initialState = await container.read(mapControllerProvider.future);
-        expect(initialState.renderer, MapRendererType.campus);
+      await container.read(mapControllerProvider.future);
+      final notifier = container.read(mapControllerProvider.notifier);
+      notifier.selectBuilding(building);
 
-        final notifier = container.read(mapControllerProvider.notifier);
-        notifier.selectBuilding(building);
-        notifier.setRenderer(MapRendererType.google);
+      final state = container.read(mapControllerProvider).value!;
+      expect(state.selectedBuilding, building);
+    });
 
-        final state = container.read(mapControllerProvider).value!;
-        expect(state.renderer, MapRendererType.google);
-        expect(state.selectedBuilding, building);
-      },
-    );
-
-    test('passes active renderer through route loading', () async {
+    test('loads route and tracks navigation state', () async {
       final repository = _FakeMapRepository(buildings: [building]);
       final container = ProviderContainer(
         overrides: [
@@ -72,15 +64,9 @@ void main() {
       final notifier = container.read(mapControllerProvider.notifier);
 
       notifier.selectBuilding(building);
-      notifier.setRenderer(MapRendererType.google);
       await notifier.loadRoute();
 
-      expect(repository.lastRenderer, MapRendererType.google);
-      // loadRoute() no longer auto-starts navigation; explicit startNavigation() required.
-      expect(
-        container.read(mapControllerProvider).value!.isNavigating,
-        isFalse,
-      );
+      expect(container.read(mapControllerProvider).value!.isNavigating, isFalse);
 
       notifier.startNavigation();
       expect(container.read(mapControllerProvider).value!.isNavigating, isTrue);
@@ -106,7 +92,7 @@ void main() {
       expect(driveState.travelMode, TravelMode.walk);
     });
 
-    test('forces walk mode when switching back to campus renderer', () async {
+    test('forces walk mode when switching to campus', () async {
       final repository = _FakeMapRepository(buildings: [building]);
       final container = ProviderContainer(
         overrides: [
@@ -121,12 +107,9 @@ void main() {
       await container.read(mapControllerProvider.future);
       final notifier = container.read(mapControllerProvider.notifier);
 
-      notifier.setRenderer(MapRendererType.google);
       await notifier.setTravelMode(TravelMode.transit);
-      notifier.setRenderer(MapRendererType.campus);
 
       final state = container.read(mapControllerProvider).value!;
-      expect(state.renderer, MapRendererType.campus);
       expect(state.travelMode, TravelMode.walk);
     });
 
@@ -251,9 +234,6 @@ void main() {
         );
         addTearDown(container.dispose);
 
-        // Build() now calls ensureLocationPermission + getCurrentLocation during
-        // init. Complete the pending ones for build(), then set new ones for
-        // centerOnCurrentLocation to test async preservation.
         permissionCompleter.complete(LocationPermissionState.granted);
         locationCompleter.complete(
           const LocationSample(
@@ -272,8 +252,6 @@ void main() {
 
         final centerFuture = notifier.centerOnCurrentLocation();
 
-        // While locate-me is waiting on async permission/location, user selects
-        // another building. The locate-me completion must not roll state back.
         notifier.selectBuilding(secondBuilding);
 
         permissionCompleter2.complete(LocationPermissionState.granted);
@@ -373,10 +351,6 @@ void main() {
     test(
       'clearSelection from focused-with-query state preserves the query (back-to-list)',
       () async {
-        // Repro of the focused → list back behavior: when a user is in
-        // category browse mode AND has drilled into a specific
-        // building, tapping close on the RoutePanel should return to
-        // the category list — not wipe everything.
         final repository = _FakeMapRepository(
           buildings: [building, secondBuilding],
         );
@@ -414,8 +388,6 @@ void main() {
     test(
       'clearCategoryBrowse fully resets even when a query is active',
       () async {
-        // The X button on the category list panel uses this method to
-        // exit category browse entirely — distinct from clearSelection.
         final repository = _FakeMapRepository(buildings: [building]);
         final container = ProviderContainer(
           overrides: [
@@ -489,7 +461,6 @@ class _FakeMapRepository implements MapRepository {
   final LocationPermissionState permissionState;
   final LocationSample? currentLocation;
   final Stream<LocationSample> _locationStream;
-  MapRendererType? lastRenderer;
   Completer<MapRoute>? pendingRouteCompleter;
   Completer<LocationPermissionState>? pendingPermissionCompleter;
   Completer<LocationSample?>? pendingLocationCompleter;
@@ -528,13 +499,11 @@ class _FakeMapRepository implements MapRepository {
 
   @override
   Future<MapRoute> getRoute({
-    required MapRendererType renderer,
     required LocationSample origin,
     required Building destination,
     required TravelMode travelMode,
   }) async {
     routeCallCount += 1;
-    lastRenderer = renderer;
     final pending = pendingRouteCompleter;
     if (pending != null) {
       pendingRouteCompleter = null;

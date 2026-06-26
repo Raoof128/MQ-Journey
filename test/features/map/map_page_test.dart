@@ -8,7 +8,6 @@ import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
 import 'package:mq_navigation/app/router/route_names.dart';
 import 'package:mq_navigation/features/map/data/repositories/map_repository_impl.dart';
 import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/features/map/presentation/pages/map_page.dart';
 import 'package:mq_navigation/features/map/data/datasources/location_source.dart';
@@ -18,8 +17,7 @@ import 'package:mq_navigation/shared/models/user_preferences.dart';
 
 class _FakeSettingsController extends SettingsController {
   @override
-  Future<UserPreferences> build() async =>
-      const UserPreferences(defaultRenderer: MapRendererType.campus);
+  Future<UserPreferences> build() async => const UserPreferences();
 }
 
 class _FakeMapRepository implements MapRepository {
@@ -50,7 +48,6 @@ class _FakeMapRepository implements MapRepository {
 
   @override
   Future<MapRoute> getRoute({
-    required MapRendererType renderer,
     required LocationSample origin,
     required Building destination,
     required TravelMode travelMode,
@@ -144,12 +141,10 @@ void main() {
       final element = tester.element(find.byType(MapPage));
       final container = ProviderScope.containerOf(element);
 
-      // Navigate to meet coordinates
       router.go('/map?lat=-33.77380&lng=151.11260');
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
-      // Expect a meet point building to be selected
       final selected = container
           .read(mapControllerProvider)
           .value!
@@ -159,10 +154,8 @@ void main() {
       expect(selected.latitude, equals(-33.77380));
       expect(selected.longitude, equals(151.11260));
 
-      // Route path should remain /map (with query params) rather than pushing buildingDetail path
       expect(router.routeInformationProvider.value.uri.path, equals('/map'));
 
-      // Re-trigger pump to ensure post-frame callback back-navigation detector does not clear it
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
       expect(
@@ -210,12 +203,10 @@ void main() {
     final element = tester.element(find.byType(MapPage));
     final container = ProviderScope.containerOf(element);
 
-    // Navigate to select building via query param
     router.go('/map?building=BLD-A');
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Expect Building A to be selected
     final selected = container
         .read(mapControllerProvider)
         .value!
@@ -224,11 +215,8 @@ void main() {
     expect(selected!.id, equals('BLD-A'));
     expect(selected.code, equals('BLDA'));
 
-    // Route path should remain /map (with query params) rather than pushing buildingDetail path
     expect(router.routeInformationProvider.value.uri.path, equals('/map'));
 
-    // Verify selection is preserved after re-pump (post-frame back-navigation
-    // detector should not clear it because building query param is present)
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     expect(
@@ -238,7 +226,7 @@ void main() {
   });
 
   testWidgets(
-    'MapPage selects building and loads route preview when preview=route query param is set',
+    'MapPage selects building from query param',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(1400, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -251,7 +239,6 @@ void main() {
             name: RouteNames.map,
             builder: (context, state) => MapPage(
               initialBuildingId: state.uri.queryParameters['building'],
-              autoPreviewRoute: state.uri.queryParameters['preview'] == 'route',
               initialSearchQuery: state.uri.queryParameters['q'],
               meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
               meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
@@ -267,21 +254,18 @@ void main() {
       final element = tester.element(find.byType(MapPage));
       final container = ProviderScope.containerOf(element);
 
-      // Navigate to select building and start navigation via query param
-      router.go('/map?building=BLD-A&preview=route');
+      router.go('/map?building=BLD-A');
       await tester.pump();
-      // Wait for the async post-frame callback (loadRoute)
       await tester.pump(const Duration(milliseconds: 200));
 
       final mapState = container.read(mapControllerProvider).value!;
       expect(mapState.selectedBuilding?.id, equals('BLD-A'));
-      expect(mapState.route, isNotNull);
       expect(mapState.isNavigating, isFalse);
     },
   );
 
   testWidgets(
-    'MapPage loads route preview on building already selected when preview=route is set',
+    'MapPage keeps building selected on re-navigation',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(1400, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -294,7 +278,6 @@ void main() {
             name: RouteNames.map,
             builder: (context, state) => MapPage(
               initialBuildingId: state.uri.queryParameters['building'],
-              autoPreviewRoute: state.uri.queryParameters['preview'] == 'route',
               initialSearchQuery: state.uri.queryParameters['q'],
               meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
               meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
@@ -310,7 +293,6 @@ void main() {
       final element = tester.element(find.byType(MapPage));
       final container = ProviderScope.containerOf(element);
 
-      // First navigate to select the building without previewing the route
       router.go('/map?building=BLD-A');
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
@@ -320,15 +302,12 @@ void main() {
       expect(mapState.route, isNull);
       expect(mapState.isNavigating, isFalse);
 
-      // Now navigate with preview=route on the already selected building
-      router.go('/map?building=BLD-A&preview=route');
+      router.go('/map?building=BLD-A');
       await tester.pump();
-      // Wait for the async post-frame callback to trigger loadRoute
       await tester.pump(const Duration(milliseconds: 200));
 
       mapState = container.read(mapControllerProvider).value!;
       expect(mapState.selectedBuilding?.id, equals('BLD-A'));
-      expect(mapState.route, isNotNull);
       expect(mapState.isNavigating, isFalse);
     },
   );

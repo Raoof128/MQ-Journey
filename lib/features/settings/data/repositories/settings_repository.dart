@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mq_navigation/core/logging/app_logger.dart';
 import 'package:mq_navigation/core/security/secure_storage_service.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/shared/models/user_preferences.dart';
 
 const _themeModeKey = 'settings.theme_mode';
 const _localeCodeKey = 'settings.locale_code';
 const _notificationsEnabledKey = 'settings.notifications_enabled';
-const _defaultRendererKey = 'settings.default_renderer';
 const _defaultTravelModeKey = 'settings.default_travel_mode';
 const _lowDataModeKey = 'settings.low_data_mode';
 const _reducedMotionKey = 'settings.reduced_motion';
@@ -29,18 +27,6 @@ const _openDayRemindersEnabledKey = 'settings.open_day.reminders_enabled';
 const _openDayReminderMinutesKey = 'settings.open_day.reminder_minutes';
 const _hasCompletedOnboardingKey = 'settings.has_completed_onboarding';
 
-/// Data source for persisting and retrieving user settings.
-///
-/// **Architectural note — settings are device-local by design.**
-/// Every key in this repository is a per-device UX preference (theme,
-/// language, haptics, low-data, quiet hours, commute setup, etc.).
-/// None of them carry cross-device value, so they are persisted via
-/// `flutter_secure_storage` (Keychain on iOS, EncryptedSharedPreferences
-/// on Android) — *not* Supabase. Supabase coupling is reserved for
-/// features that genuinely require server-backed state.
-///
-/// Fails safely on read by returning defaults, but throws on write so
-/// the UI controller can show an error and revert any optimistic updates.
 abstract interface class SettingsRepository {
   Future<UserPreferences> loadPreferences();
   Future<UserPreferences> savePreferences(UserPreferences preferences);
@@ -66,7 +52,6 @@ class LocalSettingsRepository implements SettingsRepository {
       final notificationsEnabled = await _storage.read(
         _notificationsEnabledKey,
       );
-      final defaultRendererString = await _storage.read(_defaultRendererKey);
       final defaultTravelModeString = await _storage.read(
         _defaultTravelModeKey,
       );
@@ -101,11 +86,6 @@ class LocalSettingsRepository implements SettingsRepository {
         orElse: () => ThemeMode.system,
       );
 
-      final defaultRenderer = MapRendererType.values.firstWhere(
-        (m) => m.name == defaultRendererString,
-        orElse: () => MapRendererType.campus,
-      );
-
       final defaultTravelMode = TravelMode.values.firstWhere(
         (m) => m.name == defaultTravelModeString,
         orElse: () => TravelMode.walk,
@@ -116,7 +96,6 @@ class LocalSettingsRepository implements SettingsRepository {
         themeMode: localThemeMode,
         localeCode: localeCode,
         notificationsEnabled: notificationsEnabled != 'false',
-        defaultRenderer: defaultRenderer,
         defaultTravelMode: defaultTravelMode,
         lowDataMode: lowDataMode == 'true',
         reducedMotion: reducedMotion == 'true',
@@ -158,10 +137,6 @@ class LocalSettingsRepository implements SettingsRepository {
         preferences.notificationsEnabled.toString(),
       );
       await _storage.write(
-        _defaultRendererKey,
-        preferences.defaultRenderer.name,
-      );
-      await _storage.write(
         _defaultTravelModeKey,
         preferences.defaultTravelMode.name,
       );
@@ -196,8 +171,6 @@ class LocalSettingsRepository implements SettingsRepository {
       await _storage.write(_favoriteRouteKey, preferences.favoriteRoute);
       await _storage.write(_favoriteStopIdKey, preferences.favoriteStopId);
       await _storage.write(_favoriteStopNameKey, preferences.favoriteStopName);
-      // Open Day study-interest preference. Treated as nullable: a missing
-      // entry signals "not chosen" so the Home onboarding card surfaces.
       if (preferences.selectedBachelorId != null) {
         await _storage.write(
           _selectedBachelorIdKey,
@@ -237,8 +210,6 @@ class LocalSettingsRepository implements SettingsRepository {
   }
 }
 
-/// Clamps the persisted reminder lead time into the allowed range.
-/// Defaults to 15 minutes when the stored value is missing or malformed.
 int _parseMinutes(String? raw) {
   final parsed = int.tryParse(raw ?? '');
   if (parsed == null) return 15;

@@ -9,25 +9,16 @@ import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
 import 'package:mq_navigation/features/map/data/datasources/location_source.dart';
 import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
-import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
 import 'package:mq_navigation/features/favorites/presentation/widgets/favorite_button.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/building_actions_sheet.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/building_search_sheet.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/campus/campus_map_view.dart';
-import 'package:mq_navigation/features/map/presentation/widgets/google/google_map_view.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/map_shell.dart';
 import 'package:mq_navigation/features/map/presentation/widgets/overlay_picker_sheet.dart';
-import 'package:mq_navigation/features/map/presentation/widgets/route_panel.dart';
 import 'package:mq_navigation/shared/extensions/context_extensions.dart';
 import 'package:mq_navigation/shared/widgets/mq_button.dart';
 
-/// Main screen for the campus map feature.
-///
-/// Serves as the orchestration layer that watches [MapController] and passes
-/// its unified state down to the active renderer ([CampusMapView] or
-/// [GoogleMapView]). Also manages bottom sheets for search and overlays.
 class MapPage extends ConsumerStatefulWidget {
   const MapPage({
     super.key,
@@ -35,20 +26,12 @@ class MapPage extends ConsumerStatefulWidget {
     this.initialSearchQuery,
     this.meetLat,
     this.meetLng,
-    this.autoPreviewRoute = false,
   });
 
   final String? initialBuildingId;
   final String? initialSearchQuery;
   final double? meetLat;
   final double? meetLng;
-
-  /// When `true`, immediately request a route preview after the initial
-  /// building selection settles. Used by the "Navigate with Google Maps"
-  /// action which expects a route already visible by the time the user
-  /// reaches the map. The "View in Campus Map" action leaves this `false`
-  /// so the user just sees the destination marker — no auto-navigation.
-  final bool autoPreviewRoute;
 
   @override
   ConsumerState<MapPage> createState() => _MapPageState();
@@ -109,30 +92,9 @@ class _MapPageState extends ConsumerState<MapPage> {
       final selectedCode = mapState.selectedBuilding?.code.toUpperCase();
       final upperId = buildingId.toUpperCase();
       if (selectedId != upperId && selectedCode != upperId) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
-          final notifier = ref.read(mapControllerProvider.notifier);
-          notifier.selectBuildingById(buildingId);
-          // "Navigate with Google Maps" requests a route preview and stays in preview mode.
-          // "View in Campus Map" leaves this flag false.
-          if (widget.autoPreviewRoute) {
-            await notifier.loadRoute();
-          }
-        });
-      } else if (widget.autoPreviewRoute) {
-        // Building is already selected, but autoPreviewRoute is requested.
-        // Guard against redundant loading when already active.
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (!mounted) return;
-          final currentVal = ref.read(mapControllerProvider).value;
-          if (currentVal == null) return;
-
-          final notifier = ref.read(mapControllerProvider.notifier);
-          if (currentVal.route == null &&
-              !currentVal.isLoadingRoute &&
-              !currentVal.isNavigating) {
-            await notifier.loadRoute();
-          }
+          ref.read(mapControllerProvider.notifier).selectBuildingById(buildingId);
         });
       }
     } else if (searchQuery != null && searchQuery.isNotEmpty) {
@@ -180,18 +142,11 @@ class _MapPageState extends ConsumerState<MapPage> {
       if (next.hasValue) {
         final mapState = next.value!;
 
-        // Handle initialization parameters when the controller state changes to loaded
         if (previous == null || !previous.hasValue) {
           _handleNavigationParams(mapState);
           return;
         }
 
-        // When a building is selected from the map UI (e.g. category drill-down)
-        // update the URL to `/map?building={id}` so the route stays on the base
-        // `/map` page — no sub-route push that creates a separate page.
-        // When the selection is cleared, remove the query param.
-        // BuildingActionsSheet / EventActionsSheet handle their own navigation
-        // to `/map?building={id}` directly, so this only fires for in-map picks.
         final selectedBuilding = mapState.selectedBuilding;
         if (!context.mounted) return;
         final location = GoRouterState.of(context).matchedLocation;
@@ -212,7 +167,6 @@ class _MapPageState extends ConsumerState<MapPage> {
       }
     });
 
-    // Detect if the user navigated back to /map explicitly (e.g. back button) while a building is still selected
     if (state.hasValue) {
       final selectedBuilding = state.value!.selectedBuilding;
       if (selectedBuilding != null &&
@@ -243,21 +197,11 @@ class _MapPageState extends ConsumerState<MapPage> {
               permissionState == LocationPermissionState.deniedForever ||
               permissionState == LocationPermissionState.servicesDisabled;
 
-          // Category browse mode: search active, multiple results, nothing selected.
           final isCategoryBrowse =
               mapState.searchQuery.trim().isNotEmpty &&
               mapState.selectedBuilding == null &&
               mapState.searchResults.length > 1;
 
-          // ── Two-level drill-down state for the three grouped chips ──
-          // For each of Faculty / Student Services / Campus Hub, the
-          // top level shows the group cards and the sub level shows
-          // the buildings filtered by the selected group. The same
-          // pattern is repeated three times because each chip has its
-          // own filter predicate against the Building entity:
-          //   * facultyGroup            (singular)
-          //   * studentServicesGroups   (list — 18WW spans 4 groups)
-          //   * campusHubGroups         (list)
           final normalizedQuery = mapState.searchQuery.trim().toLowerCase();
 
           final isFacultyCategory = normalizedQuery == 'faculty';
@@ -306,11 +250,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                     .toList()
               : const <Building>[];
 
-          // While the user is at the *top* of any drill-down (browsing
-          // the group cards), suppress on-map markers — otherwise tapping
-          // "Campus Hub" would dump 70 pins onto the map at once. Pins
-          // reappear at the second level once the user picks a group,
-          // and they're filtered to just that group's buildings.
           final List<Building> rendererSearchResults;
           if (facultySubLevel) {
             rendererSearchResults = facultyBuildings;
@@ -326,34 +265,20 @@ class _MapPageState extends ConsumerState<MapPage> {
             rendererSearchResults = mapState.searchResults;
           }
 
-          final mapView = switch (mapState.renderer) {
-            MapRendererType.campus => CampusMapView(
-              searchResults: rendererSearchResults,
-              searchQuery: mapState.searchQuery,
-              selectedBuilding: mapState.selectedBuilding,
-              route: mapState.route,
-              currentLocation: mapState.currentLocation,
-              locationCenterRequestToken: mapState.locationCenterRequestToken,
-              isNavigating: mapState.isNavigating,
-              onSelectBuilding: controller.selectBuilding,
-              activeOverlayIds: mapState.activeOverlayIds,
-            ),
-            MapRendererType.google => GoogleMapView(
-              searchResults: rendererSearchResults,
-              searchQuery: mapState.searchQuery,
-              selectedBuilding: mapState.selectedBuilding,
-              route: mapState.route,
-              currentLocation: mapState.currentLocation,
-              locationCenterRequestToken: mapState.locationCenterRequestToken,
-              isNavigating: mapState.isNavigating,
-              onSelectBuilding: controller.selectBuilding,
-            ),
-          };
+          final mapView = CampusMapView(
+            searchResults: rendererSearchResults,
+            searchQuery: mapState.searchQuery,
+            selectedBuilding: mapState.selectedBuilding,
+            route: mapState.route,
+            currentLocation: mapState.currentLocation,
+            locationCenterRequestToken: mapState.locationCenterRequestToken,
+            isNavigating: mapState.isNavigating,
+            onSelectBuilding: controller.selectBuilding,
+            activeOverlayIds: mapState.activeOverlayIds,
+          );
 
           return MapShell(
             mapView: mapView,
-            renderer: mapState.renderer,
-            onRendererChanged: controller.setRenderer,
             onCenterOnLocation: controller.centerOnCurrentLocation,
             onOpenSearch: _openSearchSheet,
             onOpenOverlayPicker: _openOverlayPicker,
@@ -375,28 +300,10 @@ class _MapPageState extends ConsumerState<MapPage> {
                         : controller.openAppSettings,
                   ),
             footer: mapState.selectedBuilding != null
-                ? (mapState.renderer == MapRendererType.campus
-                      ? _CampusBuildingInfoPanel(
-                          selectedBuilding: mapState.selectedBuilding!,
-                          onClearSelection: controller.clearSelection,
-                        )
-                      : RoutePanel(
-                          selectedBuilding: mapState.selectedBuilding,
-                          route: mapState.route,
-                          currentLocation: mapState.currentLocation,
-                          travelMode: mapState.travelMode,
-                          supportedTravelModes: TravelMode.values,
-                          isLoading: mapState.isLoadingRoute,
-                          isNavigating: mapState.isNavigating,
-                          hasArrived: mapState.hasArrived,
-                          onLoadRoute: controller.loadRoute,
-                          onClearRoute: controller.clearRoute,
-                          onClearSelection: controller.clearSelection,
-                          onTravelModeChanged: controller.setTravelMode,
-                          onStartNavigation: controller.startNavigation,
-                          onStopNavigation: controller.stopNavigation,
-                          onDismissArrival: controller.dismissArrival,
-                        ))
+                ? _CampusBuildingInfoPanel(
+                    selectedBuilding: mapState.selectedBuilding!,
+                    onClearSelection: controller.clearSelection,
+                  )
                 : facultyTopLevel
                 ? _BrowseGroupPanel<FacultyGroup>(
                     title: l10n.home_faculty,
@@ -636,9 +543,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                     buildings: mapState.searchResults,
                     searchQuery: mapState.searchQuery,
                     onSelectBuilding: controller.selectBuilding,
-                    // X on the category list panel = exit category
-                    // browse entirely. `clearSelection` is reserved
-                    // for focused-back-to-list (RoutePanel close).
                     onClear: controller.clearCategoryBrowse,
                   )
                 : null,
@@ -802,13 +706,6 @@ class _MapErrorBanner extends StatelessWidget {
   }
 }
 
-/// Glass-styled scrollable list of buildings for category browse mode.
-///
-/// `onBack`, when non-null, renders a leading back chevron in the
-/// header — used by the Faculty drill-down's second level to return
-/// to the four-group top level without exiting the category. Without
-/// `onBack`, the panel renders without a leading affordance (the
-/// trailing X close button still appears).
 class _CategoryBuildingList extends StatelessWidget {
   const _CategoryBuildingList({
     required this.buildings,
@@ -877,7 +774,6 @@ class _CategoryBuildingList extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Handle bar
               Padding(
                 padding: const EdgeInsetsDirectional.only(
                   top: MqSpacing.space3,
@@ -896,7 +792,6 @@ class _CategoryBuildingList extends StatelessWidget {
                 ),
               ),
 
-              // Header
               Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(
                   onBack != null ? MqSpacing.space2 : MqSpacing.space4,
@@ -943,7 +838,6 @@ class _CategoryBuildingList extends StatelessWidget {
                 ),
               ),
 
-              // Building list
               Flexible(
                 child: ListView.separated(
                   padding: const EdgeInsetsDirectional.fromSTEB(
@@ -985,9 +879,6 @@ class _CategoryBuildingList extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             )
                           : null,
-                      // Heart sits left of the chevron so the row still
-                      // feels navigable (chevron signals "drill in") while
-                      // the favourite action is always one tap away.
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -1019,27 +910,6 @@ class _CategoryBuildingList extends StatelessWidget {
   }
 }
 
-/// Top level of any of the three category drill-downs (Faculty,
-/// Student Services, Campus Hub). Renders one card per sub-group with
-/// per-group counts so the user picks a group first, then drills in
-/// to the actual buildings.
-///
-/// Generic over the sub-group enum (`TGroup`) so we share one widget
-/// across all three sections rather than duplicating the same glass
-/// chrome three times. The caller supplies:
-///   * `groups` — ordered enum values to show as cards
-///   * `countByGroup` — pre-computed building counts (drives the
-///     subtitle's "· N" badge)
-///   * `labelOf` / `descriptionOf` — readable strings per group
-///   * `onSelectGroup` — called when the user taps a card
-///   * `onClear` — closes the entire category browse (X button)
-///   * `title` — header copy for the section
-///   * `leadingIcon` — the icon stamped on every card (school /
-///     support_agent / account_balance for the three sections)
-///
-/// Visual style intentionally mirrors [_CategoryBuildingList] (glass
-/// + handle bar + close X) so the transition between top and second
-/// levels feels like one continuous panel, not two different sheets.
 class _BrowseGroupPanel<TGroup> extends StatelessWidget {
   const _BrowseGroupPanel({
     required this.title,
@@ -1106,7 +976,6 @@ class _BrowseGroupPanel<TGroup> extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Handle bar
               Padding(
                 padding: const EdgeInsetsDirectional.only(
                   top: MqSpacing.space3,
@@ -1125,7 +994,6 @@ class _BrowseGroupPanel<TGroup> extends StatelessWidget {
                 ),
               ),
 
-              // Header: section title + close X
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
                   MqSpacing.space4,
@@ -1160,7 +1028,6 @@ class _BrowseGroupPanel<TGroup> extends StatelessWidget {
                 ),
               ),
 
-              // One row per sub-group
               Flexible(
                 child: ListView.separated(
                   padding: const EdgeInsetsDirectional.fromSTEB(
@@ -1215,11 +1082,6 @@ class _BrowseGroupPanel<TGroup> extends StatelessWidget {
   }
 }
 
-/// Horizontal row of campus category chips shown under the map search bar.
-///
-/// Tapping a chip seeds the map's search query; tapping the active chip clears
-/// it. Matches the category shortcuts on the home screen so students can
-/// re-filter without leaving the map.
 class _CategoryFilterChips extends StatelessWidget {
   const _CategoryFilterChips({
     required this.activeQuery,
@@ -1234,15 +1096,7 @@ class _CategoryFilterChips extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final isDark = context.isDarkMode;
     final normalizedActive = activeQuery.trim().toLowerCase();
-    // Categories mirror the Home Quick Access set verbatim — same labels,
-    // same query strings, same iconography. Keeping these aligned is a
-    // hard product constraint: switching tabs must never relabel the
-    // same destination family.
-    //
-    // Transport is intentionally absent — surfaced via Home's Metro
-    // Countdown card, so a duplicate Map filter chip would only add
-    // noise. Library is folded into Campus Hub via tags in
-    // `assets/data/buildings.json`.
+
     final categories = <({IconData icon, String label, String query})>[
       (
         icon: Icons.support_agent,

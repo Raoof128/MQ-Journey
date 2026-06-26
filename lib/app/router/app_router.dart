@@ -205,8 +205,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: RouteNames.map,
                 builder: (context, state) => MapPage(
                   initialBuildingId: state.uri.queryParameters['building'],
-                  autoPreviewRoute:
-                      state.uri.queryParameters['preview'] == 'route',
                   initialSearchQuery: state.uri.queryParameters['q'],
                   meetLat: double.tryParse(
                     state.uri.queryParameters['lat'] ?? '',
@@ -221,13 +219,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     name: RouteNames.buildingDetail,
                     builder: (context, state) => MapPage(
                       initialBuildingId: state.pathParameters['buildingId'],
-                      // `?preview=route` is set by "Navigate with Google
-                      // Maps" so the MapPage requests a route preview
-                      // straight after selecting the building. "View in
-                      // Campus Map" omits the param and the page renders
-                      // only the destination marker.
-                      autoPreviewRoute:
-                          state.uri.queryParameters['preview'] == 'route',
                     ),
                   ),
                 ],

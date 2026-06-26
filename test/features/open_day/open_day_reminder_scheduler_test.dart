@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/features/notifications/data/datasources/local_notifications_service.dart';
 import 'package:mq_navigation/features/notifications/domain/entities/reminder_request.dart';
@@ -8,11 +7,6 @@ import 'package:mq_navigation/features/open_day/data/open_day_reminder_scheduler
 import 'package:mq_navigation/features/open_day/domain/entities/open_day_data.dart';
 import 'package:mq_navigation/shared/models/user_preferences.dart';
 
-/// Fake [LocalNotificationsService] that records calls instead of
-/// touching the platform channel. Letting the scheduler depend on the
-/// concrete service rather than an interface kept the wiring simple in
-/// production; the trade-off is that this fake subclasses the real
-/// service and overrides the three methods the scheduler actually uses.
 class _FakeLocalNotifications extends LocalNotificationsService {
   _FakeLocalNotifications();
 
@@ -31,8 +25,6 @@ class _FakeLocalNotifications extends LocalNotificationsService {
 
   @override
   int notificationIdForStableId(String stableId) {
-    // Use the real algorithm so the scheduler's pendingIds set matches
-    // what the production service would compute.
     return stableId.hashCode & 0x7fffffff;
   }
 }
@@ -69,9 +61,7 @@ UserPreferences _prefs({
     openDayRemindersEnabled: openDay,
     openDayReminderMinutesBefore: minutes,
     selectedBachelorId: bachelorId,
-    // Other fields irrelevant — defaults are fine.
     themeMode: ThemeMode.system,
-    defaultRenderer: MapRendererType.campus,
     defaultTravelMode: TravelMode.walk,
   );
 }
@@ -89,12 +79,10 @@ void main() {
     test(
       'schedules a reminder for each future event, lead-time minutes before',
       () async {
-        // Arrange — fix `now` so the test isn't time-of-day-flaky.
-        final now = DateTime(2026, 8, 8, 9, 0); // 9:00 AM local on Open Day
+        final now = DateTime(2026, 8, 8, 9, 0);
         final eventA = _event(id: 'a', startTime: DateTime(2026, 8, 8, 10, 0));
         final eventB = _event(id: 'b', startTime: DateTime(2026, 8, 8, 11, 0));
 
-        // Act
         await scheduler.reschedule(
           preferences: _prefs(minutes: 15),
           events: [eventA, eventB],
@@ -102,7 +90,6 @@ void main() {
           now: now,
         );
 
-        // Assert — both events scheduled, fired 15 minutes before start.
         expect(fake.scheduled, hasLength(2));
         expect(
           fake.scheduled[0].scheduledFor,
@@ -114,8 +101,6 @@ void main() {
           DateTime(2026, 8, 8, 10, 45),
           reason: '11:00 minus 15 min = 10:45',
         );
-        // The cancel-except call is what wipes stale reminders; its
-        // retained set must contain exactly the new reminder IDs.
         expect(fake.cancelExceptCalls, hasLength(1));
         expect(
           fake.cancelExceptCalls.single,
@@ -126,12 +111,10 @@ void main() {
 
     test('skips events whose reminder time has already passed', () async {
       final now = DateTime(2026, 8, 8, 12, 0);
-      // Reminder for 10:00 event would fire at 9:45 — already in the past.
       final pastEvent = _event(
         id: 'past',
         startTime: DateTime(2026, 8, 8, 10, 0),
       );
-      // Reminder for 13:00 event fires at 12:45 — still in the future.
       final futureEvent = _event(
         id: 'future',
         startTime: DateTime(2026, 8, 8, 13, 0),
@@ -198,7 +181,6 @@ void main() {
       final now = DateTime(2026, 8, 8, 9, 0);
       final event = _event(id: 'a', startTime: DateTime(2026, 8, 8, 10, 0));
 
-      // 30-minute lead — reminder fires at 9:30.
       await scheduler.reschedule(
         preferences: _prefs(minutes: 30),
         events: [event],
@@ -207,8 +189,6 @@ void main() {
       );
       expect(fake.scheduled.single.scheduledFor, DateTime(2026, 8, 8, 9, 30));
 
-      // 60-minute lead — reminder fires at 9:00 (at `now`, but `isBefore`
-      // is strict so 9:00 == 9:00 still schedules, not skips).
       fake.scheduled.clear();
       await scheduler.reschedule(
         preferences: _prefs(minutes: 60),
@@ -241,7 +221,6 @@ void main() {
       () async {
         final event = _event(id: 'a', startTime: DateTime(2099, 1, 1, 12, 0));
 
-        // Way too high — should be clamped to 60.
         await scheduler.reschedule(
           preferences: _prefs(minutes: 9999),
           events: [event],
@@ -250,7 +229,7 @@ void main() {
         );
         expect(
           fake.scheduled.single.scheduledFor,
-          DateTime(2099, 1, 1, 11, 0), // 12:00 minus 60 minutes
+          DateTime(2099, 1, 1, 11, 0),
         );
       },
     );
