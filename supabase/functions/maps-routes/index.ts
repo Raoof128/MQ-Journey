@@ -1,5 +1,5 @@
 /// Edge Function: maps-routes
-/// Shared campus/google routing proxy for the Flutter dual-map client.
+/// Shared campus and TfNSW routing proxy for the Flutter maps client.
 /// Supports anon access with IP-based throttling and upgrades to user-based
 /// throttling when a valid Supabase access token is present.
 
@@ -9,30 +9,22 @@ import {
 } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, handleCors, jsonCorsHeaders } from "../_shared/cors.ts";
 
-const GOOGLE_ROUTES_URL =
-  "https://routes.googleapis.com/directions/v2:computeRoutes";
 const TFNSW_TRIP_PLANNER_URL = "https://api.transport.nsw.gov.au/v1/tp/trip";
 const ORS_BASE_URL = Deno.env.get("ORS_BASE_URL") ??
-  "https://api.openrouteservice.org/v2/directions/foot-walking/geojson";
+  "https://api.openrouteservice.org/v2/directions";
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 60;
-const GOOGLE_ROUTES_FIELD_MASK = [
-  "routes.distanceMeters",
-  "routes.duration",
-  "routes.polyline.encodedPolyline",
-  "routes.legs.steps.distanceMeters",
-  "routes.legs.steps.staticDuration",
-  "routes.legs.steps.travelMode",
-  "routes.legs.steps.navigationInstruction.instructions",
-  "routes.legs.steps.transitDetails",
-].join(",");
+
+const ORS_PROFILES: Record<string, string> = {
+  WALK: "foot-walking",
+  DRIVE: "driving-car",
+  BICYCLE: "cycling-regular",
+};
 
 type CoordinatePayload = {
   latitude: number;
   longitude: number;
 };
-
-type RouteRenderer = "campus" | "google";
 
 type NormalizedStep = {
   instruction: string;
@@ -46,7 +38,6 @@ type NormalizedStep = {
 };
 
 type NormalizedRoute = {
-  renderer: RouteRenderer;
   mode: string;
   distanceMeters: number;
   durationSeconds: number;
@@ -117,13 +108,6 @@ async function maybeUser(
   return data.user;
 }
 
-function parseRenderer(value: unknown): RouteRenderer {
-  if (value === "campus" || value === "google") {
-    return value;
-  }
-  throw new RequestValidationError("renderer must be campus or google");
-}
-
 function parseCoordinate(value: unknown, label: string): CoordinatePayload {
   if (!value || typeof value !== "object") {
     throw new Error(`${label} is required`);
@@ -152,14 +136,6 @@ function parseTravelMode(value: unknown): string {
     );
   }
   return normalized;
-}
-
-function assertCampusTravelModeSupported(travelMode: string): void {
-  if (travelMode !== "WALK") {
-    throw new RequestValidationError(
-      "Campus routing currently supports WALK only. Switch to the Google renderer for drive, bicycle, or transit routes.",
-    );
-  }
 }
 
 async function enforceRateLimit(
@@ -228,92 +204,8 @@ function parseDurationSeconds(value: unknown): number {
   return 0;
 }
 
-function decodePolyline(encoded: string): Array<{ lat: number; lng: number }> {
-  let index = 0;
-  let lat = 0;
-  let lng = 0;
-  const coordinates: Array<{ lat: number; lng: number }> = [];
-
-  while (index < encoded.length) {
-    let result = 0;
-    let shift = 0;
-    let byte = 0;
-
-    do {
-      byte = encoded.charCodeAt(index++) - 63;
-      result |= (byte & 0x1f) << shift;
-      shift += 5;
-    } while (byte >= 0x20);
-
-    lat += (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
-
-    result = 0;
-    shift = 0;
-
-    do {
-      byte = encoded.charCodeAt(index++) - 63;
-      result |= (byte & 0x1f) << shift;
-      shift += 5;
-    } while (byte >= 0x20);
-
-    lng += (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
-
-    coordinates.push({
-      lat: lat / 1e5,
-      lng: lng / 1e5,
-    });
-  }
-
-  return coordinates;
-}
-
 function toArrivalEstimate(durationSeconds: number): string {
   return new Date(Date.now() + durationSeconds * 1000).toISOString();
-}
-
-function normaliseGoogleRoute(
-  renderer: RouteRenderer,
-  travelMode: string,
-  route: Record<string, unknown>,
-): NormalizedRoute {
-  const legs = (route.legs as Array<Record<string, unknown>> | undefined) ?? [];
-  const steps = legs.flatMap((leg) =>
-    ((leg.steps as Array<Record<string, unknown>> | undefined) ?? []).map(
-      (step) => ({
-        instruction:
-          (step.navigationInstruction as { instructions?: string } | undefined)
-            ?.instructions ?? "Continue",
-        distanceMeters: Number(step.distanceMeters ?? 0),
-        durationSeconds: parseDurationSeconds(step.staticDuration),
-        travelMode: step.travelMode as string | undefined,
-        transitLineName: (step.transitDetails as {
-          transitLine?: { nameShort?: string; name?: string };
-        } | undefined)?.transitLine?.nameShort ??
-          (step.transitDetails as {
-            transitLine?: { nameShort?: string; name?: string };
-          } | undefined)?.transitLine?.name,
-        transitHeadsign:
-          (step.transitDetails as { headsign?: string } | undefined)?.headsign,
-        transitStopCount:
-          (step.transitDetails as { stopCount?: number } | undefined)
-            ?.stopCount,
-      }),
-    )
-  );
-  const encodedPolyline =
-    (route.polyline as { encodedPolyline?: string } | undefined)
-      ?.encodedPolyline ?? "";
-
-  return {
-    renderer,
-    mode: travelMode,
-    distanceMeters: Number(route.distanceMeters ?? 0),
-    durationSeconds: parseDurationSeconds(route.duration),
-    encodedPolyline,
-    points: encodedPolyline ? decodePolyline(encodedPolyline) : [],
-    steps,
-    arrivalEstimate: toArrivalEstimate(parseDurationSeconds(route.duration)),
-  };
 }
 
 function normaliseCampusRoute(
@@ -344,7 +236,6 @@ function normaliseCampusRoute(
   const durationSeconds = Number(summary.duration ?? 0);
 
   return {
-    renderer: "campus",
     mode: travelMode,
     distanceMeters: Number(summary.distance ?? 0),
     durationSeconds,
@@ -443,7 +334,6 @@ function normaliseTfnswTransitRoute(
   }
 
   return {
-    renderer: "google",
     mode: "TRANSIT",
     distanceMeters,
     durationSeconds,
@@ -497,141 +387,16 @@ async function fetchTfnswTransitRoute(
   return normaliseTfnswTransitRoute(origin, destination, upstreamJson);
 }
 
-async function fetchTransitRouteWithFallback(
-  renderer: RouteRenderer,
-  origin: CoordinatePayload,
-  destination: CoordinatePayload,
-  languageCode: string,
-): Promise<NormalizedRoute> {
-  try {
-    return await fetchTfnswTransitRoute(origin, destination);
-  } catch (tfnswError) {
-    console.warn(
-      "TfNSW transit routing failed, falling back to Google",
-      tfnswError,
-    );
-    return await fetchGoogleRoute(
-      renderer,
-      origin,
-      destination,
-      "TRANSIT",
-      languageCode,
-    );
-  }
-}
-
-async function fetchGoogleRoute(
-  renderer: RouteRenderer,
-  origin: CoordinatePayload,
-  destination: CoordinatePayload,
-  travelMode: string,
-  languageCode: string,
-): Promise<NormalizedRoute> {
-  const apiKey = requireEnv("GOOGLE_ROUTES_API_KEY");
-  const body: Record<string, unknown> = {
-    origin: {
-      location: {
-        latLng: { latitude: origin.latitude, longitude: origin.longitude },
-      },
-    },
-    destination: {
-      location: {
-        latLng: {
-          latitude: destination.latitude,
-          longitude: destination.longitude,
-        },
-      },
-    },
-    travelMode,
-    computeAlternativeRoutes: false,
-    languageCode,
-    units: "METRIC",
-  };
-
-  if (travelMode === "DRIVE") {
-    body.routingPreference = "TRAFFIC_AWARE";
-  }
-
-  if (travelMode === "TRANSIT") {
-    body.departureTime = new Date().toISOString();
-  }
-
-  const upstream = await fetch(GOOGLE_ROUTES_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Goog-Api-Key": apiKey,
-      "X-Goog-FieldMask": GOOGLE_ROUTES_FIELD_MASK,
-    },
-    body: JSON.stringify(body),
-  });
-
-  const upstreamText = await upstream.text();
-  let upstreamJson: Record<string, unknown> | null = null;
-  try {
-    upstreamJson = JSON.parse(upstreamText) as Record<string, unknown>;
-  } catch {
-    upstreamJson = null;
-  }
-
-  if (!upstream.ok) {
-    throw new Error(
-      (upstreamJson?.error as { message?: string } | undefined)?.message ??
-        "Google Routes API error",
-    );
-  }
-
-  const routes = (upstreamJson?.routes as Array<Record<string, unknown>>) ?? [];
-  if (routes.length === 0) {
-    // Google legitimately returns zero routes when the destination snap-point
-    // is unreachable by the requested mode (e.g. a campus building with no
-    // drivable road access). Try WALK once as a graceful fallback before
-    // giving up — a walkable route from anywhere on campus to a building
-    // entrance almost always exists.
-    if (travelMode !== "WALK") {
-      try {
-        return await fetchGoogleRoute(
-          renderer,
-          origin,
-          destination,
-          "WALK",
-          languageCode,
-        );
-      } catch (_) {
-        // fall through to the structured NO_ROUTE error below
-      }
-    }
-    const noRouteErr = new Error(
-      "No route exists between origin and destination",
-    ) as Error & { status?: number; code?: string };
-    noRouteErr.status = 404;
-    noRouteErr.code = "NO_ROUTE";
-    throw noRouteErr;
-  }
-
-  return normaliseGoogleRoute(renderer, travelMode, routes[0]);
-}
-
 async function fetchCampusRoute(
   origin: CoordinatePayload,
   destination: CoordinatePayload,
   travelMode: string,
 ): Promise<NormalizedRoute> {
-  const orsApiKey = Deno.env.get("ORS_API_KEY");
+  const orsApiKey = requireEnv("ORS_API_KEY");
+  const profile = ORS_PROFILES[travelMode] ?? "foot-walking";
+  const url = `${ORS_BASE_URL}/${profile}/geojson`;
 
-  if (!orsApiKey) {
-    // Keep campus routes live/executable when ORS is unavailable by falling
-    // back to Google Routes WALK while preserving the campus renderer contract.
-    return await fetchGoogleRoute(
-      "campus",
-      origin,
-      destination,
-      "WALK",
-      "en-AU",
-    );
-  }
-
-  const upstream = await fetch(ORS_BASE_URL, {
+  const upstream = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -691,34 +456,13 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const renderer = parseRenderer(body.renderer);
     const origin = parseCoordinate(body.origin, "origin");
     const destination = parseCoordinate(body.destination, "destination");
     const travelMode = parseTravelMode(body.travelMode);
-    const languageCode = typeof body.languageCode === "string"
-      ? body.languageCode
-      : "en-AU";
 
-    if (renderer === "campus") {
-      assertCampusTravelModeSupported(travelMode);
-    }
-
-    const route = renderer === "campus"
-      ? await fetchCampusRoute(origin, destination, travelMode)
-      : travelMode === "TRANSIT"
-      ? await fetchTransitRouteWithFallback(
-        renderer,
-        origin,
-        destination,
-        languageCode,
-      )
-      : await fetchGoogleRoute(
-        renderer,
-        origin,
-        destination,
-        travelMode,
-        languageCode,
-      );
+    const route = travelMode === "TRANSIT"
+      ? await fetchTfnswTransitRoute(origin, destination)
+      : await fetchCampusRoute(origin, destination, travelMode);
 
     return new Response(JSON.stringify(route), {
       headers: {
