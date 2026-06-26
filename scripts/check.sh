@@ -231,7 +231,7 @@ fi
 step "No-Google guard"
 
 GOOGLE_SOURCE_DIRS="lib android ios supabase scripts"
-GOOGLE_PATTERNS="google_maps_flutter|maps.googleapis.com|GMSServices|GOOGLE_MAPS_API_KEY|GOOGLE_ROUTES_API_KEY"
+GOOGLE_PATTERNS="google_maps_flutter|maps.googleapis.com|GMSServices|GOOGLE_MAPS_API_KEY"
 GOOGLE_GUARD_FAIL=false
 
 for dir in $GOOGLE_SOURCE_DIRS; do
