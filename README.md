@@ -9,7 +9,6 @@
 ![Dart](https://img.shields.io/badge/Dart_3-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![Riverpod](https://img.shields.io/badge/Riverpod_3.2-7C3AED?style=for-the-badge)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Google Maps](https://img.shields.io/badge/Google_Maps-4285F4?style=for-the-badge&logo=googlemaps&logoColor=white)
 ![Tests](https://img.shields.io/badge/323_Tests-Flutter_Test-6E9F18?style=for-the-badge)
 ![Material 3](https://img.shields.io/badge/Material_3-757575?style=for-the-badge&logo=materialdesign&logoColor=white)
 
@@ -23,7 +22,7 @@
 
 > **Find your way around Macquarie — without selling your data.**
 
-A production-ready Flutter client for Macquarie University's campus — dual-renderer maps, turn-by-turn routing, compass mode, campus safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: optional account, zero tracking, no location history.**
+A production-ready Flutter client for Macquarie University's campus — flutter_map illustrated campus, turn-by-turn routing, compass mode, campus safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: optional account, zero tracking, no location history.**
 
 Part of a **two frontends, one backend** architecture sharing a Supabase backend with the [Syllabus Sync](https://github.com/mrpouyaalavi/syllabus-sync) Next.js web application. Submitted for **COMP3130 Mobile App Development — Major Project (May 2026)** and pitched as the official navigation companion for the **Macquarie University Open Day** experience.
 
@@ -76,8 +75,8 @@ Password: OpenDay2026!
 
 Existing campus maps either stop at the kerb (Google/Apple Maps don't know which door is *18 Wally's Walk*) or require single sign-on for a poor-quality web experience. MQ Navigation solves this by providing:
 
-- **Dual-Renderer Maps:** Coordinate-aligned switch between Google Maps (traffic, satellite, clustering) and a calibrated illustrated campus raster — both pinpoint the correct **building entrance**, not the road.
-- **Turn-by-Turn Routing:** Server-side routing via Supabase Edge proxy with walking, driving, cycling, and transit modes. Arrival detection, off-route recalculation, and a collapsible nav sheet that doesn't stop navigation.
+- **Illustrated Campus Map:** Single flutter_map + CrsSimple raster renderer with calibrated building position overlay — pinpoints the correct **building entrance**, not the road.
+- **Turn-by-Turn Routing:** Server-side routing via Supabase Edge proxy (OpenRouteService + TfNSW) with walking, driving, cycling, and transit modes. Arrival detection, off-route recalculation, and a collapsible nav sheet that doesn't stop navigation.
 - **Privacy-by-Design Architecture:** Optional account, **zero analytics packages** (CI-enforced), no location history, on-device compass calculation. Encryption via Keychain / Android Keystore.
 - **Open Day Ready:** Branded study-interest picker, dynamic event cards, BuildingActionsSheet shared with [Syllabus Sync](https://github.com/mrpouyaalavi/syllabus-sync) deep-link contract.
 
@@ -125,9 +124,9 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 
 ```text
 ╔══════════════════════════════════════════════════════════════════════╗
-║  🗺  Dual-renderer maps: Google Maps + calibrated illustrated campus ║
+║  🗺  flutter_map + CrsSimple illustrated campus renderer             ║
 ║  🧭  On-device compass mode with bearing-to-destination arrow        ║
-║  🛣  Turn-by-turn routing via Supabase Edge proxy → Google Routes V2 ║
+║  🛣  Turn-by-turn routing via ORS + TfNSW Supabase Edge proxy        ║
 ║  ❤️  Favourites CRUD: heart-toggle, edit-note, swipe-to-delete       ║
 ║  🚨  Campus Safety Toolkit: 000, AEDs, first aid, shuttle, torch     ║
 ║  🚆  Live Macquarie Uni metro countdown via TfNSW Open Data proxy    ║
@@ -161,9 +160,8 @@ graph TD
     end
 
     subgraph "External APIs"
-        F --> G[Google Routes V2]
-        F --> H[Google Places]
-        F --> I[TfNSW Open Data]
+        F --> G[OpenRouteService]
+        F --> H[TfNSW Open Data]
     end
 ```
 
@@ -174,7 +172,7 @@ graph TD
 | **Framework** | Flutter 3.11+ (Stable channel) |
 | **State** | Riverpod 3.2 (AsyncNotifier) |
 | **Routing** | GoRouter 17.1 (StatefulShellRoute, 4 tabs + standalone routes) |
-| **Maps** | google_maps_flutter 2.15 / flutter_map 8.2 |
+| **Maps** | flutter_map 8.3 + CrsSimple raster |
 | **Backend** | Supabase (Postgres, RLS, Realtime, Deno Edge Functions) |
 | **Location** | geolocator 14 (raw GPS + last-known fallback, emulator mock rejection) |
 | **Compass** | flutter_compass 0.8 |
@@ -186,7 +184,7 @@ graph TD
 
 - **Defensive bootstrap with timeouts:** `Firebase.initializeApp()` and `Supabase.initialize()` are both wrapped in `.timeout()` calls so the app cannot hang on a stalled network during cold start (root cause we hit during Release-mode testing).
 - **Silent existing-user detection:** `AuthRepository.signUp` inspects `response.user.identities` to detect when Supabase silently returns an existing-confirmed account and shows a real error instead of a misleading "Account created" banner.
-- **Renderer-aware Building actions:** `BuildingActionsSheet` distinguishes "View in Campus Map" (marker only) from "Navigate with Google Maps" (route preview auto-loaded) via a `?preview=route` query parameter.
+- **Building actions sheet:** `BuildingActionsSheet` offers two choices — "View on Campus Map" (marker only) and "Navigate" (route preview auto-loaded via `?preview=route` query parameter).
 - **CI privacy guard:** `scripts/check.sh` refuses to compile if any analytics package (`firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events`) is added to `pubspec.yaml`.
 
 > **Deep Dive:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/SECURITY_POSTURE.md`](docs/SECURITY_POSTURE.md) · [`docs/route_matrix.md`](docs/route_matrix.md)
@@ -245,7 +243,7 @@ We designed MQ Navigation around four real user personas — the people we'd han
 | **Android physical device** | ✅ Full | Compass, flashlight, GPS, push notifications all functional. |
 | **Chrome (web)** | ✅ Core | Auth, favourites CRUD, maps, routing, transit countdown work. Compass mode and flashlight gracefully degrade — the UI displays an "unsupported on this device" fallback. |
 | **iOS device** | ✅ Full | Native build verified on iPhone (iOS 17+). Custom URL scheme `io.mqnavigation://` registered for auth callbacks. |
-| **macOS desktop** | ✅ Core | Location, auth, and dual-renderer all functional. CFBundleURLTypes registered so auth deep links return to the app. Google Maps falls back to OSM (plugin limitation). |
+| **macOS desktop** | ✅ Core | Location, auth, and flutter_map campus renderer all functional. CFBundleURLTypes registered so auth deep links return to the app. |
 
 If a platform-specific issue surfaces during marking, the relevant feature renders a typed `MapStateError` fallback rather than crashing.
 
@@ -266,7 +264,7 @@ lib/
     ├── auth/         Supabase Auth (login, signup, session persistence, gate)
     ├── favorites/    Building favourites CRUD (controller, repo, datasource, UI)
     ├── home/         Welcome dashboard, onboarding, metro countdown
-    ├── map/          Dual-renderer, routing, compass mode, search, favourites
+    ├── map/          flutter_map campus, routing, compass mode, search, favourites
     ├── safety/       Safety toolkit, emergency contacts, first aid / AED
     ├── notifications/ FCM push, local reminders, inbox
     ├── open_day/     Open Day events, study interest, reminders
@@ -306,7 +304,7 @@ flutter pub get
 
 # Configure environment
 cp .env.example .env
-# Edit .env with your Supabase + Google Maps credentials
+# Edit .env with your Supabase credentials
 # (see docs/env_inventory.md for the full variable list)
 
 # Generate localisations
@@ -320,8 +318,8 @@ flutter run --dart-define-from-file=.env
 
 ### Quality Assurance
 ```bash
-./scripts/check.sh             # 9 steps (includes debug APK build)
-./scripts/check.sh --quick     # 8 steps (skips build)
+./scripts/check.sh             # 10 steps (includes debug APK build)
+./scripts/check.sh --quick     # 9 steps (skips build)
 ./scripts/check.sh --fix       # auto-format instead of read-only check
 ./scripts/check.sh --verbose   # stream command logs to terminal
 ```
@@ -336,6 +334,7 @@ flutter run --dart-define-from-file=.env
 | Untranslated check | `.dart_tool/untranslated.json` — new keys tracked as non-blocking |
 | **Privacy guard** | **Blocks** `firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events` |
 | **Secret scan** | Flags hardcoded API keys (`sk-*`, `AIza*`) in `lib/` `test/` `scripts/` |
+| **No-Google guard** | Blocks any Google Maps SDK/files references in `lib/`, `android/`, `ios/`, `supabase/` |
 | `flutter build apk --debug` | Android APK compiles (skipped with `--quick`) |
 
 <br/>
@@ -398,7 +397,7 @@ Built with the support of the open-source community. This project benefits from:
 
 - [Flutter](https://flutter.dev/) — Cross-platform UI toolkit.
 - [Supabase](https://supabase.com/) — Open-source backend with Row-Level Security.
-- [OpenStreetMap](https://www.openstreetmap.org/) — Map tile provider for the Campus Map fallback renderer.
+- [OpenStreetMap](https://www.openstreetmap.org/) — Map tile provider for the campus map renderer.
 - [TfNSW Open Data](https://opendata.transport.nsw.gov.au/) — Live metro departures.
 
 <br/>

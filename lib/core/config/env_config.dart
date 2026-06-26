@@ -3,10 +3,8 @@ import 'package:flutter/foundation.dart';
 /// Environment configuration loaded from --dart-define at build time.
 ///
 /// In **debug mode**, Supabase falls back to development defaults to keep local
-/// onboarding simple. The Google Maps client key does not have a committed
-/// fallback and must be supplied via `--dart-define` or
-/// `--dart-define-from-file=.env` when the Google renderer is needed.
-/// In **release mode**, missing required values cause a [StateError].
+/// onboarding simple. In **release mode**, missing required values cause a
+/// [StateError].
 ///
 /// **Security Note:** Real `.env` files are ignored by git to prevent
 /// credential leaks. The fallbacks here are safe public identifiers.
@@ -15,7 +13,6 @@ import 'package:flutter/foundation.dart';
 ///   flutter run --release \
 ///     --dart-define=SUPABASE_URL=https://xxx.supabase.co \
 ///     --dart-define=SUPABASE_ANON_KEY=eyJ... \
-///     --dart-define=GOOGLE_MAPS_API_KEY=AIza... \
 ///     --dart-define=APP_ENV=production
 class EnvConfig {
   const EnvConfig._();
@@ -25,9 +22,6 @@ class EnvConfig {
   static const String _supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
   );
-  static const String _googleMapsApiKey = String.fromEnvironment(
-    'GOOGLE_MAPS_API_KEY',
-  );
   static const String _appEnv = String.fromEnvironment('APP_ENV');
 
   // Development defaults loaded via --dart-define-from-file=.env
@@ -36,9 +30,6 @@ class EnvConfig {
   );
   static const String _devSupabaseAnonKey = String.fromEnvironment(
     'DEV_SUPABASE_ANON_KEY',
-  );
-  static const String _devGoogleMapsApiKey = String.fromEnvironment(
-    'DEV_GOOGLE_MAPS_API_KEY',
   );
 
   // ── Hardcoded debug-only fallbacks ──────────────────────────────────────
@@ -67,20 +58,12 @@ class EnvConfig {
     return kDebugMode ? _fallbackSupabaseAnonKey : '';
   }
 
-  /// Google Maps client-side API key. Must come from dart-define or local env.
-  static String get googleMapsApiKey {
-    if (_googleMapsApiKey.isNotEmpty) return _googleMapsApiKey;
-    if (_devGoogleMapsApiKey.isNotEmpty) return _devGoogleMapsApiKey;
-    return '';
-  }
-
   /// App environment. Defaults to 'development'.
   static String get appEnv => _appEnv.isNotEmpty ? _appEnv : 'development';
 
   static bool get isProduction => appEnv == 'production';
   static bool get isStaging => appEnv == 'staging';
   static bool get isDevelopment => appEnv == 'development';
-  static bool get hasGoogleMapsApiKey => googleMapsApiKey.trim().isNotEmpty;
 
   /// Throws [StateError] if required env vars are missing **in release mode**.
   /// In debug mode, logs a warning but does NOT throw — this lets bare

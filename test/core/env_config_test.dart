@@ -33,11 +33,5 @@ void main() {
       },
     );
 
-    test(
-      'googleMapsApiKey is empty without dart-define (no hardcoded keys)',
-      () {
-        expect(EnvConfig.googleMapsApiKey, isA<String>());
-      },
-    );
   });
 }

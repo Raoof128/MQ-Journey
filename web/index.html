@@ -56,46 +56,6 @@
       }, { capture: true, passive: false });
     })();
   </script>
-
-  <!--
-    google_maps_config.js is generated locally / in CI and is intentionally
-    gitignored. It sets window.GOOGLE_MAPS_API_KEY for web builds without
-    committing the key into source control.
-
-    This script reads the key from google_maps_config.js so it is available
-    on window.GOOGLE_MAPS_API_KEY before flutter_bootstrap.js runs.
-    flutter_bootstrap.js then injects the Maps JS API script and waits for
-    it to fully load before starting Flutter, so google_maps_flutter_web
-    can access window.google.maps synchronously.
-  -->
-  <script>
-    (function () {
-      window.GOOGLE_MAPS_API_KEY = window.GOOGLE_MAPS_API_KEY || "";
-
-      // Read the key from the config file via synchronous XHR.
-      // Only the key string is extracted — no dynamic code evaluation.
-      try {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "google_maps_config.js", false);
-        xhr.send();
-        if (xhr.status === 200) {
-          // Use String.prototype.match (no eval / no Function constructor).
-          var parts = xhr.responseText.match(
-            /window\.GOOGLE_MAPS_API_KEY\s*=\s*["']([^"']*)["']/
-          );
-          if (parts && parts[1]) {
-            window.GOOGLE_MAPS_API_KEY = parts[1];
-          }
-        }
-      } catch (_) {
-        /* File absent or request blocked — continue with empty key. */
-      }
-
-      // NOTE: Do NOT inject the Maps JS API here.
-      // flutter_bootstrap.js handles loading it and waits for it to finish
-      // before starting Flutter (so google_maps_flutter_web works correctly).
-    })();
-  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
