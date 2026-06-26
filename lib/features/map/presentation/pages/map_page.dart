@@ -94,7 +94,9 @@ class _MapPageState extends ConsumerState<MapPage> {
       if (selectedId != upperId && selectedCode != upperId) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
-          ref.read(mapControllerProvider.notifier).selectBuildingById(buildingId);
+          ref
+              .read(mapControllerProvider.notifier)
+              .selectBuildingById(buildingId);
         });
       }
     } else if (searchQuery != null && searchQuery.isNotEmpty) {

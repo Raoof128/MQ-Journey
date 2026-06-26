@@ -225,90 +225,86 @@ void main() {
     );
   });
 
-  testWidgets(
-    'MapPage selects building from query param',
-    (tester) async {
-      await tester.binding.setSurfaceSize(const Size(1400, 1000));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+  testWidgets('MapPage selects building from query param', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      final router = GoRouter(
-        initialLocation: '/map',
-        routes: [
-          GoRoute(
-            path: '/map',
-            name: RouteNames.map,
-            builder: (context, state) => MapPage(
-              initialBuildingId: state.uri.queryParameters['building'],
-              initialSearchQuery: state.uri.queryParameters['q'],
-              meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
-              meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
-            ),
+    final router = GoRouter(
+      initialLocation: '/map',
+      routes: [
+        GoRoute(
+          path: '/map',
+          name: RouteNames.map,
+          builder: (context, state) => MapPage(
+            initialBuildingId: state.uri.queryParameters['building'],
+            initialSearchQuery: state.uri.queryParameters['q'],
+            meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
+            meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
           ),
-        ],
-      );
+        ),
+      ],
+    );
 
-      await tester.pumpWidget(buildTestApp(router: router));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpWidget(buildTestApp(router: router));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
-      final element = tester.element(find.byType(MapPage));
-      final container = ProviderScope.containerOf(element);
+    final element = tester.element(find.byType(MapPage));
+    final container = ProviderScope.containerOf(element);
 
-      router.go('/map?building=BLD-A');
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+    router.go('/map?building=BLD-A');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
 
-      final mapState = container.read(mapControllerProvider).value!;
-      expect(mapState.selectedBuilding?.id, equals('BLD-A'));
-      expect(mapState.isNavigating, isFalse);
-    },
-  );
+    final mapState = container.read(mapControllerProvider).value!;
+    expect(mapState.selectedBuilding?.id, equals('BLD-A'));
+    expect(mapState.isNavigating, isFalse);
+  });
 
-  testWidgets(
-    'MapPage keeps building selected on re-navigation',
-    (tester) async {
-      await tester.binding.setSurfaceSize(const Size(1400, 1000));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+  testWidgets('MapPage keeps building selected on re-navigation', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      final router = GoRouter(
-        initialLocation: '/map',
-        routes: [
-          GoRoute(
-            path: '/map',
-            name: RouteNames.map,
-            builder: (context, state) => MapPage(
-              initialBuildingId: state.uri.queryParameters['building'],
-              initialSearchQuery: state.uri.queryParameters['q'],
-              meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
-              meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
-            ),
+    final router = GoRouter(
+      initialLocation: '/map',
+      routes: [
+        GoRoute(
+          path: '/map',
+          name: RouteNames.map,
+          builder: (context, state) => MapPage(
+            initialBuildingId: state.uri.queryParameters['building'],
+            initialSearchQuery: state.uri.queryParameters['q'],
+            meetLat: double.tryParse(state.uri.queryParameters['lat'] ?? ''),
+            meetLng: double.tryParse(state.uri.queryParameters['lng'] ?? ''),
           ),
-        ],
-      );
+        ),
+      ],
+    );
 
-      await tester.pumpWidget(buildTestApp(router: router));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpWidget(buildTestApp(router: router));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
-      final element = tester.element(find.byType(MapPage));
-      final container = ProviderScope.containerOf(element);
+    final element = tester.element(find.byType(MapPage));
+    final container = ProviderScope.containerOf(element);
 
-      router.go('/map?building=BLD-A');
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
+    router.go('/map?building=BLD-A');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
-      var mapState = container.read(mapControllerProvider).value!;
-      expect(mapState.selectedBuilding?.id, equals('BLD-A'));
-      expect(mapState.route, isNull);
-      expect(mapState.isNavigating, isFalse);
+    var mapState = container.read(mapControllerProvider).value!;
+    expect(mapState.selectedBuilding?.id, equals('BLD-A'));
+    expect(mapState.route, isNull);
+    expect(mapState.isNavigating, isFalse);
 
-      router.go('/map?building=BLD-A');
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+    router.go('/map?building=BLD-A');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
 
-      mapState = container.read(mapControllerProvider).value!;
-      expect(mapState.selectedBuilding?.id, equals('BLD-A'));
-      expect(mapState.isNavigating, isFalse);
-    },
-  );
+    mapState = container.read(mapControllerProvider).value!;
+    expect(mapState.selectedBuilding?.id, equals('BLD-A'));
+    expect(mapState.isNavigating, isFalse);
+  });
 }

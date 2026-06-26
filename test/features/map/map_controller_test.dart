@@ -66,7 +66,10 @@ void main() {
       notifier.selectBuilding(building);
       await notifier.loadRoute();
 
-      expect(container.read(mapControllerProvider).value!.isNavigating, isFalse);
+      expect(
+        container.read(mapControllerProvider).value!.isNavigating,
+        isFalse,
+      );
 
       notifier.startNavigation();
       expect(container.read(mapControllerProvider).value!.isNavigating, isTrue);

@@ -36,9 +36,7 @@ class BuildingActionsSheet extends ConsumerWidget {
     if (context.mounted) {
       context.goNamed(
         RouteNames.map,
-        queryParameters: {
-          'building': buildingId,
-        },
+        queryParameters: {'building': buildingId},
       );
     }
   }
