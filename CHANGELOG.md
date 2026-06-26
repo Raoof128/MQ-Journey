@@ -1,3 +1,17 @@
+### Raouf: 2026-06-26 (Australia/Sydney) — Windows build: MSVC coroutine deprecation fix + BINARY_NAME rename
+**Scope:** Windows CI/CD — `windows/CMakeLists.txt`
+**Summary:** Fixed `flutter build windows --release` failure on MSVC 2025+. The compiler errors `STL1011: The /await compiler option... is deprecated` affected `flutter_local_notifications_windows` and `permission_handler_windows` plugins. Added `_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS` globally to suppress. Also silenced `objectbox_flutter_libs` FetchContent deprecation via `CMP0169 OLD`. Renamed `BINARY_NAME` from `mq_navigation` → `mq_journey`.
+**Files Changed:** `windows/CMakeLists.txt`
+**Verification:** CMake policy + MSVC define configured for Windows CI builds.
+**Follow-ups:** Run `flutter build windows --release` on Windows CI.
+
+### Raouf: 2026-06-26 (Australia/Sydney) — README audit: stale name refs + Google Maps detritus cleanup
+**Scope:** Documentation — `README.md`, `.env.example`
+**Summary:** Audited README for remaining `mq-navigation`/`MQ Navigation` references. Fixed: typing SVG "Dual-Renderer Maps" → "Illustrated Campus Map", test email `marker@mq-navigation.test` → `marker@mq-journey.test`, iOS URL scheme docs now mention legacy alias, clone dir `mq_navigation` → `MQ-Journey`, `.env.example` header stale name.
+**Files Changed:** `README.md`, `.env.example`
+**Verification:** Grep clean for stale references.
+**Follow-ups:** None.
+
 ### Raouf: 2026-06-26 (Australia/Sydney) — Phase 5: URL scheme & deep links migration (MQ Navigation → MQ Journey)
 **Scope:** URL scheme rename — `chore/rename-mq-journey` Task 4: migrate `io.mqnavigation://` → `io.mqjourney://`
 **Summary:** Migrated URL scheme from `io.mqnavigation://` to `io.mqjourney://` across all layers, keeping old scheme as legacy alias during transition. (1) iOS Info.plist: added `io.mqjourney` above `io.mqnavigation` in CFBundleURLSchemes. (2) Android AndroidManifest.xml: added `io.mqjourney` entries for both `callback` and `meet` hosts alongside existing legacy entries. (3) Dart deep-link handler (`mq_journey_app.dart`): updated scheme check to accept both schemes. (4) Auth service: changed both `io.mqnavigation://callback` to `io.mqjourney://callback`. (5) Offline maps service: updated userAgentPackageName to `io.mqjourney.mq_journey`. (6) Campus map view: updated share URI scheme to `io.mqjourney`.
