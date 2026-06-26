@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Typing animation -->
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=20&duration=2800&pause=700&color=0067a5&center=true&vCenter=true&width=860&lines=Find+Your+Way+Around+Macquarie+%E2%80%94+Without+Selling+Your+Data;Dual-Renderer+Maps+%E2%80%A2+Turn-by-Turn+Routing+%E2%80%A2+Compass+Mode;Flutter+3.11+%E2%80%A2+Riverpod+3+%E2%80%A2+Supabase+%E2%80%A2+35+Languages;Privacy+by+Design+%E2%80%A2+323+Tests+%E2%80%A2+Open+Day+2026+Ready)](https://readme-typing-svg.demolab.com)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=20&duration=2800&pause=700&color=0067a5&center=true&vCenter=true&width=860&lines=Find+Your+Way+Around+Macquarie+%E2%80%94+Without+Selling+Your+Data;Illustrated+Campus+Map+%E2%80%A2+Turn-by-Turn+Routing+%E2%80%A2+Compass+Mode;Flutter+3.11+%E2%80%A2+Riverpod+3+%E2%80%A2+Supabase+%E2%80%A2+35+Languages;Privacy+by+Design+%E2%80%A2+323+Tests+%E2%80%A2+Open+Day+2026+Ready)](https://readme-typing-svg.demolab.com)
 
 <!-- Badges -->
 ![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b?style=for-the-badge)
@@ -47,7 +47,7 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 ### Test User Credentials
 
 ```
-Email:    marker@mq-navigation.test
+Email:    marker@mq-journey.test
 Password: OpenDay2026!
 ```
 
@@ -242,7 +242,7 @@ We designed MQ Journey around four real user personas — the people we'd hand a
 | **Android emulator** (API 33+) | ✅ Full | All features verified. Recommended for marking. |
 | **Android physical device** | ✅ Full | Compass, flashlight, GPS, push notifications all functional. |
 | **Chrome (web)** | ✅ Core | Auth, favourites CRUD, maps, routing, transit countdown work. Compass mode and flashlight gracefully degrade — the UI displays an "unsupported on this device" fallback. |
-| **iOS device** | ✅ Full | Native build verified on iPhone (iOS 17+). Custom URL scheme `io.mqnavigation://` registered for auth callbacks. |
+| **iOS device** | ✅ Full | Native build verified on iPhone (iOS 17+). Custom URL scheme `io.mqjourney://` registered for auth callbacks (legacy `io.mqnavigation://` also supported during transition). |
 | **macOS desktop** | ✅ Core | Location, auth, and flutter_map campus renderer all functional. CFBundleURLTypes registered so auth deep links return to the app. |
 
 If a platform-specific issue surfaces during marking, the relevant feature renders a typed `MapStateError` fallback rather than crashing.
@@ -299,7 +299,7 @@ scripts/              run.sh, check.sh (quality gate)
 ```bash
 # Clone and install
 git clone <repo-url>
-cd mq_navigation
+cd MQ-Journey
 flutter pub get
 
 # Configure environment

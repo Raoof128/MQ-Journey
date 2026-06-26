@@ -44,6 +44,20 @@ lib/
 ```
 
 
+### Raouf: 2026-06-26 (Australia/Sydney) — Windows build: MSVC coroutine deprecation fix + BINARY_NAME rename
+**Scope:** Windows CI/CD — `windows/CMakeLists.txt`
+**Summary:** Fixed `flutter build windows --release` failure on MSVC 2025+. The compiler errors `STL1011: The /await compiler option... is deprecated` affected `flutter_local_notifications_windows` and `permission_handler_windows` plugins. Added `add_compile_definitions(_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)` globally to suppress. Also added `cmake_policy(SET CMP0169 OLD)` for `objectbox_flutter_libs` FetchContent deprecation warning. Renamed `BINARY_NAME` from `mq_navigation` to `mq_journey`.
+**Files Changed:** `windows/CMakeLists.txt`
+**Verification:** Compilation fix — verified via cmake policy + MSVC define.
+**Follow-ups:** Run `flutter build windows --release` on Windows CI to confirm.
+
+### Raouf: 2026-06-26 (Australia/Sydney) — README audit: stale name references + Google Maps detritus cleanup
+**Scope:** Documentation — `README.md`, `.env.example`
+**Summary:** Audited README and `.env.example` for remaining `mq-navigation` / `MQ Navigation` references and Google Maps SDK detritus. Fixed 5 issues: (1) typing SVG still said "Dual-Renderer Maps" → "Illustrated Campus Map"; (2) test email `marker@mq-navigation.test` → `marker@mq-journey.test`; (3) iOS URL scheme `io.mqnavigation://` now documents legacy alias; (4) clone directory `cd mq_navigation` → `cd MQ-Journey`; (5) `.env.example` header still said "MQ Navigation" → "MQ Journey".
+**Files Changed:** `README.md`, `.env.example`
+**Verification:** `grep -n 'mq-navigation\|MQ Navigation\|Dual-Renderer' README.md .env.example` — 0 hits.
+**Follow-ups:** None.
+
 ### Raouf: 2026-06-26 (Australia/Sydney) — Phase 5: URL scheme & deep links migration (MQ Navigation → MQ Journey)
 **Scope:** URL scheme rename — migrated `io.mqnavigation://` → `io.mqjourney://` with legacy alias.
 **Summary:** iOS Info.plist, Android AndroidManifest.xml, Dart deep-link handler, auth service redirectTo, offline maps userAgent, campus map share URI all updated. Only legacy comparison in `mq_journey_app.dart:59` retains old scheme string.
