@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:mq_navigation/core/config/env_config.dart';
-import 'package:mq_navigation/core/error/error_boundary.dart';
-import 'package:mq_navigation/core/logging/app_logger.dart';
+import 'package:mq_journey/core/config/env_config.dart';
+import 'package:mq_journey/core/error/error_boundary.dart';
+import 'package:mq_journey/core/logging/app_logger.dart';
 
 /// Initialises critical synchronous settings before the widget tree mounts.
 ///

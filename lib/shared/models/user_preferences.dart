@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
+import 'package:mq_journey/features/map/domain/entities/route_leg.dart';
 
 @immutable
 class UserPreferences {

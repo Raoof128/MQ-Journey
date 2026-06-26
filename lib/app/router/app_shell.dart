@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
+import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
 
 /// Persistent bottom navigation shell wrapping the main tab destinations.
 class AppShell extends StatelessWidget {

@@ -3,11 +3,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
-import 'package:mq_navigation/features/auth/data/repositories/auth_repository.dart';
-import 'package:mq_navigation/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:mq_navigation/features/auth/presentation/pages/login_page.dart';
-import 'package:mq_navigation/shared/widgets/mq_button.dart';
+import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
+import 'package:mq_journey/features/auth/data/repositories/auth_repository.dart';
+import 'package:mq_journey/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:mq_journey/features/auth/presentation/pages/login_page.dart';
+import 'package:mq_journey/shared/widgets/mq_button.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
