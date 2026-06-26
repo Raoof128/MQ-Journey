@@ -1,6 +1,6 @@
 {
-    "name": "mq_navigation",
-    "short_name": "mq_navigation",
+    "name": "MQ Journey",
+    "short_name": "MQ Journey",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
