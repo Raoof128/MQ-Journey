@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mq_journey/app/router/app_router.dart';
 import 'package:mq_journey/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:mq_journey/core/logging/app_logger.dart';
+import 'package:mq_journey/core/network/session_guard.dart';
 import 'package:mq_journey/core/network/connectivity_service.dart';
 import 'package:mq_journey/features/notifications/data/datasources/fcm_service.dart';
 import 'package:mq_journey/features/notifications/data/datasources/local_notifications_service.dart';
@@ -120,6 +121,7 @@ class NotificationsController extends AsyncNotifier<NotificationsState> {
     if (userId != null &&
         (permissionStatus == NotificationPermissionStatus.granted ||
             permissionStatus == NotificationPermissionStatus.provisional)) {
+      await ensureSessionBeforeWrite();
       await ref.read(fcmServiceProvider).syncToken(userId);
     }
 
@@ -148,6 +150,7 @@ class NotificationsController extends AsyncNotifier<NotificationsState> {
     if (userId != null &&
         (permissionStatus == NotificationPermissionStatus.granted ||
             permissionStatus == NotificationPermissionStatus.provisional)) {
+      await ensureSessionBeforeWrite();
       await ref.read(fcmServiceProvider).syncToken(userId);
     }
   }
