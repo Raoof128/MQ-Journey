@@ -45,9 +45,6 @@ client_id = "env(GOOGLE_CLIENT_ID)"
 secret = "env(GOOGLE_CLIENT_SECRET)"
 
 
-[functions.maps-places]
-verify_jwt = false
-
 [functions.maps-routes]
 verify_jwt = false
 

@@ -227,10 +227,7 @@ void main() {
           selectedBachelor: _bachelor('computing'),
           now: DateTime(2026, 1, 1),
         );
-        expect(
-          fake.scheduled.single.scheduledFor,
-          DateTime(2099, 1, 1, 11, 0),
-        );
+        expect(fake.scheduled.single.scheduledFor, DateTime(2099, 1, 1, 11, 0));
       },
     );
   });

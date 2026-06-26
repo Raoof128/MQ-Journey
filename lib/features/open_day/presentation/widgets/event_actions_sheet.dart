@@ -32,9 +32,7 @@ class EventActionsSheet extends ConsumerWidget {
 
       context.goNamed(
         RouteNames.map,
-        queryParameters: {
-          'building': targetBuildingId,
-        },
+        queryParameters: {'building': targetBuildingId},
       );
     }
   }

@@ -229,8 +229,7 @@ class MapController extends AsyncNotifier<MapState> {
           await _startLocationTracking();
         }
       }
-    } catch (_) {
-    }
+    } catch (_) {}
 
     return MapState(
       buildings: buildings,
