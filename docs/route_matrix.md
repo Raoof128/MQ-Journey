@@ -1,6 +1,6 @@
 # Route Matrix — Flutter Routes
 
-All routes in the MQ Navigation Flutter app.
+All routes in the MQ Journey Flutter app.
 
 ## Page Routes
 

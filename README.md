@@ -18,7 +18,7 @@
 
 <br/>
 
-# MQ Navigation — Privacy-First Campus Companion
+# MQ Journey — Privacy-First Campus Companion
 
 > **Find your way around Macquarie — without selling your data.**
 
@@ -73,7 +73,7 @@ Password: OpenDay2026!
 
 ## 🎯 High-Level Impact & Value Proposition
 
-Existing campus maps either stop at the kerb (Google/Apple Maps don't know which door is *18 Wally's Walk*) or require single sign-on for a poor-quality web experience. MQ Navigation solves this by providing:
+Existing campus maps either stop at the kerb (Google/Apple Maps don't know which door is *18 Wally's Walk*) or require single sign-on for a poor-quality web experience. MQ Journey solves this by providing:
 
 - **Illustrated Campus Map:** Single flutter_map + CrsSimple raster renderer with calibrated building position overlay — pinpoints the correct **building entrance**, not the road.
 - **Turn-by-Turn Routing:** Server-side routing via Supabase Edge proxy (OpenRouteService + TfNSW) with walking, driving, cycling, and transit modes. Arrival detection, off-route recalculation, and a collapsible nav sheet that doesn't stop navigation.
@@ -84,7 +84,7 @@ Existing campus maps either stop at the kerb (Google/Apple Maps don't know which
 
 ## Why This Project Matters
 
-Most campus apps are dated, English-only, and trade student data for the convenience of a "free" Google Maps embed. MQ Navigation was built to prove three things:
+Most campus apps are dated, English-only, and trade student data for the convenience of a "free" Google Maps embed. MQ Journey was built to prove three things:
 
 1. **A privacy-respecting campus app is technically achievable.** Real GPS, real routing, real building markers, real safety contacts — and zero analytics SDKs. The CI privacy guard refuses to compile the app if any tracking package is added.
 2. **Localisation can be a first-class concern, not an afterthought.** 35 ARB locales with full RTL support for Arabic, Farsi, Hebrew, and Urdu. Tested on real screens, not just `flutter gen-l10n` output.
@@ -144,7 +144,7 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 
 ## 🏗️ Technical Architecture Overview
 
-MQ Navigation is built on a modern Flutter stack designed for offline resilience, type safety, and zero-trust privacy.
+MQ Journey is built on a modern Flutter stack designed for offline resilience, type safety, and zero-trust privacy.
 
 ### System Architecture
 
@@ -218,7 +218,7 @@ Privacy is a structural constraint, not a feature flag. Every line of code is au
 
 ## Who is this for?
 
-We designed MQ Navigation around four real user personas — the people we'd hand a phone to on Open Day and watch them use it.
+We designed MQ Journey around four real user personas — the people we'd hand a phone to on Open Day and watch them use it.
 
 | Persona | Goals | Why this app over competitors |
 |---------|-------|------------------------------|
@@ -227,7 +227,7 @@ We designed MQ Navigation around four real user personas — the people we'd han
 | **"International Isha"** — New PhD student from Mumbai, navigating campus in her second language. | Read the app in Hindi or English. Save the rooms her supervisor mentioned. | Full 35-language i18n (with RTL for Arabic, Farsi, Hebrew, Urdu) — most campus apps are English-only. |
 | **"Accessibility Alex"** — Low-vision student who uses a screen reader. | High-contrast map mode, no flashing animations, predictable navigation. | Reduced-motion toggle, high-contrast map mode, semantic widgets throughout, no analytics/tracking SDKs. |
 
-**Why pick MQ Navigation over Google/Apple Maps?** Google Maps stops at the street. We start at the building entrance — and we promise to never sell where you walked.
+**Why pick MQ Journey over Google/Apple Maps?** Google Maps stops at the street. We start at the building entrance — and we promise to never sell where you walked.
 
 <br/>
 

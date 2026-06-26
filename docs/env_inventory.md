@@ -1,6 +1,6 @@
 # Environment Variable Inventory
 
-All environment variables used by MQ Navigation, categorised by client/server exposure.
+All environment variables used by MQ Journey, categorised by client/server exposure.
 
 ## Client-Side (--dart-define in Flutter)
 
