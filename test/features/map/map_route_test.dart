@@ -39,7 +39,6 @@ void main() {
 
     test('parses normalized maps-routes response', () {
       final route = MapRoute.fromJson({
-        'renderer': 'google',
         'mode': 'WALK',
         'distanceMeters': 540,
         'durationSeconds': 420,
@@ -72,7 +71,6 @@ void main() {
 
     test('parses Routes API duration strings from normalized responses', () {
       final route = MapRoute.fromJson({
-        'renderer': 'google',
         'mode': 'WALK',
         'distanceMeters': 540,
         'duration': '420s',
