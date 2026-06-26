@@ -16,9 +16,6 @@ abstract final class RouteNames {
   // Safety
   static const String safetyToolkit = 'safety';
 
-  // Auth
-  static const String auth = 'auth';
-
   // Favorites
   static const String favorites = 'favorites';
 }
