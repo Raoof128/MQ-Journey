@@ -1383,7 +1383,7 @@
   "invalidVerificationLink": "유효하지 않거나 만료된 인증 링크입니다. 새 링크를 요청해 주세요.",
   "signedInNow": "로그인되었습니다!",
   "collectionNotice": "계정 생성 및 관리, 서비스 제공, 보안 유지를 위해 귀하의 성명, 이메일, 학번, 전공, 학년을 수집합니다. 클라우드 호스팅을 포함한 당사의 서비스 제공업체는 호주 외부에서 데이터를 처리할 수 있습니다.",
-  "appName": "MQ 네비게이션",
+  "appName": "MQ Journey",
   "done": "완료",
   "kContinue": "계속",
   "optional": "선택 사항",
