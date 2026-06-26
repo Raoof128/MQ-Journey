@@ -1,6 +1,5 @@
 import FirebaseCore
 import Flutter
-import GoogleMaps
 import UIKit
 
 /// App delegate for MQ Navigation.
@@ -42,13 +41,6 @@ import UIKit
       FirebaseApp.app() == nil
     {
       FirebaseApp.configure()
-    }
-
-    // ── Google Maps ───────────────────────────────────────────────────────
-    if let mapsApiKey = Bundle.main.object(forInfoDictionaryKey: "GMSApiKey") as? String,
-      !mapsApiKey.isEmpty
-    {
-      GMSServices.provideAPIKey(mapsApiKey)
     }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
