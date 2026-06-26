@@ -44,6 +44,13 @@ lib/
 ```
 
 
+### Raouf: 2026-06-26 (Australia/Sydney) — Phase 5: URL scheme & deep links migration (MQ Navigation → MQ Journey)
+**Scope:** URL scheme rename — migrated `io.mqnavigation://` → `io.mqjourney://` with legacy alias.
+**Summary:** iOS Info.plist, Android AndroidManifest.xml, Dart deep-link handler, auth service redirectTo, offline maps userAgent, campus map share URI all updated. Only legacy comparison in `mq_journey_app.dart:59` retains old scheme string.
+**Files Changed:** `ios/Runner/Info.plist`, `android/app/src/main/AndroidManifest.xml`, `lib/app/mq_journey_app.dart`, `lib/features/auth/domain/services/auth_service.dart`, `lib/features/map/data/services/offline_maps_service.dart`, `lib/features/map/presentation/widgets/campus/campus_map_view.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `grep -rn 'io.mqnavigation' lib/` — only expected legacy line.
+**Follow-ups:** Verify Android app links, test deep link functionality.
+
 ### Raouf: 2026-06-26 (Australia/Sydney) — Phase 1: Branch + Baseline Check + Identity Capture (MQ Navigation → MQ Journey)
 **Scope:** Rename prep — `chore/rename-mq-journey` branch creation, baseline validation, identity capture
 **Summary:** (1) Created feature branch `chore/rename-mq-journey`. (2) Ran `scripts/check.sh` — 8/10 passed (2 pre-existing failures: no-google guard false positive, Gradle Kotlin build environment issue). Critical checks all green (format, analyze, 320+ tests, gen-l10n, privacy, secret scan). (3) Captured all current identifiers: pubspec name `mq_navigation`, bundle ID `io.mqnavigation`/`io.mqnavigation.mq_navigation`, deep link scheme `io.mqnavigation`, l10n appName `"MQ Navigation"`.
