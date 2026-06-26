@@ -1,15 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
 import 'package:mq_journey/app/router/app_shell.dart';
 import 'package:mq_journey/app/router/route_names.dart';
 import 'package:mq_journey/core/config/env_config.dart';
-import 'package:mq_journey/features/auth/presentation/pages/login_page.dart';
-import 'package:mq_journey/features/auth/presentation/pages/reset_password_page.dart';
-import 'package:mq_journey/features/auth/presentation/pages/signup_page.dart';
 import 'package:mq_journey/features/deep_link/deep_link_contract.dart';
 import 'package:mq_journey/features/home/presentation/pages/home_page.dart';
 import 'package:mq_journey/features/home/presentation/pages/onboarding_page.dart';
@@ -20,7 +14,6 @@ import 'package:mq_journey/features/open_day/presentation/pages/open_day_page.da
 import 'package:mq_journey/features/safety/presentation/pages/safety_toolkit_page.dart';
 import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:mq_journey/features/settings/presentation/pages/settings_page.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -44,44 +37,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/home',
     debugLogDiagnostics: EnvConfig.isDevelopment,
     redirect: (context, state) {
-      final session = Supabase.instance.client.auth.currentSession;
-      final isAuthed = session != null;
       final path = state.matchedLocation;
+      if (path == '/onboarding') return null;
 
-      final isAuthRoute = path.startsWith('/auth');
-      final isOnboardingRoute = path == '/onboarding';
-      final isResetRoute = path == '/auth/reset-password';
+      final settingsAsync = ref.read(settingsControllerProvider);
+      if (settingsAsync.isLoading) return null;
+      final hasCompleted = settingsAsync.value?.hasCompletedOnboarding ?? false;
 
-      // Unauthenticated users go to auth
-      if (!isAuthed && !isAuthRoute) {
-        return '/auth/login';
+      if (!hasCompleted) {
+        return '/onboarding';
       }
-
-      // Authenticated users on auth route (excluding reset-password) → redirect to home or onboarding
-      if (isAuthed && isAuthRoute && !isResetRoute) {
-        final settingsAsync = ref.read(settingsControllerProvider);
-        final hasCompleted =
-            settingsAsync.value?.hasCompletedOnboarding ?? false;
-        return hasCompleted ? '/home' : '/onboarding';
-      }
-
-      // Onboarding gate — only applies to authenticated users
-      if (isAuthed && !isOnboardingRoute && !isResetRoute) {
-        final settingsAsync = ref.read(settingsControllerProvider);
-        if (settingsAsync.isLoading) return null;
-        final hasCompleted =
-            settingsAsync.value?.hasCompletedOnboarding ?? false;
-        if (!hasCompleted) {
-          return '/onboarding';
-        }
-      }
-
       return null;
     },
-    // Re-run the redirect whenever the onboarding-completion bit flips.
-    // This is the only piece of settings state the redirect cares about,
-    // so we listen to *just* that bit. Other preference changes (theme,
-    // locale, bachelor, …) no longer trigger router rebuilds.
     refreshListenable: _OnboardingFlagListenable(ref),
     routes: [
       // Syllabus Sync integration entry point.
@@ -143,40 +110,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/safety',
         name: RouteNames.safetyToolkit,
         builder: (context, state) => const SafetyToolkitPage(),
-      ),
-      // Auth routes (public, outside shell)
-      GoRoute(
-        path: '/auth/login',
-        name: RouteNames.login,
-        builder: (context, state) => const LoginPage(),
-      ),
-      GoRoute(
-        path: '/auth/signup',
-        name: RouteNames.signup,
-        builder: (context, state) => const SignupPage(),
-      ),
-      GoRoute(
-        path: '/auth/reset-password',
-        name: RouteNames.resetPassword,
-        builder: (context, state) => const ResetPasswordPage(),
-      ),
-      GoRoute(path: '/auth', redirect: (context, state) => '/auth/login'),
-      // Web email-confirmation callback (PKCE flow).
-      //
-      // After a user clicks the link in their confirmation email, Supabase
-      // redirects the browser to `{emailRedirectTo}?code=<pkce_code>`.
-      // supabase_flutter automatically exchanges that code for a session during
-      // Supabase.initialize() (before runApp is called).  By the time GoRouter
-      // evaluates this route, the session is already present and the global
-      // redirect fires, sending the user to /onboarding or /home.
-      //
-      // This route therefore acts as a safe landing page: if the exchange is
-      // still in-flight it shows a brief loading spinner; once the auth-state
-      // stream fires (via _OnboardingFlagListenable) the router takes over.
-      GoRoute(
-        path: '/auth/callback',
-        name: RouteNames.authCallback,
-        builder: (context, state) => const _AuthCallbackPage(),
       ),
       // Favorites page
       GoRoute(
@@ -242,26 +175,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
 /// [Listenable] adapter for `GoRouter.refreshListenable`.
 ///
-/// Fires whenever EITHER of these changes:
-///   1. Supabase auth state (sign-in / sign-out) — so the router re-evaluates
-///      the redirect immediately after a successful login or logout.
-///   2. The onboarding-completion flag in settings — so the router redirects
-///      away from /onboarding once the user finishes it.
-///
-/// Records use value-equality for the settings projection, so unrelated
-/// preference changes (theme, locale, bachelor, …) keep this listener
-/// silent and avoid spurious router rebuilds.
+/// Fires whenever the onboarding-completion flag in settings changes,
+/// so the router redirects away from /onboarding once the user finishes it.
 class _OnboardingFlagListenable extends ChangeNotifier {
   _OnboardingFlagListenable(Ref ref) {
-    // Listen to Supabase auth state changes (login / logout).
-    _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      if (data.event == AuthChangeEvent.passwordRecovery) {
-        _rootNavigatorKey.currentContext?.go('/auth/reset-password');
-      }
-      notifyListeners();
-    });
-
-    // Listen to the onboarding flag (and its loading state).
     _settingsSub = ref.listen<({bool isLoading, bool hasCompleted})>(
       settingsControllerProvider.select(
         (s) => (
@@ -273,40 +190,9 @@ class _OnboardingFlagListenable extends ChangeNotifier {
       fireImmediately: false,
     );
     ref.onDispose(() {
-      _authSub?.cancel();
       _settingsSub?.close();
     });
   }
 
-  StreamSubscription<AuthState>? _authSub;
   ProviderSubscription<({bool isLoading, bool hasCompleted})>? _settingsSub;
-}
-
-/// Transitional page shown at `/auth/callback` while supabase_flutter
-/// exchanges the PKCE code from the confirmation-email link for a session.
-///
-/// In practice this is almost invisible on fast connections — `Supabase
-/// .initialize()` (called before `runApp`) already exchanges the code
-/// synchronously, so [_OnboardingFlagListenable] fires and the router
-/// redirects before the first frame is painted.  The spinner is only visible
-/// on very slow connections or when the exchange races with startup.
-class _AuthCallbackPage extends StatelessWidget {
-  const _AuthCallbackPage();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(l10n.authConfirmingEmail),
-          ],
-        ),
-      ),
-    );
-  }
 }
