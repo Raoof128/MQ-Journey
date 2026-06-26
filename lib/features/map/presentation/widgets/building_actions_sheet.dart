@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
-import 'package:mq_navigation/app/router/route_names.dart';
 import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
-import 'package:mq_navigation/shared/extensions/context_extensions.dart';
 import 'package:mq_navigation/shared/widgets/mq_bottom_sheet.dart';
 
-class BuildingActionsSheet extends ConsumerWidget {
+class BuildingActionsSheet extends StatelessWidget {
   const BuildingActionsSheet({
     super.key,
     required this.buildingId,
@@ -22,72 +19,100 @@ class BuildingActionsSheet extends ConsumerWidget {
     BuildContext context, {
     required String buildingId,
     required String buildingName,
-  }) async {
-    await showModalBottomSheet<void>(
+  }) {
+    return showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
-      isScrollControlled: true,
       builder: (_) => BuildingActionsSheet(
         buildingId: buildingId,
         buildingName: buildingName,
       ),
     );
-
-    if (context.mounted) {
-      context.goNamed(
-        RouteNames.map,
-        queryParameters: {'building': buildingId},
-      );
-    }
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final dark = context.isDarkMode;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return MqBottomSheet(
-      child: Padding(
-        padding: const EdgeInsetsDirectional.symmetric(
-          horizontal: MqSpacing.space2,
-          vertical: MqSpacing.space2,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.symmetric(
-                horizontal: MqSpacing.space2,
-                vertical: MqSpacing.space1,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            buildingName,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : MqColors.contentPrimary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: MqSpacing.space4),
+          _ActionButton(
+            icon: Icons.map_outlined,
+            label: l10n.navigateOnCampus,
+            onTap: () {
+              Navigator.pop(context);
+              context.goNamed('map', queryParameters: {'building': buildingId});
+            },
+          ),
+          _ActionButton(
+            icon: Icons.directions_walk_outlined,
+            label: l10n.navigate,
+            onTap: () {
+              Navigator.pop(context);
+              context.goNamed(
+                'map',
+                queryParameters: {'building': buildingId, 'preview': 'route'},
+              );
+            },
+          ),
+          const SizedBox(height: MqSpacing.space3),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(bottom: MqSpacing.space2),
+      child: Semantics(
+        button: true,
+        label: label,
+        child: SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: onTap,
+            icon: Icon(icon, size: 20),
+            label: Text(label),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: isDark ? Colors.white : MqColors.contentPrimary,
+              side: BorderSide(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.15)
+                    : MqColors.charcoal800.withValues(alpha: 0.12),
               ),
-              child: Text(
-                buildingName,
-                style: context.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: dark ? Colors.white : MqColors.contentPrimary,
-                ),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(MqSpacing.radiusMd),
               ),
             ),
-            Semantics(
-              button: true,
-              label: l10n.openDay_viewInCampusMapSemantic(buildingName),
-              child: ListTile(
-                leading: Icon(
-                  Icons.location_on_rounded,
-                  color: dark ? MqColors.brightRed : MqColors.red,
-                ),
-                title: Text(
-                  l10n.openDay_viewInCampusMap,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                subtitle: Text(l10n.openDay_openInsideMqNav),
-                onTap: () => Navigator.pop(context),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
