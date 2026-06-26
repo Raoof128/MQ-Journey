@@ -45,7 +45,6 @@ jobs:
       - name: Check edge functions
         run: |
           deno check supabase/functions/maps-routes/index.ts
-          deno check supabase/functions/maps-places/index.ts
           deno check supabase/functions/tfnsw-proxy/index.ts
           deno check supabase/functions/notify/index.ts
           deno check supabase/functions/cleanup-cron/index.ts
@@ -76,7 +75,6 @@ jobs:
           flutter build apk --release \
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
-            --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
             --dart-define=APP_ENV=production
 
       - name: Upload APK
@@ -114,7 +112,6 @@ jobs:
           flutter build ios --release --no-codesign \
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
-            --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
             --dart-define=APP_ENV=production
 
   build-web:
@@ -138,7 +135,6 @@ jobs:
           flutter build web --release \
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
-            --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
             --dart-define=APP_ENV=production
 
       - name: Upload web build
@@ -173,7 +169,6 @@ jobs:
           flutter build macos --release \
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
-            --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
             --dart-define=APP_ENV=production
 
       - name: Upload macOS app
@@ -236,7 +231,6 @@ jobs:
           flutter build windows --release `
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} `
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} `
-            --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} `
             --dart-define=APP_ENV=production
 
       - name: Upload Windows build
