@@ -67,7 +67,6 @@ class MapsRoutesRemoteSource {
         'lng': destinationLongitude,
         'entranceLat': destination.entranceLatitude,
         'entranceLng': destination.entranceLongitude,
-        'googlePlaceId': destination.googlePlaceId,
       },
       'travelMode': travelMode.apiValue,
       'languageCode': 'en-AU',
