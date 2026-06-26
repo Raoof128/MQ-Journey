@@ -1226,3 +1226,10 @@ The project was built through phases 0–5, originally including auth, calendar,
   - `lib/features/map/presentation/pages/map_page.dart`
 - **Verification:** UI visual inspection in dark mode confirms icon visibility, map interaction testing confirms expected panel dismissal, and `./scripts/check.sh` reports 184 tests passed successfully.
 - **Follow-ups:** Monitor future map-panel components to ensure category drill-down states don't accidentally supersede RoutePanel display logic.
+
+### Raouf: 2026-06-26 (Australia/Sydney) — Dropped google_maps_flutter dependency (Task 1/12)
+**Scope:** Dependency removal — `pubspec.yaml`
+**Summary:** Removed `google_maps_flutter: ^2.15.0` and all transitive Google Maps Flutter dependencies from the project. Bumped `flutter_map` from `^8.2.2` to `^8.3.0`. This is the first step of a 12-task plan to fully remove Google Maps from the app. The app will temporarily not compile (expected — fixed in Task 4).
+**Files Changed:** `pubspec.yaml`, `pubspec.lock`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `flutter pub get` resolves cleanly (11 google-maps packages removed). `grep -rn "google_maps_flutter" lib test` shows 3 remaining references in source code (imports + comments in `google_map_view.dart`, `desktop_map_fallback_view.dart`) — these will be addressed in Tasks 2–4.
+**Follow-ups:** Tasks 2–4 of the Google Maps removal plan.
