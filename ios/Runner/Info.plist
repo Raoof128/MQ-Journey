@@ -27,8 +27,9 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
+		<key>CFBundleURLSchemes</key>
 			<array>
+				<string>io.mqjourney</string>
 				<string>io.mqnavigation</string>
 			</array>
 		</dict>

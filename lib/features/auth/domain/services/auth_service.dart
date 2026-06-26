@@ -33,7 +33,7 @@ class AuthService {
         ? '${Uri.base.scheme}://${Uri.base.host}'
               '${Uri.base.hasPort ? ':${Uri.base.port}' : ''}'
               '/auth/callback'
-        : 'io.mqnavigation://callback';
+        : 'io.mqjourney://callback';
 
     return _supabase.auth.signUp(
       email: email,
@@ -61,7 +61,7 @@ class AuthService {
         ? '${Uri.base.scheme}://${Uri.base.host}'
               '${Uri.base.hasPort ? ':${Uri.base.port}' : ''}'
               '/auth/callback'
-        : 'io.mqnavigation://callback';
+        : 'io.mqjourney://callback';
 
     await _supabase.auth.resetPasswordForEmail(email, redirectTo: redirectTo);
   }

@@ -49,7 +49,7 @@ class OfflineMapsService {
 
     final tileLayer = TileLayer(
       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-      userAgentPackageName: 'io.mqnavigation.mq_journey',
+      userAgentPackageName: 'io.mqjourney.mq_journey',
     );
     final region = RectangleRegion(
       LatLngBounds(
