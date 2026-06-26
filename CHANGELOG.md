@@ -1,3 +1,10 @@
+### Raouf: 2026-06-26 (Australia/Sydney) — Phase 1: Branch + Baseline Check + Identity Capture (MQ Navigation → MQ Journey)
+**Scope:** Rename prep — `chore/rename-mq-journey` branch creation, baseline validation, identity capture
+**Summary:** (1) Created feature branch `chore/rename-mq-journey`. (2) Ran `scripts/check.sh` — 8/10 passed (2 pre-existing failures: no-google guard false positive, Gradle Kotlin build environment issue). Critical checks all green (format, analyze, 320+ tests, gen-l10n, privacy, secret scan). (3) Captured all current identifiers: pubspec name `mq_navigation`, bundle ID `io.mqnavigation`/`io.mqnavigation.mq_navigation`, deep link scheme `io.mqnavigation`, l10n appName `"MQ Navigation"`. Commit was empty (no files modified in this read-only phase).
+**Files Changed:** `AGENT.md`, `CHANGELOG.md`
+**Verification:** `scripts/check.sh` — 8/10 passed (format, analyze, 320+ tests, gen-l10n, privacy, secret scan green; no-google guard and build APK are known pre-existing issues).
+**Follow-ups:** Phase 2 — rename pubspec name, bundle IDs, l10n appName, and all io.mqnavigation references.
+
 ### Raouf: 2026-05-24 (Australia/Sydney) — Showcase Screenshots and Release APK Build
 **Scope:** Showcase Presentation & Release Packaging — `build/app/outputs/flutter-apk/app-release.apk`, `screenshots/` (7 images)
 **Summary:** (1) Built the release APK target for MQ Navigation at `build/app/outputs/flutter-apk/app-release.apk` with debug key fallback signing, and cleaned up debug and sha1 build outputs. (2) Compiled the web target (`build/web`) and automated Playwright to log in via the demo credentials (`marker@mq-navigation.test` / `OpenDay2026!`). (3) Automated bypassing the onboarding flow and captured 7 distinctive high-resolution showcase screenshots of the Login, Home Dashboard, Map, Safety Toolkit, Favorites, Notifications, and Settings screens.
