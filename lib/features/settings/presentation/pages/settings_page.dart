@@ -5,7 +5,6 @@ import 'package:mq_navigation/app/theme/mq_colors.dart';
 import 'package:mq_navigation/app/theme/mq_spacing.dart';
 import 'package:mq_navigation/core/utils/haptics.dart';
 import 'package:mq_navigation/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:mq_navigation/features/map/data/services/offline_maps_service.dart';
 import 'package:mq_navigation/features/open_day/data/open_day_providers.dart';
@@ -63,11 +62,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       MqHaptics.heavy(true); // Always vibrate for the easter egg!
 
       final l10n = AppLocalizations.of(context)!;
-      final preferences = ref.read(settingsControllerProvider).value;
-      final rendererLabel =
-          preferences?.defaultRenderer == MapRendererType.google
-          ? l10n.diagnosticsRendererGoogle
-          : l10n.diagnosticsRendererCampus;
+      final rendererLabel = l10n.diagnosticsRendererCampus;
       // App version mirrors the value declared in pubspec.yaml. It is
       // surfaced here for the dev-only easter egg, not for end-user
       // marketing — keep both values in sync when bumping the release.
@@ -289,29 +284,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   ), // Using experience for map prefs
                   _SettingsCard(
                     children: [
-                      _TapRow(
-                        icon: Icons.map_outlined,
-                        label: l10n.defaultRenderer,
-                        value:
-                            preferences.defaultRenderer ==
-                                MapRendererType.campus
-                            ? l10n.campusRenderer
-                            : l10n.googleRenderer,
-                        semanticLabel: l10n.defaultRenderer,
-                        hapticsEnabled: preferences.hapticsEnabled,
-                        onTap: () => _showPicker<MapRendererType>(
-                          context: context,
-                          title: l10n.defaultRenderer,
-                          current: preferences.defaultRenderer,
-                          items: MapRendererType.values,
-                          labelOf: (v) => v == MapRendererType.campus
-                              ? l10n.campusRenderer
-                              : l10n.googleRenderer,
-                          onSelect: (v) => ref
-                              .read(settingsControllerProvider.notifier)
-                              .updateDefaultRenderer(v),
-                        ),
-                      ),
                       _TapRow(
                         icon: Icons.directions_walk_outlined,
                         label: l10n.defaultTravelMode,

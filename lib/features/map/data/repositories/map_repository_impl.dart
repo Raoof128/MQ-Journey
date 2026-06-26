@@ -1,22 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mq_navigation/features/map/data/datasources/building_registry_source.dart';
 import 'package:mq_navigation/features/map/data/datasources/campus_routes_remote_source.dart';
-import 'package:mq_navigation/features/map/data/datasources/google_routes_remote_source.dart';
 import 'package:mq_navigation/features/map/data/datasources/location_source.dart';
 import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 
-/// Core repository interface for all map-related data operations.
-/// Defines the contract for fetching buildings, handling location permissions,
-/// and requesting routes regardless of the underlying renderer.
 abstract interface class MapRepository {
   Future<List<Building>> getBuildings({bool forceRefresh = false});
   Future<LocationPermissionState> ensureLocationPermission();
   Future<LocationSample?> getCurrentLocation();
   Stream<LocationSample> watchLocation();
   Future<MapRoute> getRoute({
-    required MapRendererType renderer,
     required LocationSample origin,
     required Building destination,
     required TravelMode travelMode,
@@ -29,31 +23,21 @@ final mapRepositoryProvider = Provider<MapRepository>((ref) {
   return MapRepositoryImpl(
     buildingRegistrySource: ref.watch(buildingRegistrySourceProvider),
     campusRoutesRemoteSource: ref.watch(campusRoutesRemoteSourceProvider),
-    googleRoutesRemoteSource: ref.watch(googleRoutesRemoteSourceProvider),
     locationSource: ref.watch(locationSourceProvider),
   );
 });
 
-/// Implementation of [MapRepository] that acts as an orchestrator.
-///
-/// It delegates building fetching to [BuildingRegistrySource], location services
-/// to [LocationSource], and routes the `getRoute` call to the appropriate
-/// remote source depending on whether the user is in [MapRendererType.campus]
-/// or [MapRendererType.google] mode.
 class MapRepositoryImpl implements MapRepository {
   const MapRepositoryImpl({
     required BuildingRegistrySource buildingRegistrySource,
     required CampusRoutesRemoteSource campusRoutesRemoteSource,
-    required GoogleRoutesRemoteSource googleRoutesRemoteSource,
     required LocationSource locationSource,
   }) : _buildingRegistrySource = buildingRegistrySource,
        _campusRoutesRemoteSource = campusRoutesRemoteSource,
-       _googleRoutesRemoteSource = googleRoutesRemoteSource,
        _locationSource = locationSource;
 
   final BuildingRegistrySource _buildingRegistrySource;
   final CampusRoutesRemoteSource _campusRoutesRemoteSource;
-  final GoogleRoutesRemoteSource _googleRoutesRemoteSource;
   final LocationSource _locationSource;
 
   @override
@@ -78,23 +62,15 @@ class MapRepositoryImpl implements MapRepository {
 
   @override
   Future<MapRoute> getRoute({
-    required MapRendererType renderer,
     required LocationSample origin,
     required Building destination,
     required TravelMode travelMode,
   }) {
-    return switch (renderer) {
-      MapRendererType.campus => _campusRoutesRemoteSource.getRoute(
-        origin: origin,
-        destination: destination,
-        travelMode: travelMode,
-      ),
-      MapRendererType.google => _googleRoutesRemoteSource.getRoute(
-        origin: origin,
-        destination: destination,
-        travelMode: travelMode,
-      ),
-    };
+    return _campusRoutesRemoteSource.getRoute(
+      origin: origin,
+      destination: destination,
+      travelMode: travelMode,
+    );
   }
 
   @override

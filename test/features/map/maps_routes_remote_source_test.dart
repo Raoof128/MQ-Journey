@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:mq_navigation/features/map/data/datasources/maps_routes_remote_source.dart';
 import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/domain/entities/map_renderer_type.dart';
 import 'package:mq_navigation/features/map/domain/entities/route_leg.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -48,7 +47,6 @@ void main() {
 
   group('MapsRoutesRemoteSource', () {
     test('getRoute returns MapRoute on 200 success', () async {
-      // Arrange
       final successResponse = {
         'distanceMeters': 250,
         'durationSeconds': 180,
@@ -72,22 +70,18 @@ void main() {
         (_) async => http.Response(jsonEncode(successResponse), 200),
       );
 
-      // Act
       final route = await remoteSource.getRoute(
-        renderer: MapRendererType.campus,
         origin: origin,
         destination: building,
         travelMode: TravelMode.walk,
       );
 
-      // Assert
       expect(route.distanceMeters, 250);
       expect(route.encodedPolyline, 'abc_123');
       expect(route.instructions.first.text, 'Head south');
     });
 
     test('getRoute throws StateError on 400 failure', () async {
-      // Arrange
       when(
         () => mockHttpClient.post(
           any(),
@@ -99,10 +93,8 @@ void main() {
             http.Response(jsonEncode({'error': 'Invalid request'}), 400),
       );
 
-      // Act & Assert
       expect(
         () => remoteSource.getRoute(
-          renderer: MapRendererType.campus,
           origin: origin,
           destination: building,
           travelMode: TravelMode.walk,
@@ -114,13 +106,10 @@ void main() {
     test(
       'getRoute throws StateError when building has no coordinates',
       () async {
-        // Arrange
         const invalidBuilding = Building(id: 'X', code: 'X', name: 'Unknown');
 
-        // Act & Assert
         expect(
           () => remoteSource.getRoute(
-            renderer: MapRendererType.campus,
             origin: origin,
             destination: invalidBuilding,
             travelMode: TravelMode.walk,
@@ -137,7 +126,6 @@ void main() {
     );
 
     test('getRoute handles Directions API error format', () async {
-      // Arrange
       final errorResponse = {'status': 'ZERO_RESULTS', 'routes': []};
 
       when(
@@ -148,10 +136,8 @@ void main() {
         ),
       ).thenAnswer((_) async => http.Response(jsonEncode(errorResponse), 200));
 
-      // Act & Assert
       expect(
         () => remoteSource.getRoute(
-          renderer: MapRendererType.google,
           origin: origin,
           destination: building,
           travelMode: TravelMode.walk,
@@ -169,7 +155,6 @@ void main() {
     });
 
     test('getRoute includes Authorization header if session exists', () async {
-      // Arrange
       final mockSession = MockSession();
       when(() => mockSession.accessToken).thenReturn('fake-token');
       when(() => mockAuthClient.currentSession).thenReturn(mockSession);
@@ -182,10 +167,8 @@ void main() {
         ),
       ).thenAnswer((_) async => http.Response('{"routes":[]}', 200));
 
-      // Act & Assert (ignoring result, checking headers)
       try {
         await remoteSource.getRoute(
-          renderer: MapRendererType.google,
           origin: origin,
           destination: building,
           travelMode: TravelMode.walk,

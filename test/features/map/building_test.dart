@@ -15,7 +15,6 @@ void main() {
       'longitude': 151.1126116,
       'entranceLatitude': -33.77388,
       'entranceLongitude': 151.11275,
-      'googlePlaceId': 'ChIJx123',
       'levels': 4,
       'wheelchair': true,
       'tags': ['services', 'administration', 'study'],
@@ -38,7 +37,6 @@ void main() {
       expect(building.longitude, 151.1126116);
       expect(building.entranceLatitude, -33.77388);
       expect(building.entranceLongitude, 151.11275);
-      expect(building.googlePlaceId, 'ChIJx123');
       expect(building.levels, 4);
       expect(building.wheelchair, isTrue);
       expect(building.tags, hasLength(3));

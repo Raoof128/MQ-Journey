@@ -1,1 +1,0 @@
-enum MapRendererType { campus, google }

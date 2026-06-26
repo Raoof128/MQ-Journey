@@ -14,7 +14,6 @@ Building _b({required String id, bool geo = true}) {
     longitude: geo ? 151.1126 : null,
     entranceLatitude: null,
     entranceLongitude: null,
-    googlePlaceId: null,
     aliases: const [],
     tags: const [],
     searchTokens: const [],
