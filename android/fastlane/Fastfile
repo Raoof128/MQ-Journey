@@ -6,7 +6,6 @@ platform :android do
     sh("cd ../.. && flutter build apk --debug " \
        "--dart-define=SUPABASE_URL=#{ENV['SUPABASE_URL']} " \
        "--dart-define=SUPABASE_ANON_KEY=#{ENV['SUPABASE_ANON_KEY']} " \
-       "--dart-define=GOOGLE_MAPS_API_KEY=#{ENV['GOOGLE_MAPS_API_KEY'] || ''} " \
        "--dart-define=APP_ENV=development")
   end
 
@@ -15,7 +14,6 @@ platform :android do
     sh("cd ../.. && flutter build appbundle --release " \
        "--dart-define=SUPABASE_URL=#{ENV['SUPABASE_URL']} " \
        "--dart-define=SUPABASE_ANON_KEY=#{ENV['SUPABASE_ANON_KEY']} " \
-       "--dart-define=GOOGLE_MAPS_API_KEY=#{ENV['GOOGLE_MAPS_API_KEY'] || ''} " \
        "--dart-define=APP_ENV=production")
   end
 

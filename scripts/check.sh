@@ -227,7 +227,40 @@ else
   pass "secret scan"
 fi
 
-# ── 9. Build ─────────────────────────────────────────────
+# ── 9. No-Google guard ─────────────────────────────────────
+step "No-Google guard"
+
+GOOGLE_SOURCE_DIRS="lib android ios supabase scripts"
+GOOGLE_PATTERNS="google_maps_flutter|maps.googleapis.com|GMSServices|GOOGLE_MAPS_API_KEY|GOOGLE_ROUTES_API_KEY"
+GOOGLE_GUARD_FAIL=false
+
+for dir in $GOOGLE_SOURCE_DIRS; do
+  if [[ ! -d "$dir" ]]; then continue; fi
+
+  if grep -RIE "$GOOGLE_PATTERNS" \
+    "$dir" \
+    --exclude-dir=.dart_tool \
+    --exclude-dir=build \
+    --exclude-dir=.git \
+    --exclude='*.g.dart' \
+    --exclude='*.freezed.dart' \
+    --exclude-dir=Pods \
+    2>/dev/null > /tmp/mq_google_guard.txt; then
+    echo -e "${RED}Google Maps references found in $dir:${NC}"
+    cat /tmp/mq_google_guard.txt
+    GOOGLE_GUARD_FAIL=true
+  fi
+done
+
+rm -f /tmp/mq_google_guard.txt
+
+if [[ "$GOOGLE_GUARD_FAIL" == true ]]; then
+  fail "no-google guard"
+else
+  pass "no-google guard"
+fi
+
+# ── 10. Build ────────────────────────────────────────────
 if [[ "$QUICK" == false ]]; then
   step "Build check"
   run_step "flutter build apk debug" "flutter build apk --debug"
