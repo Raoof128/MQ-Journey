@@ -15,7 +15,6 @@ class Building {
     this.longitude,
     this.entranceLatitude,
     this.entranceLongitude,
-    this.googlePlaceId,
     this.levels,
     this.wheelchair = false,
     this.tags = const [],
@@ -39,7 +38,6 @@ class Building {
   final double? longitude;
   final double? entranceLatitude;
   final double? entranceLongitude;
-  final String? googlePlaceId;
   final int? levels;
   final bool wheelchair;
   final List<String> tags;
@@ -105,7 +103,6 @@ class Building {
       entranceLongitude:
           (json['entranceLongitude'] as num?)?.toDouble() ??
           (entrance?['lng'] as num?)?.toDouble(),
-      googlePlaceId: json['googlePlaceId'] as String?,
       levels: (json['levels'] as num?)?.toInt(),
       wheelchair: json['wheelchair'] as bool? ?? false,
       tags: (json['tags'] as List<dynamic>?)?.cast<String>() ?? [],
@@ -156,7 +153,6 @@ class Building {
     'entranceLocation': entranceLatitude != null
         ? {'lat': entranceLatitude, 'lng': entranceLongitude}
         : null,
-    'googlePlaceId': googlePlaceId,
     'levels': levels,
     'wheelchair': wheelchair,
     'tags': tags,
