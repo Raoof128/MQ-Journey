@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# MQ Navigation comprehensive check script.
+# MQ Journey comprehensive check script.
 #
 # Runs:
 #   pub get
@@ -227,7 +227,30 @@ else
   pass "secret scan"
 fi
 
-# ── 9. No-Google guard ─────────────────────────────────────
+# ── 9. No-stale-name guard ─────────────────────────────
+step "No-stale-name guard"
+
+STALE_NAME_FAIL=false
+
+if grep -rni 'mq_navigation' \
+  --include='*.dart' --include='*.yaml' --include='*.xml' \
+  --include='*.plist' --include='*.gradle' --include='*.kts' \
+  --include='*.json' --include='*.md' --include='*.arb' \
+  lib test android ios macos web scripts 2>/dev/null \
+  > /tmp/stale_name_scan.txt; then
+  echo -e "${RED}Stale 'mq_navigation' reference found:${NC}"
+  cat /tmp/stale_name_scan.txt
+  STALE_NAME_FAIL=true
+fi
+rm -f /tmp/stale_name_scan.txt
+
+if [[ "$STALE_NAME_FAIL" == true ]]; then
+  fail "no-stale-name guard"
+else
+  pass "no-stale-name guard"
+fi
+
+# ── 10. No-Google guard ─────────────────────────────────────
 step "No-Google guard"
 
 GOOGLE_SOURCE_DIRS="lib android ios supabase scripts"
@@ -260,7 +283,7 @@ else
   pass "no-google guard"
 fi
 
-# ── 10. Build ────────────────────────────────────────────
+# ── 11. Build ────────────────────────────────────────────
 if [[ "$QUICK" == false ]]; then
   step "Build check"
   run_step "flutter build apk debug" "flutter build apk --debug"
