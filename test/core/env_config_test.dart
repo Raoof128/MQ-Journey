@@ -32,6 +32,5 @@ void main() {
         expect(EnvConfig.supabaseAnonKey, isA<String>());
       },
     );
-
   });
 }
