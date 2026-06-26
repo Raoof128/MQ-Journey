@@ -133,7 +133,7 @@ class _CampusMapViewState extends ConsumerState<CampusMapView> {
     final l10n = AppLocalizations.of(context)!;
     MqHaptics.heavy(true);
     final uri = Uri(
-      scheme: 'io.mqnavigation',
+      scheme: 'io.mqjourney',
       host: 'meet',
       queryParameters: {
         'lat': latitude.toString(),
