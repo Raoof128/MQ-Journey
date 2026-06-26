@@ -232,11 +232,13 @@ step "No-stale-name guard"
 
 STALE_NAME_FAIL=false
 
+# Only scan source/script/config directories where the Dart package name
+# could leak back in.  Exclude native build files (android/, ios/, etc.)
+# because their applicationId / bundle ID intentionally keep the old
+# namespace under Option A (cosmetic rename).
 if grep -rni 'mq_navigation' \
-  --include='*.dart' --include='*.yaml' --include='*.xml' \
-  --include='*.plist' --include='*.gradle' --include='*.kts' \
-  --include='*.json' --include='*.md' --include='*.arb' \
-  lib test android ios macos web scripts 2>/dev/null \
+  --include='*.dart' --include='*.yaml' --include='*.arb' \
+  lib test scripts pubspec.yaml 2>/dev/null \
   > /tmp/stale_name_scan.txt; then
   echo -e "${RED}Stale 'mq_navigation' reference found:${NC}"
   cat /tmp/stale_name_scan.txt

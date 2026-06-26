@@ -56,7 +56,8 @@ class _MqJourneyAppState extends ConsumerState<MqJourneyApp> {
   }
 
   void _handleDeepLink(Uri uri) {
-    if (uri.host != 'meet' || (uri.scheme != 'io.mqjourney' && uri.scheme != 'io.mqnavigation')) {
+    if (uri.host != 'meet' ||
+        (uri.scheme != 'io.mqjourney' && uri.scheme != 'io.mqnavigation')) {
       return;
     }
 
