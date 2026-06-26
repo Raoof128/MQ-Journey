@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
-import 'package:mq_navigation/app/theme/mq_colors.dart';
-import 'package:mq_navigation/shared/widgets/glass_pane.dart';
-import 'package:mq_navigation/app/theme/mq_spacing.dart';
+import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
+import 'package:mq_journey/app/theme/mq_colors.dart';
+import 'package:mq_journey/shared/widgets/glass_pane.dart';
+import 'package:mq_journey/app/theme/mq_spacing.dart';
 
 class MapShell extends StatelessWidget {
   const MapShell({

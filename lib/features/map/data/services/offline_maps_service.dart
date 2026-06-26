@@ -3,7 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:mq_navigation/core/logging/app_logger.dart';
+import 'package:mq_journey/core/logging/app_logger.dart';
 
 const campusOfflineStoreName = 'campus_offline_tiles';
 
@@ -49,7 +49,7 @@ class OfflineMapsService {
 
     final tileLayer = TileLayer(
       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-      userAgentPackageName: 'io.mqnavigation.mq_navigation',
+      userAgentPackageName: 'io.mqnavigation.mq_journey',
     );
     final region = RectangleRegion(
       LatLngBounds(

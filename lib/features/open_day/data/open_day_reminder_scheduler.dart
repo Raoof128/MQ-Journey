@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mq_navigation/core/logging/app_logger.dart';
-import 'package:mq_navigation/features/notifications/data/datasources/local_notifications_service.dart';
-import 'package:mq_navigation/features/notifications/domain/entities/app_notification.dart';
-import 'package:mq_navigation/features/notifications/domain/entities/reminder_request.dart';
-import 'package:mq_navigation/features/open_day/data/open_day_providers.dart';
-import 'package:mq_navigation/features/open_day/domain/entities/open_day_data.dart';
-import 'package:mq_navigation/features/settings/presentation/controllers/settings_controller.dart';
-import 'package:mq_navigation/shared/models/user_preferences.dart';
+import 'package:mq_journey/core/logging/app_logger.dart';
+import 'package:mq_journey/features/notifications/data/datasources/local_notifications_service.dart';
+import 'package:mq_journey/features/notifications/domain/entities/app_notification.dart';
+import 'package:mq_journey/features/notifications/domain/entities/reminder_request.dart';
+import 'package:mq_journey/features/open_day/data/open_day_providers.dart';
+import 'package:mq_journey/features/open_day/domain/entities/open_day_data.dart';
+import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
+import 'package:mq_journey/shared/models/user_preferences.dart';
 
 /// Stable-ID prefix used in payloads so the scheduler can identify
 /// reminders it owns when reconciling. The base service's
@@ -105,7 +105,7 @@ class OpenDayReminderScheduler {
       }
 
       // Cancel anything we previously scheduled that isn't in the new set.
-      // The base service filters by `managedBy: mq_navigation` so other
+      // The base service filters by `managedBy: mq_journey` so other
       // notification surfaces (deadlines, exams, system alerts) are safe.
       await _localNotifications.cancelManagedNotificationsExcept(pendingIds);
 

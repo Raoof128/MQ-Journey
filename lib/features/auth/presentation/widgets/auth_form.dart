@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
-import 'package:mq_navigation/shared/widgets/mq_input.dart';
+import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
+import 'package:mq_journey/shared/widgets/mq_input.dart';
 
 class AuthForm extends StatelessWidget {
   const AuthForm({

@@ -3,21 +3,21 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mq_navigation/app/router/route_names.dart';
-import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
-import 'package:mq_navigation/app/theme/mq_colors.dart';
-import 'package:mq_navigation/app/theme/mq_spacing.dart';
-import 'package:mq_navigation/features/map/data/datasources/location_source.dart';
-import 'package:mq_navigation/features/map/domain/entities/building.dart';
-import 'package:mq_navigation/features/map/presentation/controllers/map_controller.dart';
-import 'package:mq_navigation/features/favorites/presentation/widgets/favorite_button.dart';
-import 'package:mq_navigation/features/map/presentation/widgets/building_actions_sheet.dart';
-import 'package:mq_navigation/features/map/presentation/widgets/building_search_sheet.dart';
-import 'package:mq_navigation/features/map/presentation/widgets/campus/campus_map_view.dart';
-import 'package:mq_navigation/features/map/presentation/widgets/map_shell.dart';
-import 'package:mq_navigation/features/map/presentation/widgets/overlay_picker_sheet.dart';
-import 'package:mq_navigation/shared/extensions/context_extensions.dart';
-import 'package:mq_navigation/shared/widgets/mq_button.dart';
+import 'package:mq_journey/app/router/route_names.dart';
+import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
+import 'package:mq_journey/app/theme/mq_colors.dart';
+import 'package:mq_journey/app/theme/mq_spacing.dart';
+import 'package:mq_journey/features/map/data/datasources/location_source.dart';
+import 'package:mq_journey/features/map/domain/entities/building.dart';
+import 'package:mq_journey/features/map/presentation/controllers/map_controller.dart';
+import 'package:mq_journey/features/favorites/presentation/widgets/favorite_button.dart';
+import 'package:mq_journey/features/map/presentation/widgets/building_actions_sheet.dart';
+import 'package:mq_journey/features/map/presentation/widgets/building_search_sheet.dart';
+import 'package:mq_journey/features/map/presentation/widgets/campus/campus_map_view.dart';
+import 'package:mq_journey/features/map/presentation/widgets/map_shell.dart';
+import 'package:mq_journey/features/map/presentation/widgets/overlay_picker_sheet.dart';
+import 'package:mq_journey/shared/extensions/context_extensions.dart';
+import 'package:mq_journey/shared/widgets/mq_button.dart';
 
 class MapPage extends ConsumerStatefulWidget {
   const MapPage({

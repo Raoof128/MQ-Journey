@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:mq_navigation/features/notifications/domain/entities/app_notification.dart';
+import 'package:mq_journey/features/notifications/domain/entities/app_notification.dart';
 
 @immutable
 class ReminderRequest {
@@ -28,7 +28,7 @@ class ReminderRequest {
   final bool repeatsDaily;
 
   String get encodedPayload => jsonEncode(<String, dynamic>{
-    'managedBy': 'mq_navigation',
+    'managedBy': 'mq_journey',
     'notificationId': notificationId,
     'stableId': stableId,
     'type': type.value,

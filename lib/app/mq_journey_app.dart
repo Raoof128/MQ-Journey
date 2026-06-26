@@ -4,29 +4,29 @@ import 'dart:ui' as ui;
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mq_navigation/app/bootstrap/app_initialization.dart';
-import 'package:mq_navigation/app/l10n/generated/app_localizations.dart';
-import 'package:mq_navigation/app/router/app_router.dart';
-import 'package:mq_navigation/app/theme/mq_colors.dart';
-import 'package:mq_navigation/app/theme/mq_theme.dart';
-import 'package:mq_navigation/core/error/error_boundary.dart';
-import 'package:mq_navigation/features/notifications/presentation/controllers/notifications_controller.dart';
-import 'package:mq_navigation/features/open_day/data/open_day_reminder_scheduler.dart';
-import 'package:mq_navigation/features/settings/presentation/controllers/settings_controller.dart';
+import 'package:mq_journey/app/bootstrap/app_initialization.dart';
+import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
+import 'package:mq_journey/app/router/app_router.dart';
+import 'package:mq_journey/app/theme/mq_colors.dart';
+import 'package:mq_journey/app/theme/mq_theme.dart';
+import 'package:mq_journey/core/error/error_boundary.dart';
+import 'package:mq_journey/features/notifications/presentation/controllers/notifications_controller.dart';
+import 'package:mq_journey/features/open_day/data/open_day_reminder_scheduler.dart';
+import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
 
 /// The root Flutter application widget.
 ///
 /// Composes global app state including routing, theme, and localization.
 /// Also observes the notifications controller so that push notification
 /// setup side-effects execute immediately upon app startup.
-class MqNavigationApp extends ConsumerStatefulWidget {
-  const MqNavigationApp({super.key});
+class MqJourneyApp extends ConsumerStatefulWidget {
+  const MqJourneyApp({super.key});
 
   @override
-  ConsumerState<MqNavigationApp> createState() => _MqNavigationAppState();
+  ConsumerState<MqJourneyApp> createState() => _MqJourneyAppState();
 }
 
-class _MqNavigationAppState extends ConsumerState<MqNavigationApp> {
+class _MqJourneyAppState extends ConsumerState<MqJourneyApp> {
   final AppLinks _appLinks = AppLinks();
   StreamSubscription<Uri>? _linkSubscription;
 
