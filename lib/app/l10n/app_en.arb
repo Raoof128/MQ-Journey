@@ -150,7 +150,7 @@
   "hapticFeedbackDesc": "Vibration feedback during navigation (mobile only)",
   "privacySecurity": "Security",
   "quickActions": "Quick Actions",
-  "helpSupport": "About MQ Navigation",
+  "helpSupport": "About MQ Journey",
   "deadlineReminders": "Deadline Reminders",
   "examReminders": "Exam Reminders",
   "deadlineRemindersDesc": "Get notified about upcoming deadlines",
@@ -197,13 +197,13 @@
   "chooseNavigationMethod": "Which map would you like to use for navigation?",
   "campusMapDesc": "Navigate using the built-in campus map",
   "googleMapsDesc": "Open in Google Maps for directions",
-  "aboutTitle": "About MQ Navigation",
+  "aboutTitle": "About MQ Journey",
   "aboutDesc": "Macquarie University Campus Management",
   "version": "Version",
   "needHelp": "Need Help?",
   "helpDesc": "Visit our documentation or contact support.",
   "viewDocumentation": "View Documentation",
-  "documentationOpening": "📚 Opening Macquarie University MQ Navigation documentation...",
+  "documentationOpening": "📚 Opening Macquarie University MQ Journey documentation...",
   "documentationMsg": "📖 Documentation will be available soon. Check back later!",
   "feedback": "Feedback",
   "feedbackDesc": "Help us improve by sharing your feedback.",
@@ -1171,7 +1171,7 @@
   "stressLevelLow": "Low stress level - you have few upcoming deadlines",
   "stressLevelBusy": "Busy schedule - several deadlines coming up",
   "stressLevelHigh": "High stress level - many deadlines need attention",
-  "copyright": "© {year} MQ Navigation - Macquarie University",
+  "copyright": "© {year} MQ Journey - Macquarie University",
   "overlay_parking_name": "Parking",
   "overlay_parking_desc": "Parking zones, EV charging, ticket machines, accessible bays, metro stop",
   "overlay_drinking_water_name": "Drinking Water",
@@ -1309,7 +1309,7 @@
   "loginHeroTitle": "Your schedule. Your goals. Synced.",
   "loginHeroDescription": "Stay on top of classes, deadlines, and student life with one dashboard.",
   "campusNavigation": "STUDENT HUB",
-  "exploreMap": "Explore MQ Navigation",
+  "exploreMap": "Explore MQ Journey",
   "loginWithGoogle": "Google",
   "featureComingSoon": "Feature coming soon",
   "oauthComingSoon": "{provider} sign-in will be available soon.",
@@ -1383,7 +1383,7 @@
   "invalidVerificationLink": "Invalid or expired verification link. Please request a new one.",
   "signedInNow": "You are now signed in!",
   "collectionNotice": "We collect your name, email, student ID, course, and year to create and manage your account, provide the Service, and maintain security. Our service providers (including cloud hosting) may process data outside Australia.",
-  "appName": "MQ Navigation",
+  "appName": "MQ Journey",
   "done": "Done",
   "kContinue": "Continue",
   "optional": "Optional",
@@ -1684,11 +1684,11 @@
   "keyboardShortcutsTitle": "Keyboard Shortcuts",
   "selectFacultyFirst": "Select a faculty first",
   "installApp": "Install App",
-  "installAppDesc": "Add MQ Navigation to your home screen for the best experience.",
+  "installAppDesc": "Add MQ Journey to your home screen for the best experience.",
   "install": "Install",
   "dismiss": "Dismiss",
   "updateAvailable": "Update Available",
-  "updateAvailableDesc": "A new version of MQ Navigation is ready.",
+  "updateAvailableDesc": "A new version of MQ Journey is ready.",
   "updateNow": "Update Now",
   "syncConflict": "Sync Conflict",
   "syncConflictDesc": "This item was modified while you were offline. Choose which version to keep.",
@@ -1773,7 +1773,7 @@
   "expectRefreshments": "Refreshments at career fairs",
   "clickCategoryToFilter": "Click a category to filter the event feed",
   "filterInterestDesc": "Filter events by category to find what interests you",
-  "youAreOfflineDesc": "MQ Navigation requires an internet connection. Please check your connection and try again.",
+  "youAreOfflineDesc": "MQ Journey requires an internet connection. Please check your connection and try again.",
   "errorProfileLoad": "We couldn't load your profile settings. This has been logged for our engineering team.",
   "viewLabel": "View {label}",
   "viewCategoryEvents": "View {label} events",
@@ -2142,7 +2142,7 @@
   "renderer": "Renderer: CrsSimple (Campus)",
   "edgeProxy": "Edge Proxy: maps-places (Active)",
   "home_brandTitle": "MQ NAVIGATION",
-  "home_welcomeTitle": "Welcome to MQ Navigation",
+  "home_welcomeTitle": "Welcome to MQ Journey",
   "home_welcomeSubtitle": "Find your way around campus quickly and easily.",
   "home_startExploring": "Start Exploring",
   "home_quickAccess": "Quick Access",
@@ -2178,15 +2178,15 @@
       }
     }
   },
-  "openDay_openInsideMqNav": "Open inside MQ Navigation",
+  "openDay_openInsideMqNav": "Open inside MQ Journey",
   "@openDay_openInsideMqNav": {
-    "description": "ListTile subtitle explaining the campus-map action opens within MQ Navigation."
+    "description": "ListTile subtitle explaining the campus-map action opens within MQ Journey."
   },
   "openDay_navigateWithGoogle": "Navigate with Google Maps",
   "@openDay_navigateWithGoogle": {
     "description": "ListTile title for the Google-Maps navigation action."
   },
-  "openDay_navigateWithGoogleSemantic": "Navigate to {venue} with Google Maps in MQ Navigation",
+  "openDay_navigateWithGoogleSemantic": "Navigate to {venue} with Google Maps in MQ Journey",
   "@openDay_navigateWithGoogleSemantic": {
     "description": "Accessibility label for the Google-Maps navigation tile.",
     "placeholders": {
@@ -2196,7 +2196,7 @@
       }
     }
   },
-  "openDay_openGoogleMapsInsideNav": "Open Google Maps inside MQ Navigation",
+  "openDay_openGoogleMapsInsideNav": "Open Google Maps inside MQ Journey",
   "@openDay_openGoogleMapsInsideNav": {
     "description": "ListTile subtitle for the Google-Maps navigation action."
   },
