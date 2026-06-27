@@ -252,7 +252,25 @@ else
   pass "no-stale-name guard"
 fi
 
-# ── 10. No-Google guard ─────────────────────────────────────
+# ── 10. No-login-route guard ─────────────────────────────────
+step "No-login-route guard"
+
+NO_LOGIN_FAIL=false
+
+if grep -rn "/auth/login\|/auth/signup\|signInWithPassword" lib --include='*.dart' 2>/dev/null > /tmp/mq_no_login_scan.txt; then
+  echo -e "${RED}Login/signup flow reference reintroduced:${NC}"
+  cat /tmp/mq_no_login_scan.txt
+  NO_LOGIN_FAIL=true
+fi
+rm -f /tmp/mq_no_login_scan.txt
+
+if [[ "$NO_LOGIN_FAIL" == true ]]; then
+  fail "no-login-route guard"
+else
+  pass "no-login-route guard"
+fi
+
+# ── 11. No-Google guard ─────────────────────────────────────
 step "No-Google guard"
 
 GOOGLE_SOURCE_DIRS="lib android ios supabase scripts"
@@ -285,7 +303,7 @@ else
   pass "no-google guard"
 fi
 
-# ── 11. Build ────────────────────────────────────────────
+# ── 12. Build ────────────────────────────────────────────
 if [[ "$QUICK" == false ]]; then
   step "Build check"
   run_step "flutter build apk debug" "flutter build apk --debug"

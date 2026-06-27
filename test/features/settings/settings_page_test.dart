@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
-import 'package:mq_journey/features/auth/data/repositories/auth_repository.dart';
-import 'package:mq_journey/features/auth/presentation/controllers/auth_controller.dart';
+
 import 'package:mq_journey/features/settings/data/repositories/settings_repository.dart';
 import 'package:mq_journey/features/settings/presentation/pages/settings_page.dart';
 import 'package:mq_journey/features/map/data/services/offline_maps_service.dart';
@@ -17,8 +16,6 @@ import 'package:mq_journey/features/notifications/presentation/controllers/notif
 import 'package:mq_journey/features/transit/domain/entities/transit_stop.dart';
 import 'package:mq_journey/features/transit/presentation/providers/tfnsw_provider.dart';
 import 'package:mq_journey/shared/models/user_preferences.dart';
-
-class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -40,7 +37,6 @@ class _FakeNotificationsController extends NotificationsController {
 }
 
 void main() {
-  late MockAuthRepository mockAuthRepository;
   late MockSettingsRepository mockSettingsRepository;
   late MockOfflineMapsService mockOfflineMapsService;
 
@@ -49,15 +45,8 @@ void main() {
   });
 
   setUp(() {
-    mockAuthRepository = MockAuthRepository();
     mockSettingsRepository = MockSettingsRepository();
     mockOfflineMapsService = MockOfflineMapsService();
-
-    // Default mock behavior
-    when(() => mockAuthRepository.isAuthenticated).thenReturn(false);
-    when(() => mockAuthRepository.userId).thenReturn(null);
-    when(() => mockAuthRepository.userEmail).thenReturn(null);
-    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
 
     when(
       () => mockSettingsRepository.loadPreferences(),
@@ -79,7 +68,6 @@ void main() {
   Widget buildTestApp({Widget? child}) {
     return ProviderScope(
       overrides: [
-        authRepositoryProvider.overrideWithValue(mockAuthRepository),
         settingsRepositoryProvider.overrideWithValue(mockSettingsRepository),
         offlineMapsServiceProvider.overrideWithValue(mockOfflineMapsService),
         notificationsControllerProvider.overrideWith(
@@ -147,58 +135,7 @@ void main() {
       expect(find.text(l10n.accessibility.toUpperCase()), findsOneWidget);
       expect(find.text(l10n.notifications.toUpperCase()), findsOneWidget);
       expect(find.text(l10n.about.toUpperCase()), findsOneWidget);
-      expect(find.text(l10n.account.toUpperCase()), findsOneWidget);
       expect(find.text(l10n.dangerZone.toUpperCase()), findsOneWidget);
-    });
-
-    testWidgets('shows signed out state when user is anonymous', (
-      tester,
-    ) async {
-      setupLargeViewport(tester);
-      when(() => mockAuthRepository.isAuthenticated).thenReturn(false);
-      when(() => mockAuthRepository.userEmail).thenReturn(null);
-
-      await tester.pumpWidget(buildTestApp());
-      await tester.pumpAndSettle();
-
-      final BuildContext context = tester.element(find.byType(SettingsPage));
-      final l10n = AppLocalizations.of(context)!;
-
-      expect(find.text(l10n.notSignedInLabel), findsOneWidget);
-    });
-
-    testWidgets('shows user email when user is authenticated', (tester) async {
-      setupLargeViewport(tester);
-      when(() => mockAuthRepository.isAuthenticated).thenReturn(true);
-      when(() => mockAuthRepository.userId).thenReturn('user-123');
-      when(() => mockAuthRepository.userEmail).thenReturn('student@mq.edu.au');
-
-      await tester.pumpWidget(buildTestApp());
-      await tester.pumpAndSettle();
-
-      expect(find.text('student@mq.edu.au'), findsOneWidget);
-    });
-
-    testWidgets('calls signOut when TapRow for Sign Out is pressed', (
-      tester,
-    ) async {
-      setupLargeViewport(tester);
-      when(() => mockAuthRepository.isAuthenticated).thenReturn(true);
-      when(() => mockAuthRepository.userId).thenReturn('user-123');
-      when(() => mockAuthRepository.userEmail).thenReturn('student@mq.edu.au');
-
-      await tester.pumpWidget(buildTestApp());
-      await tester.pumpAndSettle();
-
-      final BuildContext context = tester.element(find.byType(SettingsPage));
-      final l10n = AppLocalizations.of(context)!;
-
-      final signOutFinder = find.text(l10n.signOut);
-      expect(signOutFinder, findsOneWidget);
-      await tester.tap(signOutFinder);
-      await tester.pumpAndSettle();
-
-      verify(() => mockAuthRepository.signOut()).called(1);
     });
 
     testWidgets('toggling haptics switch invokes repository savePreferences', (

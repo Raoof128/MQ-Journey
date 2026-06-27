@@ -121,7 +121,7 @@ class NotificationsController extends AsyncNotifier<NotificationsState> {
     if (userId != null &&
         (permissionStatus == NotificationPermissionStatus.granted ||
             permissionStatus == NotificationPermissionStatus.provisional)) {
-      await ensureSessionBeforeWrite();
+      await ref.read(sessionGuardProvider)();
       await ref.read(fcmServiceProvider).syncToken(userId);
     }
 
@@ -150,7 +150,7 @@ class NotificationsController extends AsyncNotifier<NotificationsState> {
     if (userId != null &&
         (permissionStatus == NotificationPermissionStatus.granted ||
             permissionStatus == NotificationPermissionStatus.provisional)) {
-      await ensureSessionBeforeWrite();
+      await ref.read(sessionGuardProvider)();
       await ref.read(fcmServiceProvider).syncToken(userId);
     }
   }

@@ -4,7 +4,6 @@ import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
 import 'package:mq_journey/app/theme/mq_colors.dart';
 import 'package:mq_journey/app/theme/mq_spacing.dart';
 import 'package:mq_journey/core/utils/haptics.dart';
-import 'package:mq_journey/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:mq_journey/features/map/domain/entities/route_leg.dart';
 import 'package:mq_journey/features/map/data/services/offline_maps_service.dart';
 import 'package:mq_journey/features/open_day/data/open_day_providers.dart';
@@ -105,8 +104,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final settingsState = ref.watch(settingsControllerProvider);
-    ref.watch(authControllerProvider);
-    final userEmail = ref.watch(authRepositoryProvider).userEmail;
     final dark = context.isDarkMode;
 
     final body = settingsState.when(
@@ -650,34 +647,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: MqSpacing.space6),
-
-                  // ── Account section ──────────────────────────
-                  _SectionHeader(title: l10n.account),
-                  _SettingsCard(
-                    children: [
-                      _InfoRow(
-                        icon: Icons.person_outline,
-                        label: l10n.signedInAs,
-                        // Guard against an empty email in the brief window
-                        // between sign-out and the router redirect firing.
-                        subtitle: userEmail?.isNotEmpty == true
-                            ? userEmail!
-                            : l10n.notSignedInLabel,
-                      ),
-                      _TapRow(
-                        icon: Icons.logout_rounded,
-                        label: l10n.signOut,
-                        value: '',
-                        hapticsEnabled: preferences.hapticsEnabled,
-                        onTap: () async {
-                          await ref
-                              .read(authControllerProvider.notifier)
-                              .signOut();
-                        },
-                      ),
-                    ],
                   ),
                   const SizedBox(height: MqSpacing.space6),
 

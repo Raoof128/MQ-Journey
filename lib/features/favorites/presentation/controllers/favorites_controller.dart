@@ -80,7 +80,7 @@ class FavoritesController extends Notifier<FavoritesState> {
     required String buildingId,
     required String buildingName,
   }) async {
-    if (!await ensureSessionBeforeWrite()) return;
+    if (!await ref.read(sessionGuardProvider)()) return;
     final userId = _userId;
     if (userId == null) return;
 

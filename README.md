@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Typing animation -->
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=20&duration=2800&pause=700&color=0067a5&center=true&vCenter=true&width=860&lines=Find+Your+Way+Around+Macquarie+%E2%80%94+Without+Selling+Your+Data;Illustrated+Campus+Map+%E2%80%A2+Turn-by-Turn+Routing+%E2%80%A2+Compass+Mode;Flutter+3.11+%E2%80%A2+Riverpod+3+%E2%80%A2+Supabase+%E2%80%A2+35+Languages;Privacy+by+Design+%E2%80%A2+323+Tests+%E2%80%A2+Open+Day+2026+Ready)](https://readme-typing-svg.demolab.com)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=20&duration=2800&pause=700&color=0067a5&center=true&vCenter=true&width=860&lines=Find+Your+Way+Around+Macquarie+%E2%80%94+Without+Selling+Your+Data;Illustrated+Campus+Map+%E2%80%A2+Turn-by-Turn+Routing+%E2%80%A2+Compass+Mode;Flutter+3.11+%E2%80%A2+Riverpod+3+%E2%80%A2+Supabase+%E2%80%A2+35+Languages;Privacy+by+Design+%E2%80%A2+295+Tests+%E2%80%A2+Open+Day+2026+Ready)](https://readme-typing-svg.demolab.com)
 
 <!-- Badges -->
 ![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b?style=for-the-badge)
@@ -9,7 +9,7 @@
 ![Dart](https://img.shields.io/badge/Dart_3-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![Riverpod](https://img.shields.io/badge/Riverpod_3.2-7C3AED?style=for-the-badge)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Tests](https://img.shields.io/badge/323_Tests-Flutter_Test-6E9F18?style=for-the-badge)
+![Tests](https://img.shields.io/badge/295_Tests-Flutter_Test-6E9F18?style=for-the-badge)
 ![Material 3](https://img.shields.io/badge/Material_3-757575?style=for-the-badge&logo=materialdesign&logoColor=white)
 
 </div>
@@ -22,7 +22,7 @@
 
 > **Find your way around Macquarie — without selling your data.**
 
-A production-ready Flutter client for Macquarie University's campus — flutter_map illustrated campus, turn-by-turn routing, compass mode, campus safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: optional account, zero tracking, no location history.**
+A production-ready Flutter client for Macquarie University's campus — flutter_map illustrated campus, turn-by-turn routing, compass mode, campus safety toolkit, transit countdowns, and 35-language i18n. **Privacy by design: no account needed, zero tracking, no location history.**
 
 Part of a **two frontends, one backend** architecture sharing a Supabase backend with the [Syllabus Sync](https://github.com/mrpouyaalavi/syllabus-sync) Next.js web application. Submitted for **COMP3130 Mobile App Development — Major Project (May 2026)** and pitched as the official navigation companion for the **Macquarie University Open Day** experience.
 
@@ -41,23 +41,12 @@ Part of a **two frontends, one backend** architecture sharing a Supabase backend
 | 1 | `flutter pub get && flutter gen-l10n` |
 | 2 | Copy `.env.example` → `.env`. The repo ships with a working Supabase test project anon key — no setup needed for graders. |
 | 3 | `flutter run --dart-define-from-file=.env` (Android emulator or Chrome) |
-| 4 | Sign in with the test credentials below, or tap **Create one** to register a fresh account. |
-| 5 | Tap a building → ❤️ to favourite. Visit the **Favourites** tab to Edit (note) and Delete (kebab menu). |
-
-### Test User Credentials
-
-```
-Email:    marker@mq-journey.test
-Password: OpenDay2026!
-```
-
-> Use these for the assessment marking pass. A fresh account can also be created from the Sign Up screen — Supabase email-confirmation is disabled on the test project so registration is instant.
+| 4 | Tap a building → ❤️ to favourite. Visit the **Favourites** tab to Edit (note) and Delete (kebab menu). |
 
 ### Where to find each rubric requirement
 
 | Requirement | Where it lives |
 |-------------|---------------|
-| **User authentication** | `lib/features/auth/` — Supabase Auth (login, signup, logout, error mapping, silent existing-user detection) |
 | **Remote database (Supabase)** | `favorite_buildings`, `notifications`, `notification_preferences` tables; `lib/features/favorites/data/` and `lib/features/notifications/data/` |
 | **CRUD on a data entity** | Favourites: **Create** via ❤️ on any building, **Read** on the Favourites tab, **Update** via the kebab → Edit note, **Delete** via swipe or kebab → Remove |
 | **Mobile device service** | `geolocator` (GPS), `flutter_compass` (heading), `torch_light` (flashlight) — all in `lib/features/map/` and `lib/features/safety/` |
@@ -77,7 +66,7 @@ Existing campus maps either stop at the kerb (Google/Apple Maps don't know which
 
 - **Illustrated Campus Map:** Single flutter_map + CrsSimple raster renderer with calibrated building position overlay — pinpoints the correct **building entrance**, not the road.
 - **Turn-by-Turn Routing:** Server-side routing via Supabase Edge proxy (OpenRouteService + TfNSW) with walking, driving, cycling, and transit modes. Arrival detection, off-route recalculation, and a collapsible nav sheet that doesn't stop navigation.
-- **Privacy-by-Design Architecture:** Optional account, **zero analytics packages** (CI-enforced), no location history, on-device compass calculation. Encryption via Keychain / Android Keystore.
+- **Privacy-by-Design Architecture:** No account needed, **zero analytics packages** (CI-enforced), no location history, on-device compass calculation. Encryption via Keychain / Android Keystore.
 - **Open Day Ready:** Branded study-interest picker, dynamic event cards, BuildingActionsSheet shared with [Syllabus Sync](https://github.com/mrpouyaalavi/syllabus-sync) deep-link contract.
 
 <br/>
@@ -100,9 +89,9 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 
 <div align="center">
 
-| Login | Home |
+| Home | Map |
 |:---:|:---:|
-| <img width="320" alt="Login" src="screenshots/01_login_page.png"/> | <img width="320" alt="Home" src="screenshots/02_home_page.png"/> |
+| <img width="320" alt="Home" src="screenshots/02_home_page.png"/> | <img width="320" alt="Map" src="screenshots/03_map_page.png"/> |
 
 | Map | Safety |
 |:---:|:---:|
@@ -131,8 +120,8 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 ║  🚨  Campus Safety Toolkit: 000, AEDs, first aid, shuttle, torch     ║
 ║  🚆  Live Macquarie Uni metro countdown via TfNSW Open Data proxy    ║
 ║  🌍  35 locales · Full RTL for ar/fa/he/ur · WCAG-aware semantics    ║
-║  🔐  Optional auth · Zero analytics · CI-enforced privacy guard      ║
-║  ⚡  323 tests · 0 analyzer issues · 8-step quality gate script       ║
+║  🔐  No login · Zero analytics · CI-enforced privacy guard            ║
+║  ⚡  295 tests · 0 analyzer issues · 8-step quality gate script       ║
 ╚══════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -183,7 +172,7 @@ graph TD
 ### Key Architectural Decisions
 
 - **Defensive bootstrap with timeouts:** `Firebase.initializeApp()` and `Supabase.initialize()` are both wrapped in `.timeout()` calls so the app cannot hang on a stalled network during cold start (root cause we hit during Release-mode testing).
-- **Silent existing-user detection:** `AuthRepository.signUp` inspects `response.user.identities` to detect when Supabase silently returns an existing-confirmed account and shows a real error instead of a misleading "Account created" banner.
+<!-- Silent existing-user detection removed with login gate -->
 - **Building actions sheet:** `BuildingActionsSheet` offers two choices — "View on Campus Map" (marker only) and "Navigate" (route preview auto-loaded via `?preview=route` query parameter).
 - **CI privacy guard:** `scripts/check.sh` refuses to compile if any analytics package (`firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events`) is added to `pubspec.yaml`.
 
@@ -201,7 +190,7 @@ Privacy is a structural constraint, not a feature flag. Every line of code is au
 
 | Principle | Enforcement |
 |-----------|------------|
-| Optional account | Auth is **fully optional** — the app works at `/home` without login. Account only needed for cloud-synced favourites. |
+| No account required | Auth is fully removed — app uses a silent anonymous session. Favourites and notifications work without any user action. |
 | Zero tracking | No analytics, telemetry, or crash reporting packages. CI guard blocks them at PR time. |
 | No location history | GPS used ephemerally — never persisted, never transmitted to any external service. |
 | Local-only preferences | Theme, locale, commute mode, and quiet hours stored via `SharedPreferences` + `FlutterSecureStorage`. |
@@ -261,19 +250,19 @@ lib/
 ├── core/             Config, error handling, logging, networking, security
 ├── shared/           Extensions, models, widgets (MqButton, MqCard, MqInput)
 └── features/
-    ├── auth/         Supabase Auth (login, signup, session persistence, gate)
+    ├── auth/         Supabase anonymous auth (silent sign-in on launch)
     ├── favorites/    Building favourites CRUD (controller, repo, datasource, UI)
     ├── home/         Welcome dashboard, onboarding, metro countdown
     ├── map/          flutter_map campus, routing, compass mode, search, favourites
     ├── safety/       Safety toolkit, emergency contacts, first aid / AED
     ├── notifications/ FCM push, local reminders, inbox
     ├── open_day/     Open Day events, study interest, reminders
-    ├── settings/     Preferences, privacy badge, data wipe, account management
+    ├── settings/     Preferences, privacy badge, data wipe
     ├── transit/      Metro/bus/train search, commute prefs
     ├── timetable/    Unit and class schedule management
     └── deep_link/    Syllabus Sync deep link contract
 
-test/                 323 widget & unit tests (Vitest-equivalent suite)
+test/                 295 widget & unit tests (Vitest-equivalent suite)
 supabase/             Edge Functions (maps-routes, tfnsw-proxy)
 docs/                 9 reference documents (architecture, security, inventories)
 screenshots/          7 screen captures used in this README
@@ -329,7 +318,7 @@ flutter run --dart-define-from-file=.env
 | `flutter pub get` | Valid dependency resolution |
 | `dart format` | Code formatting (`lib/`, `test/`, `scripts/`, `integration_test/`) |
 | `flutter analyze` | Static analysis with hardened lint rules — **0 issues required** |
-| `flutter test` | **323 tests** — 100% pass required |
+| `flutter test` | **295 tests** — 100% pass required |
 | `flutter gen-l10n` | Localisation generation (35 locales) |
 | Untranslated check | `.dart_tool/untranslated.json` — new keys tracked as non-blocking |
 | **Privacy guard** | **Blocks** `firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events` |
@@ -410,7 +399,7 @@ Built with the support of the open-source community. This project benefits from:
 > Authors    : Pouya Alavi Naeini — Software Engineer | Raouf Abedini — Back-End Developer
 > University : Macquarie University, Sydney, NSW
 > Unit       : COMP3130 Mobile App Development — Major Project (50%)
-> Submission : [●] READY — 323 tests passing · 0 analyzer issues
+> Submission : [●] READY — 295 tests passing · 0 analyzer issues
 ```
 
 <br/>
