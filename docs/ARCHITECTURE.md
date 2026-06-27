@@ -58,7 +58,7 @@ lib/
 ```
 StatefulShellRoute.indexedStack (4 tabs + standalone routes)
 ├── /home                  → HomePage (dashboard)
-├── /map                   → MapPage (dual renderer, building search, route panel)
+├── /map                   → MapPage (illustrated campus map, building search, route panel)
 ├── /favorites             → FavoritesPage (list of bookmarks)
 ├── /settings              → SettingsPage (privacy badge, commute, data, danger zone)
 ├── /safety                → SafetyToolkitPage (standalone, no auto location)
