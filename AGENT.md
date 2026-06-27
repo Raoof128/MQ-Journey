@@ -11,7 +11,7 @@ Two frontends, one backend architecture: Flutter + Next.js sharing a Supabase ba
 - **Backend**: Supabase (Postgres, RLS, Realtime, Edge Functions)
 - **Theme**: MQ design tokens (MqColors, MqTypography, MqSpacing) mapped from web app
 - **i18n**: Flutter ARB files with 35 locales, RTL support for ar/fa/he/ur
-- **No auth**: App starts directly at `/home` — no login, signup, or profile management
+- **No auth**: App starts directly at `/home` — silent Supabase anonymous session via `signInAnonymously()`, injectable `sessionGuardProvider` for retry-on-write
 
 ## Non-Negotiable Constraints
 1. Supabase is the system of record — no parallel backend
@@ -43,6 +43,13 @@ lib/
   features/settings/ → Theme, locale, notification preferences (local storage)
 ```
 
+
+### Raouf: 2026-06-27 (Australia/Sydney) — Remove login gate: anonymous-only auth, session guard, backend cleanup, README audit
+**Scope:** Auth removal, session guard, CI guards, backend, README — `feat/remove-login-gate`
+**Summary:** Removed all email/password auth UI and routes. App launches directly to `/home` or `/onboarding` with a silent Supabase anonymous session. AuthService/AuthRepository/AuthController pruned to `signInAnonymously()` only. Created `session_guard.dart` — Riverpod `sessionGuardProvider` for injectable retry-on-write in FavoritesController and NotificationsController. Fixed 4 test failures by making session guard injectable (overriding in ProviderContainer). Added `cleanup_orphaned_anonymous_users()` Postgres RPC and extended cleanup-cron Edge Function. Added no-login-route CI guard to `scripts/check.sh`. Full README audit: removed test credentials, login screenshots (deleted `01_login_page.png`), stale auth references, `"optional account"` → `"no login"`, `323` → `295` tests across badge/SVG/features/table. `flutter analyze` 0 issues, 295/295 tests passed, scripts/check.sh 10/11 (no-google pre-existing).
+**Files Changed:** `lib/core/network/session_guard.dart`, `lib/app/bootstrap/app_initialization.dart`, `lib/app/router/app_router.dart`, `lib/app/router/route_names.dart`, `lib/features/auth/` (service/repository/controller/pages/widgets — pruned), `lib/features/settings/presentation/pages/settings_page.dart`, `lib/features/favorites/presentation/controllers/favorites_controller.dart`, `lib/features/notifications/presentation/controllers/notifications_controller.dart`, `lib/app/l10n/app_*.arb` (34 locales, auth keys removed), `supabase/config.toml`, `supabase/migrations/20260627000000_cleanup_orphaned_anonymous.sql`, `supabase/functions/cleanup-cron/index.ts`, `scripts/check.sh`, `test/features/auth/` (controller/repository/service tests pruned; login_page/signup_page/reset_password_page tests deleted), `test/features/favorites/favorites_controller_test.dart`, `test/features/favorites/favorite_button_test.dart`, `test/features/settings/settings_page_test.dart`, `screenshots/01_login_page.png` (deleted), `README.md`, `CHANGELOG.md`, `AGENT.md`
+**Verification:** `flutter analyze` (0 issues), `flutter test` (295/295 passed), `scripts/check.sh --quick` (10/11 passed; no-google guard pre-existing failure).
+**Follow-ups:** Enable anonymous sign-ins in Supabase dashboard → Authentication → Providers. Consider CAPTCHA and Manual Linking settings. Re-verify after Supabase project config update.
 
 ### Raouf: 2026-06-26 (Australia/Sydney) — Windows build: MSVC coroutine deprecation fix + BINARY_NAME rename
 **Scope:** Windows CI/CD — `windows/CMakeLists.txt`
