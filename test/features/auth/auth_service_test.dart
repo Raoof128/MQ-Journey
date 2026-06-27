@@ -22,70 +22,15 @@ void main() {
   });
 
   group('AuthService', () {
-    test('signIn calls signInWithPassword', () async {
+    test('signInAnonymously calls supabase auth.signInAnonymously', () async {
       final fakeResponse = AuthResponse(user: null, session: null);
       when(
-        () => mockGoTrue.signInWithPassword(
-          email: any(named: 'email'),
-          password: any(named: 'password'),
-        ),
+        () => mockGoTrue.signInAnonymously(),
       ).thenAnswer((_) async => fakeResponse);
 
-      await authService.signIn(email: 'a@b.com', password: 'pass123');
+      await authService.signInAnonymously();
 
-      verify(
-        () => mockGoTrue.signInWithPassword(
-          email: 'a@b.com',
-          password: 'pass123',
-        ),
-      ).called(1);
-    });
-
-    test('signUp calls signUp', () async {
-      final fakeResponse = AuthResponse(user: null, session: null);
-      when(
-        () => mockGoTrue.signUp(
-          email: any(named: 'email'),
-          password: any(named: 'password'),
-          emailRedirectTo: any(named: 'emailRedirectTo'),
-        ),
-      ).thenAnswer((_) async => fakeResponse);
-
-      await authService.signUp(email: 'a@b.com', password: 'pass123');
-
-      verify(
-        () => mockGoTrue.signUp(
-          email: 'a@b.com',
-          password: 'pass123',
-          emailRedirectTo: any(named: 'emailRedirectTo'),
-        ),
-      ).called(1);
-    });
-
-    test('signOut calls signOut', () async {
-      when(() => mockGoTrue.signOut()).thenAnswer((_) async {});
-
-      await authService.signOut();
-
-      verify(() => mockGoTrue.signOut()).called(1);
-    });
-
-    test('resetPassword calls resetPasswordForEmail', () async {
-      when(
-        () => mockGoTrue.resetPasswordForEmail(
-          any(),
-          redirectTo: any(named: 'redirectTo'),
-        ),
-      ).thenAnswer((_) async {});
-
-      await authService.resetPassword(email: 'a@b.com');
-
-      verify(
-        () => mockGoTrue.resetPasswordForEmail(
-          'a@b.com',
-          redirectTo: any(named: 'redirectTo'),
-        ),
-      ).called(1);
+      verify(() => mockGoTrue.signInAnonymously()).called(1);
     });
 
     test('isAuthenticated returns true when session exists', () {
@@ -97,5 +42,18 @@ void main() {
       when(() => mockGoTrue.currentSession).thenReturn(null);
       expect(authService.isAuthenticated, isFalse);
     });
+
+    test('currentUser returns user when session exists', () {
+      final mockUser = MockUser();
+      when(() => mockGoTrue.currentUser).thenReturn(mockUser);
+      expect(authService.currentUser, mockUser);
+    });
+
+    test('currentUser returns null when no session', () {
+      when(() => mockGoTrue.currentUser).thenReturn(null);
+      expect(authService.currentUser, isNull);
+    });
   });
 }
+
+class MockUser extends Mock implements User {}

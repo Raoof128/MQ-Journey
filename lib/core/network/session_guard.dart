@@ -1,5 +1,13 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mq_journey/core/logging/app_logger.dart';
+
+/// Provider for the session guard function.
+///
+/// Override in tests to avoid requiring a real Supabase instance.
+final sessionGuardProvider = Provider<Future<bool> Function()>((ref) {
+  return _ensureSessionBeforeWrite;
+});
 
 /// Ensures a Supabase auth session exists before a write operation.
 ///
@@ -8,15 +16,19 @@ import 'package:mq_journey/core/logging/app_logger.dart';
 /// succeeds when connectivity is restored.
 ///
 /// Returns `true` if a session is available after the attempt.
-Future<bool> ensureSessionBeforeWrite() async {
-  final auth = Supabase.instance.client.auth;
-  if (auth.currentSession != null) return true;
+Future<bool> _ensureSessionBeforeWrite() async {
   try {
-    await auth.signInAnonymously().timeout(const Duration(seconds: 8));
-    AppLogger.info('Anonymous session established on write retry');
-    return true;
-  } on Exception catch (e, st) {
-    AppLogger.warning('Anonymous sign-in retry failed', e, st);
+    final auth = Supabase.instance.client.auth;
+    if (auth.currentSession != null) return true;
+    try {
+      await auth.signInAnonymously().timeout(const Duration(seconds: 8));
+      AppLogger.info('Anonymous session established on write retry');
+      return true;
+    } on Exception catch (e, st) {
+      AppLogger.warning('Anonymous sign-in retry failed', e, st);
+      return false;
+    }
+  } on AssertionError {
     return false;
   }
 }

@@ -56,10 +56,7 @@ class AuthScreenState {
   final String? userId;
   final String? error;
 
-  AuthScreenState copyWith({
-    bool? isLoading,
-    String? error,
-  }) {
+  AuthScreenState copyWith({bool? isLoading, String? error}) {
     return AuthScreenState._(
       isAuthenticated: isAuthenticated,
       userId: userId,

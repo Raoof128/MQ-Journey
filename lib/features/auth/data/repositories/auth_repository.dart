@@ -2,7 +2,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mq_journey/features/auth/domain/services/auth_service.dart';
 
 class AuthRepository {
-  AuthRepository({required AuthService authService}) : _authService = authService;
+  AuthRepository({required AuthService authService})
+    : _authService = authService;
 
   final AuthService _authService;
 
@@ -14,7 +15,7 @@ class AuthRepository {
   Future<AuthResult> signInAnonymously() async {
     try {
       await _authService.signInAnonymously();
-      return AuthResult(success: true);
+      return const AuthResult(success: true);
     } on AuthException catch (e) {
       return AuthResult(success: false, error: _mapAuthError(e));
     }
