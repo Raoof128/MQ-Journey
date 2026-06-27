@@ -44,6 +44,13 @@ lib/
 ```
 
 
+### Raouf: 2026-06-27 (Australia/Sydney) — README stale data cleanup, rebase & merge to main, fresh homepage screenshot
+**Scope:** Documentation — README audit, rebase/merge workflow
+**Summary:** Rebased `feat/remove-login-gate` onto `mqjourney/main`, fast-forward merged, pushed. New 390×844 homepage screenshot with MQ Journey branding. Fixed 10 stale README items: 8-step → 12-step quality gate, Vitest-equivalent → Flutter Test suite, 7→6 screen captures, removed duplicate Map image (3×2 layout), iOS auth callback → deep linking, macOS auth claims → deep linking, removed stale P1 auth roadmap items, step counts 10→12 / 9→11, added missing No-stale-name and No-login-route guard rows to step table. Killed all dev servers.
+**Files Changed:** `README.md`, `screenshots/02_home_page.png`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** grep shows no stale auth/8-step/Vitest references remaining.
+**Follow-ups:** None.
+
 ### Raouf: 2026-06-27 (Australia/Sydney) — Remove login gate: anonymous-only auth, session guard, backend cleanup, README audit
 **Scope:** Auth removal, session guard, CI guards, backend, README — `feat/remove-login-gate`
 **Summary:** Removed all email/password auth UI and routes. App launches directly to `/home` or `/onboarding` with a silent Supabase anonymous session. AuthService/AuthRepository/AuthController pruned to `signInAnonymously()` only. Created `session_guard.dart` — Riverpod `sessionGuardProvider` for injectable retry-on-write in FavoritesController and NotificationsController. Fixed 4 test failures by making session guard injectable (overriding in ProviderContainer). Added `cleanup_orphaned_anonymous_users()` Postgres RPC and extended cleanup-cron Edge Function. Added no-login-route CI guard to `scripts/check.sh`. Full README audit: removed test credentials, login screenshots (deleted `01_login_page.png`), stale auth references, `"optional account"` → `"no login"`, `323` → `295` tests across badge/SVG/features/table. `flutter analyze` 0 issues, 295/295 tests passed, scripts/check.sh 10/11 (no-google pre-existing).

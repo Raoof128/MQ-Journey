@@ -1,3 +1,10 @@
+### Raouf: 2026-06-27 (Australia/Sydney) — README stale data cleanup, rebase & merge, fresh homepage screenshot
+**Scope:** Documentation — README stale data fix, rebase/merge
+**Summary:** Rebased feat/remove-login-gate → main, fast-forward merged, pushed. New 390×844 mobile-sized homepage screenshot with MQ Journey branding. Fixed 10 stale README items: 8-step → 12-step, Vitest-equivalent → Flutter Test, 7→6 screen captures, removed duplicate Map image (3×2 layout), iOS auth callback → deep linking, macOS auth claims → deep linking, removed stale P1 auth roadmap items, step counts 10→12 / 9→11, added No-stale-name and No-login-route guard rows to step table.
+**Files Changed:** `README.md`, `screenshots/02_home_page.png`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** grep clean for stale references.
+**Follow-ups:** None.
+
 ### Raouf: 2026-06-27 (Australia/Sydney) — README login audit + sessionGuardProvider injection fix
 **Scope:** Documentation + test injection — `README.md`, `lib/core/network/session_guard.dart`, `lib/features/favorites/presentation/controllers/favorites_controller.dart`, `lib/features/notifications/presentation/controllers/notifications_controller.dart`
 **Summary:** Full README audit removing all remaining login/auth references: deleted test credentials section, removed "User authentication" rubric row, replaced Login screenshot column with Home/Map layout (deleted `screenshots/01_login_page.png`), updated `"optional account"` → `"no account"`/`"no login"` across subtitle/features/privacy table/architecture, changed `"account management"` → removed from settings description, updated `323 tests` → `295 tests` in badge/typing-SVG/features/directory tree/check.sh table/submission line. Fixed 4 test failures by making `ensureSessionBeforeWrite()` injectable via Riverpod `sessionGuardProvider` — FavoritesController and NotificationsController now use `ref.read(sessionGuardProvider)()`, tests override with `() async => true`.

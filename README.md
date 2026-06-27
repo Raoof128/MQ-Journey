@@ -93,13 +93,13 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 |:---:|:---:|
 | <img width="320" alt="Home" src="screenshots/02_home_page.png"/> | <img width="320" alt="Map" src="screenshots/03_map_page.png"/> |
 
-| Map | Safety |
+| Favourites | Safety |
 |:---:|:---:|
-| <img width="320" alt="Map" src="screenshots/03_map_page.png"/> | <img width="320" alt="Safety" src="screenshots/04_safety_page.png"/> |
+| <img width="320" alt="Favourites" src="screenshots/05_favorites_page.png"/> | <img width="320" alt="Safety" src="screenshots/04_safety_page.png"/> |
 
-| Favourites | Notifications | Settings |
-|:---:|:---:|:---:|
-| <img width="240" alt="Favourites" src="screenshots/05_favorites_page.png"/> | <img width="240" alt="Notifications" src="screenshots/06_notifications_page.png"/> | <img width="240" alt="Settings" src="screenshots/07_settings_page.png"/> |
+| Notifications | Settings |
+|:---:|:---:|
+| <img width="320" alt="Notifications" src="screenshots/06_notifications_page.png"/> | <img width="320" alt="Settings" src="screenshots/07_settings_page.png"/> |
 
 </div>
 
@@ -121,7 +121,7 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 ║  🚆  Live Macquarie Uni metro countdown via TfNSW Open Data proxy    ║
 ║  🌍  35 locales · Full RTL for ar/fa/he/ur · WCAG-aware semantics    ║
 ║  🔐  No login · Zero analytics · CI-enforced privacy guard            ║
-║  ⚡  295 tests · 0 analyzer issues · 8-step quality gate script       ║
+║  ⚡  295 tests · 0 analyzer issues · 12-step quality gate script       ║
 ╚══════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -231,8 +231,8 @@ We designed MQ Journey around four real user personas — the people we'd hand a
 | **Android emulator** (API 33+) | ✅ Full | All features verified. Recommended for marking. |
 | **Android physical device** | ✅ Full | Compass, flashlight, GPS, push notifications all functional. |
 | **Chrome (web)** | ✅ Core | Auth, favourites CRUD, maps, routing, transit countdown work. Compass mode and flashlight gracefully degrade — the UI displays an "unsupported on this device" fallback. |
-| **iOS device** | ✅ Full | Native build verified on iPhone (iOS 17+). Custom URL scheme `io.mqjourney://` registered for auth callbacks (legacy `io.mqnavigation://` also supported during transition). |
-| **macOS desktop** | ✅ Core | Location, auth, and flutter_map campus renderer all functional. CFBundleURLTypes registered so auth deep links return to the app. |
+| **iOS device** | ✅ Full | Native build verified on iPhone (iOS 17+). Custom URL scheme `io.mqjourney://` registered for deep linking (legacy `io.mqnavigation://` also supported during transition). |
+| **macOS desktop** | ✅ Core | Location and flutter_map campus renderer functional. CFBundleURLTypes registered for deep linking support. |
 
 If a platform-specific issue surfaces during marking, the relevant feature renders a typed `MapStateError` fallback rather than crashing.
 
@@ -262,10 +262,10 @@ lib/
     ├── timetable/    Unit and class schedule management
     └── deep_link/    Syllabus Sync deep link contract
 
-test/                 295 widget & unit tests (Vitest-equivalent suite)
+test/                 295 widget & unit tests (Flutter Test suite)
 supabase/             Edge Functions (maps-routes, tfnsw-proxy)
 docs/                 9 reference documents (architecture, security, inventories)
-screenshots/          7 screen captures used in this README
+screenshots/          6 screen captures used in this README
 scripts/              run.sh, check.sh (quality gate)
 ```
 
@@ -307,8 +307,8 @@ flutter run --dart-define-from-file=.env
 
 ### Quality Assurance
 ```bash
-./scripts/check.sh             # 10 steps (includes debug APK build)
-./scripts/check.sh --quick     # 9 steps (skips build)
+./scripts/check.sh             # 12 steps (includes debug APK build)
+./scripts/check.sh --quick     # 11 steps (skips build)
 ./scripts/check.sh --fix       # auto-format instead of read-only check
 ./scripts/check.sh --verbose   # stream command logs to terminal
 ```
@@ -323,6 +323,8 @@ flutter run --dart-define-from-file=.env
 | Untranslated check | `.dart_tool/untranslated.json` — new keys tracked as non-blocking |
 | **Privacy guard** | **Blocks** `firebase_analytics`, `google_analytics`, `appsflyer`, `amplitude`, `mixpanel`, `segment`, `sentry_flutter`, `facebook_app_events` |
 | **Secret scan** | Flags hardcoded API keys (`sk-*`, `AIza*`) in `lib/` `test/` `scripts/` |
+| **No-stale-name guard** | Blocks any `mq_navigation` references in `lib/`, `test/`, `scripts/`, `pubspec.yaml` |
+| **No-login-route guard** | Blocks any `/auth/login`, `/auth/signup`, or `signInWithPassword` references |
 | **No-Google guard** | Blocks any Google Maps SDK/files references in `lib/`, `android/`, `ios/`, `supabase/` |
 | `flutter build apk --debug` | Android APK compiles (skipped with `--quick`) |
 
@@ -362,8 +364,8 @@ Released under the **MIT License**. See [`LICENSE`](LICENSE).
 
 ### Roadmap & Priorities
 - **P0:** Open Day 2026 demo readiness (DONE).
-- **P1:** Hosted HTTPS callback page so the email-confirmation flow works on desktop browsers without the app installed.
-- **P1:** Translator passes on the remaining 26 locales' auth strings.
+- **P1:** Restore building image cache for offline mode.
+- **P1:** Complete remaining 26 locales' translations.
 - **P2:** Universal Links / App Links for first-class deep linking.
 - **P2:** Voice-guided turn-by-turn for accessibility.
 
