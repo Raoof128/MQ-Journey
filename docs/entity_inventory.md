@@ -2,7 +2,7 @@
 
 This documents the **shared Supabase backend schema** used by both the web app and the Flutter app.
 
-> **Flutter app scope:** The Flutter app interacts with Supabase Auth for optional accounts, `favorite_buildings` (user bookmarks), `user_fcm_tokens` (push tokens), `notifications` (inbox), and `rate_limits` (map routing throttle). The building registry is loaded from a bundled JSON asset, not from Supabase. All other tables below are primarily used by the web app.
+> **Flutter app scope:** The Flutter app uses Supabase anonymous auth (silent sign-in on launch), `favorite_buildings` (user bookmarks), `user_fcm_tokens` (push tokens), `notifications` (inbox), and `rate_limits` (map routing throttle). The building registry is loaded from a bundled JSON asset, not from Supabase. All other tables below are primarily used by the web app.
 
 Source: `lib/supabase/database.types.ts` in the web app.
 

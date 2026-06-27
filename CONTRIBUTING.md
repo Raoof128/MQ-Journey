@@ -11,7 +11,7 @@ We maintain a strict quality gate to ensure campus-ready stability.
     ```
 
 ## Definition of Done
-- All **154 tests** pass.
+- All **295 tests** pass.
 - No new linter warnings in `lib/`.
 - `CONTRIBUTING.md` and `README.md` updated if feature surface changes.
 - RTL layout verified for Arabic (ar) and Farsi (fa) locales.

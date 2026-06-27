@@ -1,7 +1,7 @@
 # MQ Journey: Technical Architecture (2026)
 
 ## Overview
-Feature-First Clean Architecture for high-concurrency campus navigation, transit data, compass mode, and safety toolkit. Privacy by design: optional anonymous account, zero tracking, zero location history.
+Feature-First Clean Architecture for high-concurrency campus navigation, transit data, compass mode, and safety toolkit. Privacy by design: no account needed, zero tracking, zero location history.
 
 ## Directory Structure
 
@@ -24,11 +24,11 @@ lib/
 │   ├── models/             → UserPreferences
 │   └── widgets/            → MqButton, MqCard, MqInput, MqBottomSheet, GlassPane
 └── features/
-    ├── auth/               → Supabase Auth (login, signup, session persistence, auth gate)
+    ├── auth/               → Supabase anonymous auth (silent sign-in on launch)
     ├── favorites/          → Building favorites CRUD (controller, repository, datasource, UI)
     ├── deep_link/          → Syllabus Sync deep link contract
     ├── home/               → Welcome dashboard, onboarding, metro countdown
-    ├── map/                → Campus map (161 buildings, dual renderer, routing, compass)
+    ├── map/                → Campus map (161 buildings, illustrated renderer, routing, compass)
     ├── notifications/      → FCM push + local study prompts
     ├── open_day/           → Open Day event browsing & reminders
     ├── safety/             → Campus Safety Toolkit (flashlight, contacts, first aid, AED)
@@ -61,8 +61,6 @@ StatefulShellRoute.indexedStack (4 tabs + standalone routes)
 ├── /map                   → MapPage (dual renderer, building search, route panel)
 ├── /favorites             → FavoritesPage (list of bookmarks)
 ├── /settings              → SettingsPage (privacy badge, commute, data, danger zone)
-├── /auth/login            → LoginPage (account entry)
-├── /auth/signup           → SignupPage (account creation)
 ├── /safety                → SafetyToolkitPage (standalone, no auto location)
 ├── /notifications         → NotificationsPage (covers shell)
 ├── /open-day              → OpenDayPage (temporal feature)
@@ -72,10 +70,9 @@ StatefulShellRoute.indexedStack (4 tabs + standalone routes)
 
 ## Key Features
 
-### Campus Map (Dual-Renderer)
-- **Google Maps** (`google_maps_flutter` 2.15): traffic, map-type, clustering, bearing camera
+### Campus Map
 - **Campus Map** (`flutter_map` + `CrsSimple`): custom raster calibrated to MQ GPS coordinates
-- **Routing**: Supabase Edge Functions (Google Routes API + Directions API fallback), 4 travel modes
+- **Routing**: Supabase Edge Functions (OpenRouteService + TfNSW), 4 travel modes
 - **Compass Mode**: `flutter_compass` 0.8 stream, bearing-to-destination calculation, `AnimatedRotation` smooth heading, heading accuracy display, privacy-safe (all on-device)
 
 ### Campus Safety Toolkit
@@ -87,30 +84,31 @@ StatefulShellRoute.indexedStack (4 tabs + standalone routes)
 - **Zero automatic location sharing** — user manually calls or navigates
 
 ### Privacy by Design
-- **Optional account** (Email/Password via Supabase Auth)
+- **No account required** — app uses silent anonymous session, favourites and notifications work out of the box
 - No analytics/tracking packages (enforced by `check.sh` privacy guard)
 - Preferences stored locally via `SharedPreferences` + `FlutterSecureStorage`
 - No location history, no telemetry, no crash reporting
-- Settings page shows permanent **Privacy Badge**: "Private by design: optional account, no tracking, no location history"
+- Settings page shows permanent **Privacy Badge**: "Private by design: no account, no tracking, no location history"
 
 ## CI / Validation (`scripts/check.sh`)
 ```
-9 steps:
+10 steps:
   1. flutter pub get
   2. dart format (--fix available)
   3. flutter analyze (single-pass, --no-fatal-infos)
-  4. flutter test (297 tests)
+  4. flutter test (295 tests)
   5. flutter gen-l10n
   6. untranslated l10n check (non-blocking)
   7. privacy guard (blocks analytics packages)
   8. secret scan (hardcoded API keys in lib/test/scripts)
-  9. flutter build apk --debug (skipped with --quick)
+  9. no-login-route guard (ensures no /auth routes exist)
+ 10. flutter build apk --debug (skipped with --quick)
 ```
 Supports `--quick`, `--fix`, `--verbose` flags. Structured logs under `.dart_tool/check_logs/`.
 
 ## Dependencies (Key)
 - **State**: `flutter_riverpod` 3.2 | **Router**: `go_router` 17
-- **Maps**: `google_maps_flutter` 2.15 + `flutter_map` 8.2
+- **Maps**: `flutter_map` 8.2
 - **Backend**: `supabase_flutter` 2.8 (Auth, DB, Realtime)
 - **Location**: `geolocator` 14 | **Compass**: `flutter_compass` 0.8
 - **Safety**: `torch_light` 1.1 | **Links**: `url_launcher` 6.3

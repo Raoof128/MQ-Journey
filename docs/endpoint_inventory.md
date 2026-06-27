@@ -9,23 +9,13 @@ Maps web API routes to their Flutter equivalents.
 
 ## Auth (Used by Flutter)
 
-| Web Route | Method | Flutter Approach | Notes |
-|-----------|--------|-----------------|-------|
-| `/api/auth/signin` | POST | **SDK: `supabase.auth.signInWithPassword()`** | Handled by `supabase_flutter` |
-| `/api/auth/signup` | POST | **SDK: `supabase.auth.signUp()`** | Handled by `supabase_flutter` |
-| `/api/auth/signout` | POST | **SDK: `supabase.auth.signOut()`** | Handled by `supabase_flutter` |
+Auth is fully handled by Supabase anonymous sign-in on launch. No email/password flows exist in the Flutter app. See `auth_service.dart` and `auth_repository.dart` for the anonymous-only implementation.
 
 ## Maps & Navigation (Used by Flutter)
 
 | Web Route | Method | Flutter Approach | Notes |
 |-----------|--------|-----------------|-------|
-| `/api/maps/routes` | POST | **EF: `maps-routes`** | Flutter uses the Supabase Edge Function for both campus and Google routing |
-| `/api/maps/place-search` | GET | **EF: `maps-places`** | Search suggestions with rate limiting |
-
-> Flutter sends a normalized route request to `maps-routes` with
-> `renderer`, `origin`, `destination`, and `travelMode`. The Edge Function
-> dispatches to Google Routes for Google mode and to the campus walking backend
-> for campus mode.
+| `/api/maps/routes` | POST | **EF: `maps-routes`** | Flutter uses the Supabase Edge Function for campus routing via ORS + TfNSW |
 
 ## Notifications (Used by Flutter)
 
@@ -53,9 +43,9 @@ The following endpoints exist in the web app but are not yet used by the Flutter
 
 | Edge Function | Purpose |
 |---------------|---------|
-| `maps-routes` | Shared campus/google route proxy with server-side Google/ORS keys |
-| `maps-places` | Google Places autocomplete proxy with rate limiting and caching |
+| `maps-routes` | Campus route proxy with server-side ORS + TfNSW keys |
+| `tfnsw-proxy` | TfNSW Open Data transit timetable proxy |
 | `notify` | FCM push notification dispatcher |
-| `cleanup-cron` | Rate-limit and cache record cleanup |
+| `cleanup-cron` | Rate-limit, cache record, and orphaned anonymous user cleanup |
 
 Web-only functions (`auth-email`, `auth-cleanup`, `routes-proxy`, `places-proxy`, `weather-proxy`, `security-utils`) were removed from this repo.

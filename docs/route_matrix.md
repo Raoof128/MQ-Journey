@@ -7,12 +7,11 @@ All routes in the MQ Journey Flutter app.
 | Flutter Route | go_router Name | Description |
 |---------------|----------------|-------------|
 | `/home` | `home` | Welcome hub (shell tab 0) |
-| `/map` | `map` | Campus map with dual renderer and search (shell tab 1) |
+| `/map` | `map` | Campus map with illustrated renderer and search (shell tab 1) |
 | `/map/building/:buildingId` | `building-detail` | Deep link to a specific building on the map |
 | `/favorites` | `favorites` | List of favorited buildings (shell tab 2) |
 | `/settings` | `settings` | Theme, language, account, data prefs (shell tab 3) |
-| `/auth/login` | `login` | Email/password sign in page |
-| `/auth/signup` | `signup` | New account creation page |
+<!-- removed: /auth/login and /auth/signup -->
 | `/safety` | `safety` | Safety toolkit (standalone page) |
 | `/notifications` | `notifications` | Notification inbox (covers shell) |
 | `/open-day` | `open-day` | Open Day event browsing and scheduling |

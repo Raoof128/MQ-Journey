@@ -19,7 +19,7 @@
 - **Local Only**: User preferences, commute settings, and Open Day lead times are stored in `SharedPreferences` — never sent to a server.
 
 ## API & Edge Security
-- **Proxy Pattern**: All third-party SDK keys (Google Maps, OpenRouteService) are stored as secrets in **Supabase Edge Functions**. The mobile client never holds server-side keys.
+- **Proxy Pattern**: All third-party SDK keys (OpenRouteService, TfNSW) are stored as secrets in **Supabase Edge Functions**. The mobile client never holds server-side keys.
 - **Secret Scan**: `scripts/check.sh` scans `lib/` `test/` `scripts/` for hardcoded API key patterns (`sk-*`, `AIza*`) on every CI run.
 - **Throttling**: Rate limiting applied per IP at the Edge to prevent scrapers or DDoS on the routing proxy.
 - **Input Validation**: All coordinate and route requests are validated against MQ campus bounding boxes.
