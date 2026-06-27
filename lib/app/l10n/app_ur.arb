@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "گوگل میپس",
   "onboardingMapTitle": "دو موڈ والا کیمپس نقشہ",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "حقیقی دنیا کے Google Maps یا ہمارے تفصیلی مصور کیمپس منظر کے ساتھ MQ میں نیویگیٹ کریں۔",
   "onboardingTransitTitle": "لائیو سفر",

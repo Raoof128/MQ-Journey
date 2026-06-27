@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Google Haritalar",
   "onboardingMapTitle": "İki modlu kampüs haritası",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "Gerçek dünya Google Haritalar veya ayrıntılı görsel kampüs görünümümüzle MQ’da gezinin.",
   "onboardingTransitTitle": "Canlı günlük yolculuk",

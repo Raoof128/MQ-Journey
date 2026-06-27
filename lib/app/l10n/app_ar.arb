@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "خرائط جوجل",
   "onboardingMapTitle": "خريطة الحرم الجامعي ثنائية الوضع",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "تصفّح حرم ماكواري مع خرائط Google الواقعية أو منظر الحرم التوضيحي التفصيلي.",
   "onboardingTransitTitle": "التنقل المباشر",

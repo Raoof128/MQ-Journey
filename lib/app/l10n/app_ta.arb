@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "கூகுள் மேப்ஸ்",
   "onboardingMapTitle": "இரட்டை முறை வளாக வரைபடம்",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "உண்மை உலக Google வரைபடங்கள் அல்லது எங்கள் விரிவான வரைகலை வளாகக் காட்சியுடன் MQ இல் வழிசெலுத்துங்கள்.",
   "onboardingTransitTitle": "நேரடி பயணம்",

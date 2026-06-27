@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Peta Google",
   "onboardingMapTitle": "Peta kampus dwi mod",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "Navigasi MQ dengan Google Maps dunia nyata atau pandangan kampus berilustrasi terperinci kami.",
   "onboardingTransitTitle": "Komuter langsung",

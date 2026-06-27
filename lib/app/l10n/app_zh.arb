@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Google 地图",
   "onboardingMapTitle": "双模式校园地图",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "使用真实世界的谷歌地图或我们细致的校园插画视图，在麦考瑞校园内导航。",
   "onboardingTransitTitle": "实时通勤",

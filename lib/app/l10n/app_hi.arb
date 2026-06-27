@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "गूगल मैप्स",
   "onboardingMapTitle": "दोहरा मोड वाला कैंपस मानचित्र",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "वास्तविक दुनिया के Google Maps या हमारे विस्तृत चित्रित कैंपस दृश्य के साथ MQ में नेविगेट करें।",
   "onboardingTransitTitle": "लाइव कम्यूट",

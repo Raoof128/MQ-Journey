@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Google Maps",
   "onboardingMapTitle": "Mapa kampusu ve dvou režimech",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "Navigujte po MQ se skutečnými Google Mapami nebo naším podrobným ilustrovaným pohledem na kampus.",
   "onboardingTransitTitle": "Živé dojíždění",

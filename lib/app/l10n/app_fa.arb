@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "نقشه های گوگل",
   "onboardingMapTitle": "نقشهٔ پردیس با دو حالت",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "در دانشگاه ماکواری با نقشهٔ واقعی گوگل یا نمای مصور جزئی از پردیس حرکت کنید.",
   "onboardingTransitTitle": "رفت‌وآمد زنده",

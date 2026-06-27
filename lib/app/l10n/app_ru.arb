@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Карты Google",
   "onboardingMapTitle": "Карта кампуса в двух режимах",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "Навигация по MQ с реальными Google Картами или нашей подробной иллюстрацией кампуса.",
   "onboardingTransitTitle": "Поездки в реальном времени",

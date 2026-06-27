@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Google マップ",
   "onboardingMapTitle": "キャンパスマップ（2つのモード）",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "実世界のGoogleマップ、または詳細なキャンパス俯瞰イラストでMQキャンパスをナビゲートできます。",
   "onboardingTransitTitle": "ライブ通勤情報",

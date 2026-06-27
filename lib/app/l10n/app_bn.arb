@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "গুগল ম্যাপ",
   "onboardingMapTitle": "দ্বৈত মোডের ক্যাম্পাস মানচিত্র",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "বাস্তব বিশ্বের Google Maps অথবা আমাদের বিস্তারিত চিত্রায়িত ক্যাম্পাস ভিউ দিয়ে MQ নেভিগেট করুন।",
   "onboardingTransitTitle": "লাইভ কমিউট",

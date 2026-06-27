@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Google 지도",
   "onboardingMapTitle": "두 가지 모드 캠퍼스 지도",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "실제 Google 지도 또는 세밀한 캠퍼스 일러스트 뷰로 MQ를 안내합니다.",
   "onboardingTransitTitle": "실시간 통근",

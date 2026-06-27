@@ -10,7 +10,7 @@ All routes in the MQ Journey Flutter app.
 | `/map` | `map` | Campus map with illustrated renderer and search (shell tab 1) |
 | `/map/building/:buildingId` | `building-detail` | Deep link to a specific building on the map |
 | `/favorites` | `favorites` | List of favorited buildings (shell tab 2) |
-| `/settings` | `settings` | Theme, language, account, data prefs (shell tab 3) |
+| `/settings` | `settings` | Theme, language, preferences, data (shell tab 3) |
 <!-- removed: /auth/login and /auth/signup -->
 | `/safety` | `safety` | Safety toolkit (standalone page) |
 | `/notifications` | `notifications` | Notification inbox (covers shell) |

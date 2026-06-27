@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Bản đồ Google",
   "onboardingMapTitle": "Bản đồ khuôn viên hai chế độ",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "Điều hướng MQ bằng Google Maps thực hoặc khung cảnh minh họa chi tiết của khuôn viên.",
   "onboardingTransitTitle": "Đi lại trực tiếp",

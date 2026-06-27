@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Google Maps",
   "onboardingMapTitle": "Hartă campus în două moduri",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "Navigați în MQ cu Google Maps din lumea reală sau cu vederea ilustrată detaliată a campusului.",
   "onboardingTransitTitle": "Naveta în direct",

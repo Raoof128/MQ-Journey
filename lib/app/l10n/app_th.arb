@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Google แผนที่",
   "onboardingMapTitle": "แผนที่วิทยาเขตสองโหมด",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "นำทาง MQ ด้วย Google แผนที่โลกจริง หรือมุมมองวิทยาเขตแบบภาพประกอบโดยละเอียดของเรา",
   "onboardingTransitTitle": "การเดินทางสด",

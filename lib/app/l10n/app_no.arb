@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Google Maps",
   "onboardingMapTitle": "Campuskart med to moduser",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "Naviger MQ med ekte Google Maps eller vår detaljerte illustrerte campusvisning.",
   "onboardingTransitTitle": "Live pendling",

@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "מפות גוגל",
   "onboardingMapTitle": "מפת קמפוס בשתי מצבים",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "ניווטו ב-MQ עם מפות גוגל מהעולם האמיתי או תצוגת הקמפוס המאוירת המפורטת שלנו.",
   "onboardingTransitTitle": "נסיעות בשידור חי",

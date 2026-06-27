@@ -92,7 +92,7 @@ StatefulShellRoute.indexedStack (4 tabs + standalone routes)
 
 ## CI / Validation (`scripts/check.sh`)
 ```
-10 steps:
+12 steps:
   1. flutter pub get
   2. dart format (--fix available)
   3. flutter analyze (single-pass, --no-fatal-infos)
@@ -101,8 +101,10 @@ StatefulShellRoute.indexedStack (4 tabs + standalone routes)
   6. untranslated l10n check (non-blocking)
   7. privacy guard (blocks analytics packages)
   8. secret scan (hardcoded API keys in lib/test/scripts)
-  9. no-login-route guard (ensures no /auth routes exist)
- 10. flutter build apk --debug (skipped with --quick)
+  9. no-stale-name guard (blocks mq_navigation references)
+ 10. no-login-route guard (ensures no /auth routes exist)
+ 11. no-google guard (blocks Google Maps SDK/files references)
+ 12. flutter build apk --debug (skipped with --quick)
 ```
 Supports `--quick`, `--fix`, `--verbose` flags. Structured logs under `.dart_tool/check_logs/`.
 

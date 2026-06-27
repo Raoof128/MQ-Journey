@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "ගූගල් සිතියම්",
   "onboardingMapTitle": "ද්වි-මාදිලි කැම්පස් සිතියම",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "සැබළ ලෝකයේ Google සිතියම් හෝ අපගේ විස්තරාත්මක කැම්පස් දර්ශනය සමඟ MQ හි සංචරණය කරන්න.",
   "onboardingTransitTitle": "සජීවී ගමන්",

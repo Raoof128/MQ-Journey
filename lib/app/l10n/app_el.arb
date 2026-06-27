@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Χάρτες Google",
   "onboardingMapTitle": "Χάρτης πανεπιστημιούπολης σε διπλή λειτουργία",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "Πλοηγηθείτε στο MQ με τους πραγματικούς χάρτες Google ή την λεπτομερή εικονογραφημένη άποψη του campus.",
   "onboardingTransitTitle": "Ζωντανή μετακίνηση",

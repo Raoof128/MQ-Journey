@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "Google Maps",
   "onboardingMapTitle": "Kampusztérkép két módban",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "Navigáljon az MQ-n valós Google Térképpel vagy részletes illusztrált campusnézetünkkel.",
   "onboardingTransitTitle": "Élő ingázás",

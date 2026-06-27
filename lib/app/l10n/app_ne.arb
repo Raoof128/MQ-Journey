@@ -2197,7 +2197,7 @@
   "diagnosticsRendererGoogle": "गुगल नक्सा",
   "onboardingMapTitle": "दुई मोडको क्याम्पस नक्सा",
   "@onboardingMapTitle": {
-    "description": "Title for map onboarding: Google Maps vs illustrated campus mode (two modes)"
+    "description": "Title for the campus map onboarding slide"
   },
   "onboardingMapBody": "वास्तविक संसारको Google Maps वा हाम्रो विस्तृत चित्रित क्याम्पस दृश्यसँग MQ नेभिगेट गर्नुहोस्।",
   "onboardingTransitTitle": "प्रत्यक्ष यात्रा",
