@@ -1,11 +1,11 @@
 <div align="center">
 
 <!-- Typing animation -->
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=20&duration=2800&pause=700&color=0067a5&center=true&vCenter=true&width=860&lines=Find+Your+Way+Around+Macquarie+%E2%80%94+Without+Selling+Your+Data;Illustrated+Campus+Map+%E2%80%A2+Turn-by-Turn+Routing+%E2%80%A2+Compass+Mode;Flutter+3.11+%E2%80%A2+Riverpod+3+%E2%80%A2+Supabase+%E2%80%A2+35+Languages;Privacy+by+Design+%E2%80%A2+295+Tests+%E2%80%A2+Open+Day+2026+Ready)](https://readme-typing-svg.demolab.com)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=20&duration=2800&pause=700&color=0067a5&center=true&vCenter=true&width=860&lines=Find+Your+Way+Around+Macquarie+%E2%80%94+Without+Selling+Your+Data;Illustrated+Campus+Map+%E2%80%A2+Compass+Mode+%E2%80%A2+Routing;Flutter+3.41+%E2%80%A2+Riverpod+3+%E2%80%A2+Supabase+%E2%80%A2+35+Languages;Privacy+by+Design+%E2%80%A2+295+Tests+%E2%80%A2+Open+Day+2026+Ready)](https://readme-typing-svg.demolab.com)
 
 <!-- Badges -->
 ![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b?style=for-the-badge)
-![Flutter](https://img.shields.io/badge/Flutter_3.11+-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter_3.41+-02569B?style=for-the-badge&logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart_3-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![Riverpod](https://img.shields.io/badge/Riverpod_3.2-7C3AED?style=for-the-badge)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
@@ -115,7 +115,7 @@ Most campus apps are dated, English-only, and trade student data for the conveni
 ╔══════════════════════════════════════════════════════════════════════╗
 ║  🗺  flutter_map + CrsSimple illustrated campus renderer             ║
 ║  🧭  On-device compass mode with bearing-to-destination arrow        ║
-║  🛣  Turn-by-turn routing via ORS + TfNSW Supabase Edge proxy        ║
+║  🛣  ORS campus / TfNSW transit routing via Supabase Edge            ║
 ║  ❤️  Favourites CRUD: heart-toggle, edit-note, swipe-to-delete       ║
 ║  🚨  Campus Safety Toolkit: 000, AEDs, first aid, shuttle, torch     ║
 ║  🚆  Live Macquarie Uni metro countdown via TfNSW Open Data proxy    ║
@@ -158,7 +158,7 @@ graph TD
 
 | Layer | Technology |
 |-------|-----------|
-| **Framework** | Flutter 3.11+ (Stable channel) |
+| **Framework** | Flutter 3.41+ (Stable channel) |
 | **State** | Riverpod 3.2 (AsyncNotifier) |
 | **Routing** | GoRouter 17.1 (StatefulShellRoute, 4 tabs + standalone routes) |
 | **Maps** | flutter_map 8.3 + CrsSimple raster |
