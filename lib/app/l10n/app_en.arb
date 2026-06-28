@@ -55,7 +55,7 @@
   "save": "Save",
   "share": "Share",
   "places": "Places",
-  "navigateOnCampus": "Navigate on Campus Map",
+  "navigateOnCampus": "Show in Campus Map",
   "navigateToGoogleMaps": "Navigate to Google Maps",
   "googleMaps": "Google Maps",
   "mapViewToggle": "Switch map view",
@@ -69,7 +69,6 @@
   "searchOnGoogleMaps": "Search on Google Maps",
   "centerOnCampus": "Center on campus",
   "openInApp": "Open App",
-  "navigate": "Navigate",
   "cancel": "Cancel",
   "delete": "Delete",
   "edit": "Edit",
@@ -2092,6 +2091,19 @@
       }
     }
   },
+  "hoursMinutesShort": "{hours}h {minutes}m",
+  "@hoursMinutesShort": {
+    "placeholders": {
+      "hours": { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+  "hoursShort": "{hours}h",
+  "@hoursShort": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
   "devDiagnostics": "Dev Diagnostics",
   "buildVersion": "Build: 2026.04.22-beta",
   "renderer": "Renderer: CrsSimple (Campus)",
@@ -2099,7 +2111,7 @@
   "home_brandTitle": "MQ NAVIGATION",
   "home_welcomeTitle": "Welcome to MQ Journey",
   "home_welcomeSubtitle": "Find your way around campus quickly and easily.",
-  "home_startExploring": "Start Exploring",
+  "home_scanQrCta": "Scan QR Code",
   "home_quickAccess": "Quick Access",
   "home_foodDrink": "Food & Drink",
   "home_parking": "Parking",
@@ -2300,8 +2312,7 @@
   "openDay_noEventsNoneSelected": "Pick what you're interested in to see relevant events.",
   "openDay_showSuggestedStops": "Show suggested stops",
   "openDay_showSuggestedStopsSemantic": "Show suggested stops on Home",
-  "openDay_suggestedStopsTitle": "Suggested stops",
-  "openDay_suggestedStopsForInterest": "Picked for {interest}",
+  "openDay_suggestedStopsForInterest": "Suggested stops for {interest}",
   "@openDay_suggestedStopsForInterest": {
     "placeholders": { "interest": { "type": "String" } }
   },
@@ -2320,6 +2331,20 @@
   "openDay_savedToMyDay": "Added to your day",
   "openDay_removedFromMyDay": "Removed from your day",
   "openDay_clearMyDay": "Clear my day",
+  "openDay_progressVisited": "Visited {count} of {total} stops",
+  "@openDay_progressVisited": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "openDay_trailCompleted": "Completed {trail} trail",
+  "@openDay_trailCompleted": {
+    "placeholders": {
+      "trail": { "type": "String" }
+    }
+  },
+  "openDay_privacyStrip": "No login needed · Private on your device",
   "faculty_arts_label": "Faculty of Arts",
   "faculty_arts_desc": "Humanities, Law, Education, MMCCS",
   "faculty_business_label": "Macquarie Business School",

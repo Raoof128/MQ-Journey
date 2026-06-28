@@ -11,6 +11,7 @@ import 'package:mq_journey/features/map/presentation/pages/map_page.dart';
 import 'package:mq_journey/features/map/presentation/pages/favorites_page.dart';
 import 'package:mq_journey/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:mq_journey/features/open_day/presentation/pages/open_day_page.dart';
+import 'package:mq_journey/features/open_day/presentation/pages/your_day_page.dart';
 import 'package:mq_journey/features/safety/presentation/pages/safety_toolkit_page.dart';
 import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:mq_journey/features/settings/presentation/pages/settings_page.dart';
@@ -99,6 +100,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const OpenDayPage(),
       ),
       GoRoute(
+        path: '/your-day',
+        name: RouteNames.yourDay,
+        builder: (context, state) => const YourDayPage(),
+      ),
+      GoRoute(
         path: '/onboarding',
         name: RouteNames.onboarding,
         builder: (context, state) => const OnboardingPage(),
@@ -163,7 +169,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/settings',
                 name: RouteNames.settings,
-                builder: (context, state) => const SettingsPage(),
+                builder: (context, state) => SettingsPage(
+                  initialSection: state.uri.queryParameters['section'],
+                ),
               ),
             ],
           ),

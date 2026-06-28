@@ -155,8 +155,40 @@ class SettingsController extends AsyncNotifier<UserPreferences> {
   Future<String?> clearSavedOpenDayEvents() async {
     final currentPreferences = state.value ?? const UserPreferences();
     return _save(
-      currentPreferences.copyWith(savedOpenDayEventIds: const <String>[]),
+      currentPreferences.copyWith(
+        savedOpenDayEventIds: const <String>[],
+        savedStopIds: const <String>[],
+      ),
     );
+  }
+
+  /// Adds or removes a suggested stop from "Your Day".
+  Future<String?> toggleSavedStop(String stopId) async {
+    final currentPreferences = state.value ?? const UserPreferences();
+    final current = currentPreferences.savedStopIds;
+    final updated = current.contains(stopId)
+        ? (current.where((id) => id != stopId).toList(growable: false))
+        : ([...current, stopId]);
+    return _save(currentPreferences.copyWith(savedStopIds: updated));
+  }
+
+  /// Records a visit to a location (e.g. from a QR scan). Idempotent: a
+  /// repeat visit to the same building is a no-op, so the gamification layer
+  /// never awards duplicate XP. Returns `true` when this was a *new* visit
+  /// (so the caller can show a first-visit reward), `false` otherwise.
+  Future<bool> recordLocationVisit(String buildingCode) async {
+    final code = buildingCode.trim().toUpperCase();
+    if (code.isEmpty) return false;
+    final currentPreferences = state.value ?? const UserPreferences();
+    if (currentPreferences.visitedLocationCodes.contains(code)) {
+      return false;
+    }
+    await _save(
+      currentPreferences.copyWith(
+        visitedLocationCodes: [...currentPreferences.visitedLocationCodes, code],
+      ),
+    );
+    return true;
   }
 
   Future<String?> updateSelectedBachelorId(String? bachelorId) async {

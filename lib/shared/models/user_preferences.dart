@@ -28,6 +28,8 @@ class UserPreferences {
     this.openDayReminderMinutesBefore = 15,
     this.showSuggestedStops = true,
     this.savedOpenDayEventIds = const <String>[],
+    this.savedStopIds = const <String>[],
+    this.visitedLocationCodes = const <String>[],
   });
 
   final bool hasCompletedOnboarding;
@@ -58,14 +60,29 @@ class UserPreferences {
   /// want the schedule.
   final bool showSuggestedStops;
 
-  /// IDs of Open Day events the user has saved to "Your Day". Kept as an
-  /// ordered, immutable list; the itinerary view sorts by start time.
+  /// IDs of Open Day events (sessions) the user has saved to "Your Day".
+  /// Kept as an ordered, immutable list; the itinerary sorts by start time.
   final List<String> savedOpenDayEventIds;
+
+  /// IDs of suggested stops the user has saved to "Your Day". Sessions and
+  /// stops together form the unified `UserDayItem` list (see
+  /// `userDayItemsProvider`).
+  final List<String> savedStopIds;
+
+  /// Building codes the user has visited (e.g. via a QR scan). A set-like
+  /// list — the gamification layer awards XP only on first visit, so
+  /// duplicates are ignored. The QR/location feature records visits here.
+  final List<String> visitedLocationCodes;
 
   Locale? get locale => localeCode == null ? null : Locale(localeCode!);
 
   bool isOpenDayEventSaved(String eventId) =>
       savedOpenDayEventIds.contains(eventId);
+
+  bool isStopSaved(String stopId) => savedStopIds.contains(stopId);
+
+  bool hasVisited(String buildingCode) =>
+      visitedLocationCodes.contains(buildingCode);
 
   UserPreferences copyWith({
     bool? hasCompletedOnboarding,
@@ -93,6 +110,8 @@ class UserPreferences {
     int? openDayReminderMinutesBefore,
     bool? showSuggestedStops,
     List<String>? savedOpenDayEventIds,
+    List<String>? savedStopIds,
+    List<String>? visitedLocationCodes,
   }) {
     return UserPreferences(
       hasCompletedOnboarding:
@@ -124,6 +143,8 @@ class UserPreferences {
           openDayReminderMinutesBefore ?? this.openDayReminderMinutesBefore,
       showSuggestedStops: showSuggestedStops ?? this.showSuggestedStops,
       savedOpenDayEventIds: savedOpenDayEventIds ?? this.savedOpenDayEventIds,
+      savedStopIds: savedStopIds ?? this.savedStopIds,
+      visitedLocationCodes: visitedLocationCodes ?? this.visitedLocationCodes,
     );
   }
 
@@ -154,7 +175,9 @@ class UserPreferences {
           openDayRemindersEnabled == other.openDayRemindersEnabled &&
           openDayReminderMinutesBefore == other.openDayReminderMinutesBefore &&
           showSuggestedStops == other.showSuggestedStops &&
-          listEquals(savedOpenDayEventIds, other.savedOpenDayEventIds);
+          listEquals(savedOpenDayEventIds, other.savedOpenDayEventIds) &&
+          listEquals(savedStopIds, other.savedStopIds) &&
+          listEquals(visitedLocationCodes, other.visitedLocationCodes);
 
   @override
   int get hashCode => Object.hashAll([
@@ -181,5 +204,7 @@ class UserPreferences {
     openDayReminderMinutesBefore,
     showSuggestedStops,
     Object.hashAll(savedOpenDayEventIds),
+    Object.hashAll(savedStopIds),
+    Object.hashAll(visitedLocationCodes),
   ]);
 }

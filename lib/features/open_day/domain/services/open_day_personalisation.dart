@@ -84,6 +84,24 @@ class OpenDayPersonalisation {
     return _statusFrom(all, now, usedFallback: true);
   }
 
+  /// Live/upcoming snapshot scoped to a single location (building code).
+  ///
+  /// This is the reuse seam for the QR / scanned-location feature: given the
+  /// full schedule and a building code, it returns what's on *at that place*
+  /// right now and next — using the exact same [OpenDayLiveStatus] shape the
+  /// Home cards consume, so a location card can render identically.
+  static OpenDayLiveStatus liveStatusForLocation(
+    List<OpenDayEvent> all,
+    String buildingCode,
+    DateTime now,
+  ) {
+    final code = buildingCode.trim().toUpperCase();
+    final atLocation = all
+        .where((e) => (e.buildingCode ?? '').trim().toUpperCase() == code)
+        .toList();
+    return _statusFrom(atLocation, now, usedFallback: false);
+  }
+
   static OpenDayLiveStatus _statusFrom(
     List<OpenDayEvent> events,
     DateTime now, {

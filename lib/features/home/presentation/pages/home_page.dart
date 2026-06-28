@@ -7,7 +7,6 @@ import 'package:mq_journey/app/l10n/generated/app_localizations.dart';
 import 'package:mq_journey/app/router/route_names.dart';
 import 'package:mq_journey/app/theme/mq_colors.dart';
 import 'package:mq_journey/app/theme/mq_spacing.dart';
-import 'package:mq_journey/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:mq_journey/features/map/presentation/controllers/map_controller.dart';
 import 'package:mq_journey/features/open_day/presentation/widgets/open_day_home_card.dart';
 import 'package:mq_journey/features/open_day/presentation/widgets/open_day_home_sections.dart';
@@ -104,35 +103,42 @@ class HomePage extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
+                        // ── A. Study-interest group ──────────────────────
+                        // 1. QR-first CTA hero.
                         const _HeroSection(logoAsset: _logoAsset),
-                        const SizedBox(height: MqSpacing.space8),
+                        const SizedBox(height: MqSpacing.space5),
+                        // 2. Study Interest card (onboarding CTA before a
+                        //    choice, compact preview after).
+                        const OpenDayHomeCard(),
+                        // 3–4. Coming Up Next → Suggested Stops, kept together
+                        //    as the interest-driven cluster. Self-hiding until
+                        //    a study interest is chosen.
+                        const OpenDayPersonalisedSections(),
+                        const SizedBox(height: MqSpacing.space4),
+                        // ── B. Personal saved flow ───────────────────────
+                        // 5. Your Day — independent of interest selection, so
+                        //    it always appears (with an empty state) once the
+                        //    Open Day dataset is available.
+                        const OpenDayYourDayCard(),
+                        const SizedBox(height: MqSpacing.space6),
+                        // ── C. Support ───────────────────────────────────
+                        // 6. Next Metro (commute card).
                         _MetroCountdownCard(
                           commuteMode: preferences.commuteMode,
                           favoriteRoute: preferences.favoriteRoute,
                           metroDepartures: metroDepartures,
-                          onConfigureTap: () =>
-                              context.goNamed(RouteNames.settings),
+                          // Deep-link straight to the Commute Preferences
+                          // section of Settings, not the top of the page.
+                          onConfigureTap: () => context.goNamed(
+                            RouteNames.settings,
+                            queryParameters: {'section': 'commute'},
+                          ),
                           onRefreshTap: () =>
                               ref.invalidate(tfnswMetroProvider),
                         ),
-                        const SizedBox(height: MqSpacing.space4),
-                        _FavoritesCard(
-                          // push — not go — so the Favourites screen sits on
-                          // top of Home in the navigator stack, giving it an
-                          // automatic back arrow and the correct slide-in /
-                          // slide-back animation pair.
-                          onTap: () => context.pushNamed(RouteNames.favorites),
-                        ),
-                        const SizedBox(height: MqSpacing.space4),
-                        // Open Day enhancement — hides itself when the
-                        // dataset isn't loaded, morphs between onboarding
-                        // and preview based on whether a bachelor is set.
-                        const OpenDayHomeCard(),
-                        // Personalised Open Day sections (Live Now, Suggested
-                        // Stops, Your Day). Self-hiding until a study interest
-                        // is chosen, so Home stays clean for new users.
-                        const OpenDayPersonalisedSections(),
-                        const SizedBox(height: MqSpacing.space8),
+                        const SizedBox(height: MqSpacing.space6),
+                        // 7. Quick Access — lowest-priority legacy campus
+                        //    shortcuts.
                         _QuickAccessSection(
                           hapticsEnabled: hapticsEnabled,
                           onTapCategory: (query) {
@@ -145,6 +151,11 @@ class HomePage extends ConsumerWidget {
                             context.goNamed(RouteNames.map);
                           },
                         ),
+                        const SizedBox(height: MqSpacing.space6),
+                        // 8. Privacy note — a quiet, low-priority informational
+                        //    line at the very bottom (no longer competing with
+                        //    the hero CTA up top).
+                        const _PrivacyStrip(),
                       ],
                     ),
                   ),
@@ -407,7 +418,7 @@ class _DepartureBody extends StatelessWidget {
 
     final title = next == null
         ? l10n.homeNextMetroLabel
-        : l10n.minutesShort(next.minutesUntilDeparture);
+        : _formatCountdown(l10n, next.minutesUntilDeparture);
     final subtitle = next == null
         ? l10n.homeNextMetroEmpty
         : '${next.destination}$routeSuffix';
@@ -457,6 +468,19 @@ class _DepartureBody extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Formats a departure countdown for display. The TfNSW proxy returns the
+/// minutes until the next service; outside peak/service hours that can be a
+/// couple of hours away, and "439 min" is hard to parse at a glance — so once
+/// it crosses an hour we show "7h 19m" (or "7h" on the exact hour) instead.
+String _formatCountdown(AppLocalizations l10n, int minutes) {
+  if (minutes < 60) return l10n.minutesShort(minutes);
+  final hours = minutes ~/ 60;
+  final remainder = minutes % 60;
+  return remainder == 0
+      ? l10n.hoursShort(hours)
+      : l10n.hoursMinutesShort(hours, remainder);
 }
 
 // -------------------------------------------------------------------------- //
@@ -667,9 +691,12 @@ class _HeroSection extends StatelessWidget {
                 ),
                 elevation: 2,
               ),
-              icon: const Icon(Icons.near_me, size: MqSpacing.iconMd),
+              icon: const Icon(
+                Icons.qr_code_scanner_rounded,
+                size: MqSpacing.iconMd,
+              ),
               label: Text(
-                l10n.home_startExploring,
+                l10n.home_scanQrCta,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -746,94 +773,42 @@ class _LogoFallback extends StatelessWidget {
 }
 
 // -------------------------------------------------------------------------- //
-// FAVORITES CARD                                                             //
+// PRIVACY / INSTANT-ACCESS STRIP                                             //
 // -------------------------------------------------------------------------- //
 
-class _FavoritesCard extends ConsumerWidget {
-  const _FavoritesCard({required this.onTap});
-
-  final VoidCallback onTap;
+/// Quiet privacy note shown at the very bottom of Home. Deliberately plain —
+/// no card, no border — so it reads as a low-priority informational footnote
+/// rather than a CTA-adjacent block.
+class _PrivacyStrip extends StatelessWidget {
+  const _PrivacyStrip();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final dark = context.isDarkMode;
-    final state = ref.watch(favoritesControllerProvider);
-
-    final surface = dark
-        ? MqColors.charcoal800.withValues(alpha: 0.94)
-        : Colors.white.withValues(alpha: 0.94);
-    final border = dark
-        ? Colors.white.withValues(alpha: 0.08)
-        : MqColors.charcoal800.withValues(alpha: 0.06);
-    final titleColor = dark ? Colors.white : MqColors.black;
-    final subtitleColor = dark ? Colors.white : MqColors.black;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: surface,
-          borderRadius: BorderRadius.circular(MqSpacing.radiusXl),
-          border: Border.all(color: border, width: 0.6),
-          boxShadow: [
-            BoxShadow(
-              color: MqColors.charcoal800.withValues(alpha: dark ? 0.30 : 0.10),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
+    final color = dark
+        ? Colors.white.withValues(alpha: 0.60)
+        : MqColors.charcoal800.withValues(alpha: 0.55);
+    return Padding(
+      padding: const EdgeInsetsDirectional.symmetric(
+        horizontal: MqSpacing.space2,
+        vertical: MqSpacing.space2,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.lock_outline_rounded, size: 14, color: color),
+          const SizedBox(width: MqSpacing.space2),
+          Flexible(
+            child: Text(
+              l10n.openDay_privacyStrip,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: context.textTheme.bodySmall?.copyWith(color: color),
             ),
-          ],
-        ),
-        padding: const EdgeInsetsDirectional.all(MqSpacing.space4),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: const BoxDecoration(
-                color: MqColors.red,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.favorite_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: MqSpacing.space3),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    l10n.favoritesCardTitle,
-                    style: context.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: titleColor,
-                    ),
-                  ),
-                  const SizedBox(height: MqSpacing.space1),
-                  Text(
-                    state.favorites.isEmpty
-                        ? l10n.favoritesCardSubtitle
-                        : l10n.favoritesCount(state.favorites.length),
-                    style: context.textTheme.bodySmall?.copyWith(
-                      color: subtitleColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: dark ? Colors.white : MqColors.contentTertiary,
-              size: 20,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

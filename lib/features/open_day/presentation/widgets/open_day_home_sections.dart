@@ -7,8 +7,10 @@ import 'package:mq_journey/app/theme/mq_colors.dart';
 import 'package:mq_journey/app/theme/mq_spacing.dart';
 import 'package:mq_journey/features/map/data/datasources/building_registry_source.dart';
 import 'package:mq_journey/features/map/domain/entities/building.dart';
+import 'package:mq_journey/features/map/presentation/controllers/map_controller.dart';
 import 'package:mq_journey/features/open_day/data/open_day_providers.dart';
 import 'package:mq_journey/features/open_day/domain/entities/open_day_data.dart';
+import 'package:mq_journey/features/open_day/domain/entities/open_day_progress.dart';
 import 'package:mq_journey/features/open_day/domain/services/open_day_personalisation.dart';
 import 'package:mq_journey/features/open_day/domain/services/open_day_time.dart';
 import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
@@ -44,6 +46,10 @@ class OpenDayPersonalisedSections extends ConsumerWidget {
     final showSuggested =
         ref.watch(settingsControllerProvider).value?.showSuggestedStops ?? true;
 
+    // Study-interest cluster (sits directly under the interest card):
+    //   Coming Up Next → Suggested Stops.
+    // "Your Day" is intentionally NOT here — it lives in its own
+    // [OpenDayYourDayCard] so it shows independently of interest selection.
     return Column(
       children: [
         const SizedBox(height: MqSpacing.space4),
@@ -52,10 +58,24 @@ class OpenDayPersonalisedSections extends ConsumerWidget {
           const SizedBox(height: MqSpacing.space4),
           SuggestedStopsSection(interestName: selected.name),
         ],
-        const SizedBox(height: MqSpacing.space4),
-        const _YourDayCard(),
       ],
     );
+  }
+}
+
+/// Standalone "Your Day" card for Home. Independent of study-interest
+/// selection — it shows whenever the Open Day dataset is available, with an
+/// empty state prompting the user to save sessions/stops. This is the user's
+/// personal saved flow, so it must never disappear just because no interest
+/// was picked.
+class OpenDayYourDayCard extends ConsumerWidget {
+  const OpenDayYourDayCard({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dataAsync = ref.watch(openDayDataProvider);
+    if (dataAsync is! AsyncData<OpenDayData>) return const SizedBox.shrink();
+    return const _YourDayCard();
   }
 }
 
@@ -114,13 +134,21 @@ IconData iconForStop(String name) {
 }
 
 /// Resolves a building code into the registry and routes to it on the Campus
-/// Map. Mirrors the existing `EventActionsSheet` navigation so suggested stops
-/// connect to the map without this feature owning any map logic.
+/// Map.
+///
+/// **Why it also selects imperatively:** navigating to the same
+/// `/map?building=X` URL the user opened before is a no-op for go_router (the
+/// kept-alive MapPage isn't rebuilt and its param handler never re-runs), so
+/// after closing a location with X and tapping the same stop again, nothing
+/// happened. Calling `selectBuildingById` first re-emits the selection state
+/// every time, guaranteeing the marker re-shows on repeated taps; the
+/// `goNamed` keeps the URL in sync.
 void _openOnMap(BuildContext context, WidgetRef ref, String? buildingCode) {
   if (buildingCode == null) return;
   final buildings = ref.read(buildingRegistryProvider).value;
   final resolved = _resolveBuilding(buildings, buildingCode);
   final targetId = resolved?.id ?? buildingCode;
+  ref.read(mapControllerProvider.notifier).selectBuildingById(targetId);
   context.goNamed(
     RouteNames.map,
     queryParameters: {'building': targetId},
@@ -138,12 +166,16 @@ Building? _resolveBuilding(List<Building>? buildings, String? code) {
   return null;
 }
 
-/// Prominent section header consistent with Home's `_SectionHeader`.
+/// Prominent section header for the Suggested Stops block.
+///
+/// Renders a single high-contrast chip. The study interest is merged into
+/// [title] by the caller (e.g. "Suggested stops for Bachelor of Computing"),
+/// so there is deliberately no secondary subtitle line — a separate caption
+/// read poorly against the photo background.
 class _OpenDaySectionHeader extends StatelessWidget {
-  const _OpenDaySectionHeader({required this.title, this.subtitle});
+  const _OpenDaySectionHeader({required this.title});
 
   final String title;
-  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -153,62 +185,41 @@ class _OpenDaySectionHeader extends StatelessWidget {
         start: MqSpacing.space1,
         bottom: MqSpacing.space3,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: dark
+                ? MqColors.black.withValues(alpha: 0.30)
+                : Colors.white.withValues(alpha: 0.72),
+            borderRadius: BorderRadius.circular(MqSpacing.radiusMd),
+            border: Border.all(
               color: dark
-                  ? MqColors.black.withValues(alpha: 0.30)
-                  : Colors.white.withValues(alpha: 0.72),
-              borderRadius: BorderRadius.circular(MqSpacing.radiusMd),
-              border: Border.all(
-                color: dark
-                    ? Colors.white.withValues(alpha: 0.10)
-                    : MqColors.black.withValues(alpha: 0.14),
-                width: 0.8,
-              ),
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : MqColors.black.withValues(alpha: 0.14),
+              width: 0.8,
             ),
-            child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                MqSpacing.space2,
-                MqSpacing.space1,
-                MqSpacing.space2,
-                MqSpacing.space1,
-              ),
-              child: Text(
-                title.toUpperCase(),
-                style: context.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.2,
-                  fontSize: 16,
-                  color: dark ? Colors.white : MqColors.charcoal800,
-                ),
+          ),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              MqSpacing.space3,
+              MqSpacing.space2,
+              MqSpacing.space3,
+              MqSpacing.space2,
+            ),
+            child: Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                fontSize: 16,
+                height: 1.15,
+                color: dark ? Colors.white : MqColors.charcoal800,
               ),
             ),
           ),
-          if (subtitle != null) ...[
-            const SizedBox(height: MqSpacing.space2),
-            Padding(
-              padding: const EdgeInsetsDirectional.only(start: MqSpacing.space1),
-              child: Text(
-                subtitle!,
-                style: context.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: dark ? Colors.white : MqColors.black,
-                  shadows: dark
-                      ? null
-                      : [
-                          Shadow(
-                            blurRadius: 8,
-                            color: Colors.white.withValues(alpha: 0.8),
-                          ),
-                        ],
-                ),
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -362,9 +373,11 @@ class SuggestedStopsSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _OpenDaySectionHeader(
-          title: l10n.openDay_suggestedStopsTitle,
-          subtitle: l10n.openDay_suggestedStopsForInterest(interestName),
+          // Interest merged into the title itself — avoids a separate,
+          // low-contrast subtitle line floating over the photo background.
+          title: l10n.openDay_suggestedStopsForInterest(interestName),
         ),
+        const _TrailProgressChip(),
         SizedBox(
           height: 168,
           child: ListView.separated(
@@ -380,6 +393,61 @@ class SuggestedStopsSection extends ConsumerWidget {
   }
 }
 
+/// Slim, secondary gamification chip: "Visited X of N stops" + XP, with a
+/// "trail complete" flourish. Hides itself until the user has visited at
+/// least one stop, so it never nags a brand-new visitor.
+class _TrailProgressChip extends ConsumerWidget {
+  const _TrailProgressChip();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final dark = context.isDarkMode;
+    final progress = ref.watch(visitProgressProvider);
+    if (!progress.hasTrail || progress.visitedCount == 0) {
+      return const SizedBox.shrink();
+    }
+
+    final label = progress.trailComplete && progress.trailName != null
+        ? l10n.openDay_trailCompleted(progress.trailName!)
+        : l10n.openDay_progressVisited(
+            progress.visitedCount,
+            progress.totalCount,
+          );
+
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(
+        start: MqSpacing.space1,
+        bottom: MqSpacing.space3,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            progress.trailComplete
+                ? Icons.emoji_events_rounded
+                : Icons.flag_outlined,
+            size: 16,
+            color: dark ? MqColors.brightRed : MqColors.red,
+          ),
+          const SizedBox(width: MqSpacing.space2),
+          Flexible(
+            child: Text(
+              '$label  ·  ${progress.xp} XP',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: dark ? Colors.white : MqColors.charcoal800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _SuggestedStopCard extends ConsumerWidget {
   const _SuggestedStopCard({required this.stop});
 
@@ -387,13 +455,18 @@ class _SuggestedStopCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final dark = context.isDarkMode;
     final tappable = stop.buildingCode != null;
+    final isSaved =
+        ref.watch(settingsControllerProvider).value?.isStopSaved(stop.id) ??
+        false;
 
     return Semantics(
       button: tappable,
       label: stop.title,
       child: MqTactileButton(
+        // Whole-card tap opens the stop on the Campus Map.
         onTap: () => _openOnMap(context, ref, stop.buildingCode),
         borderRadius: MqSpacing.radiusXl,
         child: Container(
@@ -419,14 +492,43 @@ class _SuggestedStopCard extends ConsumerWidget {
                     ),
                   ),
                   const Spacer(),
-                  if (tappable)
-                    Icon(
-                      Icons.near_me_rounded,
-                      size: 18,
-                      color: dark
-                          ? Colors.white.withValues(alpha: 0.6)
-                          : MqColors.contentTertiary,
+                  // Add-to / remove-from "Your Day" toggle. Its own tap
+                  // target so it doesn't trigger the card's open-on-map tap.
+                  Semantics(
+                    button: true,
+                    label: isSaved
+                        ? l10n.openDay_removeFromMyDay
+                        : l10n.openDay_addToMyDay,
+                    child: InkWell(
+                      onTap: () async {
+                        await ref
+                            .read(settingsControllerProvider.notifier)
+                            .toggleSavedStop(stop.id);
+                        if (context.mounted) {
+                          context.showSnackBar(
+                            isSaved
+                                ? l10n.openDay_removedFromMyDay
+                                : l10n.openDay_savedToMyDay,
+                          );
+                        }
+                      },
+                      customBorder: const CircleBorder(),
+                      child: Padding(
+                        padding: const EdgeInsetsDirectional.all(2),
+                        child: Icon(
+                          isSaved
+                              ? Icons.bookmark_rounded
+                              : Icons.bookmark_add_outlined,
+                          size: 20,
+                          color: isSaved
+                              ? MqColors.red
+                              : (dark
+                                    ? Colors.white.withValues(alpha: 0.7)
+                                    : MqColors.contentTertiary),
+                        ),
+                      ),
                     ),
+                  ),
                 ],
               ),
               const SizedBox(height: MqSpacing.space3),
@@ -472,11 +574,13 @@ class _YourDayCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final dark = context.isDarkMode;
-    final saved = ref.watch(savedOpenDayEventsProvider);
-    final isEmpty = saved.isEmpty;
+    final items = ref.watch(userDayItemsProvider);
+    final isEmpty = items.isEmpty;
 
     return MqTactileButton(
-      onTap: () => context.pushNamed(RouteNames.openDay),
+      // Your Day has its own destination (saved items only) — distinct from
+      // Coming Up Next, which opens the broader Open Day schedule.
+      onTap: () => context.pushNamed(RouteNames.yourDay),
       borderRadius: MqSpacing.radiusXl,
       child: Container(
         width: double.infinity,
@@ -518,7 +622,7 @@ class _YourDayCard extends ConsumerWidget {
                   Text(
                     isEmpty
                         ? l10n.openDay_yourDayEmpty
-                        : _savedSummary(saved, l10n),
+                        : _savedSummary(items, l10n),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: context.textTheme.bodySmall?.copyWith(
@@ -537,10 +641,21 @@ class _YourDayCard extends ConsumerWidget {
     );
   }
 
-  String _savedSummary(List<OpenDayEvent> saved, AppLocalizations l10n) {
-    final count = l10n.openDay_yourDayCount(saved.length);
-    final next = saved.first;
-    final time = OpenDayTime.formatTimeOfDay(next.startTime);
-    return '$count  ·  $time ${next.venueName}';
+  /// Summary line for the Home card:
+  ///   • exactly one saved item → count + that item's detail (helpful);
+  ///   • multiple items → just the count (appending only the first item's
+  ///     time/venue was confusing — it looked like one item was singled out).
+  String _savedSummary(List<UserDayItem> items, AppLocalizations l10n) {
+    final count = l10n.openDay_yourDayCount(items.length);
+    if (items.length != 1) return count;
+
+    final item = items.first;
+    if (item is UserDaySession) {
+      final e = item.event;
+      return '$count  ·  '
+          '${OpenDayTime.formatTimeOfDay(e.startTime)} ${e.venueName}';
+    }
+    if (item is UserDayStop) return '$count  ·  ${item.stop.title}';
+    return count;
   }
 }

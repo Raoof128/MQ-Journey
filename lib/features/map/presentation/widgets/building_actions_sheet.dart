@@ -49,23 +49,15 @@ class BuildingActionsSheet extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: MqSpacing.space4),
+          // Single location action: show the place on the Campus Map. The
+          // generic "Navigate" (route preview) flow was removed — for Open Day
+          // we only want to surface the location, not start turn-by-turn nav.
           _ActionButton(
             icon: Icons.map_outlined,
             label: l10n.navigateOnCampus,
             onTap: () {
               Navigator.pop(context);
               context.goNamed('map', queryParameters: {'building': buildingId});
-            },
-          ),
-          _ActionButton(
-            icon: Icons.directions_walk_outlined,
-            label: l10n.navigate,
-            onTap: () {
-              Navigator.pop(context);
-              context.goNamed(
-                'map',
-                queryParameters: {'building': buildingId, 'preview': 'route'},
-              );
             },
           ),
           const SizedBox(height: MqSpacing.space3),

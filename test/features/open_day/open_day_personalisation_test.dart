@@ -195,4 +195,59 @@ void main() {
       expect(status.isEmpty, isTrue);
     });
   });
+
+  group('OpenDayPersonalisation.liveStatusForLocation', () {
+    test('scopes live/next to a single building code (case-insensitive)', () {
+      // Build a small location-scoped set with explicit building codes.
+      final events = [
+        OpenDayEvent(
+          id: 'a',
+          title: 'Talk A',
+          startTime: DateTime.parse('2026-08-15T10:00:00+10:00'),
+          endTime: DateTime.parse('2026-08-15T10:30:00+10:00'),
+          venueName: 'Price',
+          buildingCode: 'PRICE',
+          bachelorIds: const [],
+        ),
+        OpenDayEvent(
+          id: 'b',
+          title: 'Talk B',
+          startTime: DateTime.parse('2026-08-15T11:00:00+10:00'),
+          endTime: DateTime.parse('2026-08-15T11:30:00+10:00'),
+          venueName: 'Price',
+          buildingCode: 'price',
+          bachelorIds: const [],
+        ),
+        OpenDayEvent(
+          id: 'c',
+          title: 'Elsewhere',
+          startTime: DateTime.parse('2026-08-15T10:05:00+10:00'),
+          endTime: DateTime.parse('2026-08-15T10:30:00+10:00'),
+          venueName: 'Lotus',
+          buildingCode: 'LOTUS',
+          bachelorIds: const [],
+        ),
+      ];
+      final now = DateTime.parse('2026-08-15T10:15:00+10:00');
+
+      final status = OpenDayPersonalisation.liveStatusForLocation(
+        events,
+        'price',
+        now,
+      );
+
+      expect(status.liveNow.map((e) => e.id), ['a']);
+      expect(status.comingUpNext?.id, 'b');
+    });
+
+    test('returns empty for a location with no sessions', () {
+      final data = _fixture();
+      final status = OpenDayPersonalisation.liveStatusForLocation(
+        data.events,
+        'NOPE',
+        DateTime.parse('2026-08-15T10:15:00+10:00'),
+      );
+      expect(status.isEmpty, isTrue);
+    });
+  });
 }

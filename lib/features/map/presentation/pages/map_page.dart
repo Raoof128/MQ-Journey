@@ -10,7 +10,6 @@ import 'package:mq_journey/app/theme/mq_spacing.dart';
 import 'package:mq_journey/features/map/data/datasources/location_source.dart';
 import 'package:mq_journey/features/map/domain/entities/building.dart';
 import 'package:mq_journey/features/map/presentation/controllers/map_controller.dart';
-import 'package:mq_journey/features/favorites/presentation/widgets/favorite_button.dart';
 import 'package:mq_journey/features/map/presentation/widgets/building_actions_sheet.dart';
 import 'package:mq_journey/features/map/presentation/widgets/building_search_sheet.dart';
 import 'package:mq_journey/features/map/presentation/widgets/campus/campus_map_view.dart';
@@ -881,20 +880,10 @@ class _CategoryBuildingList extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             )
                           : null,
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          FavoriteButton(
-                            buildingId: building.id,
-                            buildingName: building.name,
-                            size: 20,
-                          ),
-                          Icon(
-                            Icons.chevron_right,
-                            size: 20,
-                            color: isDark ? Colors.white : MqColors.charcoal600,
-                          ),
-                        ],
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        size: 20,
+                        color: isDark ? Colors.white : MqColors.charcoal600,
                       ),
                       onTap: () => onSelectBuilding(building),
                       shape: RoundedRectangleBorder(
@@ -950,7 +939,10 @@ class _BrowseGroupPanel<TGroup> extends StatelessWidget {
           sigmaY: MqSpacing.space3,
         ),
         child: Container(
-          constraints: const BoxConstraints(maxHeight: 360),
+          // Matches the compact Food & Drink / Parking results panel (240)
+          // instead of the previous 360, so these category lists no longer
+          // dominate the map.
+          constraints: const BoxConstraints(maxHeight: 240),
           decoration: BoxDecoration(
             color: isDark
                 ? MqColors.charcoal800.withValues(alpha: 0.94)
@@ -999,7 +991,7 @@ class _BrowseGroupPanel<TGroup> extends StatelessWidget {
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
                   MqSpacing.space4,
-                  MqSpacing.space3,
+                  MqSpacing.space2,
                   MqSpacing.space2,
                   0,
                 ),
@@ -1008,16 +1000,16 @@ class _BrowseGroupPanel<TGroup> extends StatelessWidget {
                     Expanded(
                       child: Text(
                         title,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: isDark
-                                  ? Colors.white
-                                  : MqColors.contentPrimary,
-                            ),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: isDark
+                              ? Colors.white
+                              : MqColors.contentPrimary,
+                        ),
                       ),
                     ),
                     IconButton(
+                      visualDensity: VisualDensity.compact,
                       icon: Icon(
                         Icons.close,
                         size: 20,
@@ -1044,8 +1036,12 @@ class _BrowseGroupPanel<TGroup> extends StatelessWidget {
                     final group = groups[index];
                     final count = countsByGroup[group] ?? 0;
                     return ListTile(
-                      dense: false,
-                      leading: Icon(leadingIcon, color: MqColors.red, size: 22),
+                      dense: true,
+                      visualDensity: VisualDensity.compact,
+                      contentPadding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: MqSpacing.space3,
+                      ),
+                      leading: Icon(leadingIcon, color: MqColors.red, size: 20),
                       title: Text(
                         labelOf(group),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(

@@ -204,6 +204,48 @@ void main() {
       );
     });
 
+    test('toggleSavedStop adds then removes a stop', () async {
+      final container = createContainer();
+      final controller = container.read(settingsControllerProvider.notifier);
+
+      await controller.toggleSavedStop('stop-computing');
+      expect(
+        container.read(settingsControllerProvider).value?.savedStopIds,
+        ['stop-computing'],
+      );
+
+      await controller.toggleSavedStop('stop-computing');
+      expect(
+        container.read(settingsControllerProvider).value?.savedStopIds,
+        isEmpty,
+      );
+    });
+
+    test('recordLocationVisit awards once and dedupes repeat scans', () async {
+      final container = createContainer();
+      final controller = container.read(settingsControllerProvider.notifier);
+
+      final first = await controller.recordLocationVisit('4rpd');
+      expect(first, isTrue, reason: 'first visit is new');
+      expect(
+        container.read(settingsControllerProvider).value?.visitedLocationCodes,
+        ['4RPD'],
+        reason: 'stored upper-cased',
+      );
+
+      final second = await controller.recordLocationVisit('4RPD');
+      expect(second, isFalse, reason: 'repeat scan is not new');
+      expect(
+        container
+            .read(settingsControllerProvider)
+            .value
+            ?.visitedLocationCodes
+            .length,
+        1,
+        reason: 'no duplicate visit recorded',
+      );
+    });
+
     test('clearSavedOpenDayEvents empties the itinerary', () async {
       final container = createContainer();
       final controller = container.read(settingsControllerProvider.notifier);

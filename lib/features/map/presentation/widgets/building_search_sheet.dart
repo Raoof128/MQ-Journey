@@ -6,7 +6,6 @@ import 'package:mq_journey/app/theme/mq_spacing.dart';
 import 'package:mq_journey/core/utils/haptics.dart';
 import 'package:mq_journey/features/map/domain/entities/building.dart';
 import 'package:mq_journey/features/map/presentation/controllers/map_controller.dart';
-import 'package:mq_journey/features/favorites/presentation/widgets/favorite_button.dart';
 import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:mq_journey/shared/extensions/context_extensions.dart';
 
@@ -104,9 +103,10 @@ class _BuildingSearchSheetState extends ConsumerState<BuildingSearchSheet> {
                       color: isDark ? Colors.white : MqColors.contentSecondary,
                     ),
                   ),
-                  trailing: FavoriteButton(
-                    buildingId: building.id,
-                    buildingName: building.name,
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    size: 20,
+                    color: isDark ? Colors.white : MqColors.contentTertiary,
                   ),
                   onTap: () {
                     final haptics =

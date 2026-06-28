@@ -27,6 +27,8 @@ const _openDayRemindersEnabledKey = 'settings.open_day.reminders_enabled';
 const _openDayReminderMinutesKey = 'settings.open_day.reminder_minutes';
 const _showSuggestedStopsKey = 'settings.open_day.show_suggested_stops';
 const _savedOpenDayEventIdsKey = 'settings.open_day.saved_event_ids';
+const _savedStopIdsKey = 'settings.open_day.saved_stop_ids';
+const _visitedLocationCodesKey = 'settings.open_day.visited_codes';
 const _hasCompletedOnboardingKey = 'settings.has_completed_onboarding';
 
 abstract interface class SettingsRepository {
@@ -83,6 +85,8 @@ class LocalSettingsRepository implements SettingsRepository {
       final savedOpenDayEventIds = await _storage.read(
         _savedOpenDayEventIdsKey,
       );
+      final savedStopIds = await _storage.read(_savedStopIdsKey);
+      final visitedLocationCodes = await _storage.read(_visitedLocationCodesKey);
       final hasCompletedOnboarding = await _storage.read(
         _hasCompletedOnboardingKey,
       );
@@ -124,6 +128,8 @@ class LocalSettingsRepository implements SettingsRepository {
         openDayReminderMinutesBefore: _parseMinutes(openDayReminderMinutes),
         showSuggestedStops: showSuggestedStops != 'false',
         savedOpenDayEventIds: _parseSavedEventIds(savedOpenDayEventIds),
+        savedStopIds: _parseSavedEventIds(savedStopIds),
+        visitedLocationCodes: _parseSavedEventIds(visitedLocationCodes),
       );
     } catch (error, stackTrace) {
       AppLogger.error('Failed to load user preferences', error, stackTrace);
@@ -205,6 +211,14 @@ class LocalSettingsRepository implements SettingsRepository {
       await _storage.write(
         _savedOpenDayEventIdsKey,
         preferences.savedOpenDayEventIds.join(','),
+      );
+      await _storage.write(
+        _savedStopIdsKey,
+        preferences.savedStopIds.join(','),
+      );
+      await _storage.write(
+        _visitedLocationCodesKey,
+        preferences.visitedLocationCodes.join(','),
       );
       await _storage.write(
         _hasCompletedOnboardingKey,

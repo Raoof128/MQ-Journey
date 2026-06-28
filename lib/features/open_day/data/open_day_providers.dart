@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mq_journey/features/open_day/domain/entities/open_day_data.dart';
+import 'package:mq_journey/features/open_day/domain/entities/open_day_progress.dart';
+import 'package:mq_journey/features/open_day/domain/services/open_day_gamification.dart';
 import 'package:mq_journey/features/open_day/domain/services/open_day_personalisation.dart';
 import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
 
@@ -95,4 +97,55 @@ final savedOpenDayEventsProvider = Provider<List<OpenDayEvent>>((ref) {
       if (byId[id] != null) byId[id]!,
   ]..sort((a, b) => a.startTime.compareTo(b.startTime));
   return resolved;
+});
+
+/// The unified "Your Day" itinerary: saved sessions first (chronological,
+/// the natural backbone of the day) followed by saved stops (places to drop
+/// into between sessions). One list so the UI never juggles two collections.
+final userDayItemsProvider = Provider<List<UserDayItem>>((ref) {
+  final data = ref.watch(openDayDataProvider).value;
+  if (data == null) return const [];
+  final prefs = ref.watch(settingsControllerProvider).value;
+  final sessions = ref.watch(savedOpenDayEventsProvider);
+
+  final savedStopIds = prefs?.savedStopIds ?? const <String>[];
+  final stopById = {for (final s in data.suggestedStops) s.id: s};
+  final stops = [
+    for (final id in savedStopIds)
+      if (stopById[id] != null) stopById[id]!,
+  ];
+
+  return <UserDayItem>[
+    for (final e in sessions) UserDaySession(e),
+    for (final s in stops) UserDayStop(s),
+  ];
+});
+
+/// Live/upcoming snapshot for a specific building code — the reuse seam for
+/// the future QR / scanned-location cards. Reads the injected clock so it
+/// stays testable and consistent with the Home-level Live Now.
+final locationLiveStatusProvider = Provider.family<OpenDayLiveStatus, String>((
+  ref,
+  buildingCode,
+) {
+  final data = ref.watch(openDayDataProvider).value;
+  final now = ref.watch(openDayNowProvider);
+  final all = data?.events ?? const <OpenDayEvent>[];
+  return OpenDayPersonalisation.liveStatusForLocation(all, buildingCode, now);
+});
+
+/// Lightweight gamification progress for the current interest's "trail".
+/// Featured stops = the suggested stops for the selected interest, so
+/// "Visited X of N" tracks the same places shown on Home.
+final visitProgressProvider = Provider<VisitProgress>((ref) {
+  final visited =
+      ref.watch(settingsControllerProvider).value?.visitedLocationCodes ??
+      const <String>[];
+  final trail = ref.watch(suggestedStopsProvider);
+  final interest = ref.watch(selectedBachelorProvider);
+  return OpenDayGamification.progress(
+    visited: visited,
+    trail: trail,
+    trailName: interest?.name,
+  );
 });

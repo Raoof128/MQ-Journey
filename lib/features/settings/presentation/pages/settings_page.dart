@@ -35,13 +35,46 @@ ThemeData _settingsDarkReadableTheme(BuildContext context) {
 /// rather than standard Material tiles to match the MQ design system,
 /// including a red radial gradient background in dark mode.
 class SettingsPage extends ConsumerStatefulWidget {
-  const SettingsPage({super.key});
+  const SettingsPage({super.key, this.initialSection});
+
+  /// Optional deep-link target section (e.g. `'commute'`), used to scroll the
+  /// user straight to the relevant block instead of the top of the page.
+  final String? initialSection;
 
   @override
   ConsumerState<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _commuteSectionKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialSection == 'commute') {
+      // Wait for the list to build, then bring the Commute Preferences block
+      // into view so the user lands exactly where they need to configure it.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final target = _commuteSectionKey.currentContext;
+        if (target != null) {
+          Scrollable.ensureVisible(
+            target,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOutCubic,
+            alignment: 0.05,
+          );
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   static const _metroDirectionSydenham = 'Sydenham';
   static const _metroDirectionTallawong = 'Tallawong';
   static const _metroDirectionValues = [
@@ -188,6 +221,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ),
             SafeArea(
               child: ListView(
+                controller: _scrollController,
                 padding: const EdgeInsetsDirectional.fromSTEB(
                   MqSpacing.space5,
                   MqSpacing.space6,
@@ -317,14 +351,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   // Placed high on the page because these preferences
                   // are the ones that most directly change what the
                   // user sees on the Home screen (Metro Countdown).
-                  _SectionHeader(title: l10n.commutePreferences),
-                  _CommutePreviewTile(
-                    direction: preferences.favoriteDirection,
-                    mode: preferences.commuteMode,
-                    route: preferences.favoriteRoute,
-                    stopId: preferences.favoriteStopId,
-                    stopName: preferences.favoriteStopName,
-                    l10n: l10n,
+                  // Editable controls first (Main Transport), then a passive
+                  // status summary below — so it's clear that Main Transport is
+                  // the thing you change and the summary is just state.
+                  KeyedSubtree(
+                    key: _commuteSectionKey,
+                    child: _SectionHeader(title: l10n.commutePreferences),
                   ),
                   _SettingsCard(
                     children: [
@@ -430,6 +462,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           ),
                         ),
                     ],
+                  ),
+                  _CommutePreviewTile(
+                    direction: preferences.favoriteDirection,
+                    mode: preferences.commuteMode,
+                    route: preferences.favoriteRoute,
+                    stopId: preferences.favoriteStopId,
+                    stopName: preferences.favoriteStopName,
+                    l10n: l10n,
                   ),
                   const SizedBox(height: MqSpacing.space6),
 
@@ -1913,12 +1953,6 @@ class _CommutePreviewTile extends StatelessWidget {
     final dark = context.isDarkMode;
     final configured = mode != 'none';
 
-    final modeIcon = switch (mode) {
-      'metro' => Icons.directions_subway_rounded,
-      'bus' => Icons.directions_bus_rounded,
-      'train' => Icons.train_rounded,
-      _ => Icons.tune_rounded,
-    };
     final modeLabel = switch (mode) {
       'metro' => l10n.commuteModeMetro,
       'bus' => l10n.commuteModeBus,
@@ -1933,114 +1967,52 @@ class _CommutePreviewTile extends StatelessWidget {
         ? _SettingsPageState._metroDirectionLabel(direction, l10n)
         : '';
     // Prefer the human-readable stop name when available (set when the
-    // user picks a stop from the search sheet); fall back to the raw ID
-    // for users who entered an ID directly or pre-name-search builds.
+    // user picks a stop from the search sheet); fall back to the raw ID.
     final stopLabel = stopName.trim().isNotEmpty
         ? stopName.trim()
         : (stopId.trim().isNotEmpty ? '#${stopId.trim()}' : '');
-    final detailParts = <String>[
+    final summaryParts = <String>[
+      if (configured) modeLabel,
       if (configured && routeLabel.trim().isNotEmpty) routeLabel.trim(),
       if (configured && directionLabel.trim().isNotEmpty) directionLabel.trim(),
       if (stopLabel.isNotEmpty) stopLabel,
     ];
-    final detail = detailParts.isEmpty
+    final summary = summaryParts.isEmpty
         ? l10n.setRoutePrompt
-        : detailParts.join(' · ');
+        : summaryParts.join(' · ');
 
-    return Container(
-      margin: const EdgeInsetsDirectional.only(bottom: MqSpacing.space3),
-      padding: const EdgeInsetsDirectional.all(MqSpacing.space4),
-      decoration: BoxDecoration(
-        // **Light mode:** 22/55 alphas — clear call-out on white.
-        //
-        // **Dark mode:** previously 20/70 — far too weak. `red @ 8% alpha`
-        // is below the perceptual threshold against `charcoal800`, so the
-        // card faded into the background. Bumped to **48/130** so the
-        // tile clearly reads as a highlighted state — confident, not
-        // neon. The border is also now strong enough to define the
-        // tile's edge without a separate divider.
-        color: dark ? MqColors.red.withAlpha(48) : MqColors.red.withAlpha(22),
-        borderRadius: BorderRadius.circular(MqSpacing.radiusXl),
-        border: Border.all(
-          color: dark
-              ? MqColors.red.withAlpha(130)
-              : MqColors.red.withAlpha(55),
-          width: dark ? 1.0 : 1.0,
-        ),
+    // Passive status summary — deliberately NOT a card or button (no leading
+    // icon, no red highlight box) so it doesn't read as something to tap.
+    // "Main Transport" above is the editable control; this is just state.
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        MqSpacing.space2,
+        MqSpacing.space3,
+        MqSpacing.space2,
+        0,
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: MqColors.red,
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: [
-                BoxShadow(
-                  // Tightened shadow so the icon's red glow no longer
-                  // bleeds across the tile and creates the muddy
-                  // red→grey gradient artefact in the screenshot.
-                  color: MqColors.red.withAlpha(45),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+          Text(
+            summary,
+            style: context.textTheme.bodySmall?.copyWith(
+              color: dark
+                  ? Colors.white.withValues(alpha: 0.80)
+                  : MqColors.contentSecondary,
+              fontStyle: configured ? FontStyle.normal : FontStyle.italic,
             ),
-            child: Icon(modeIcon, color: Colors.white, size: 22),
           ),
-          const SizedBox(width: MqSpacing.space4),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  modeLabel,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: dark ? Colors.white : MqColors.contentPrimary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  detail,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.bodySmall?.copyWith(
-                    // Dark mode: bumped from white@55%/alpha-200 to
-                    // white@75%/85% so the "Set route…" prompt and any
-                    // configured detail read clearly against the now-
-                    // stronger red tile background.
-                    color: configured
-                        ? (dark
-                              ? Colors.white.withValues(alpha: 0.85)
-                              : MqColors.contentSecondary)
-                        : (dark
-                              ? Colors.white.withValues(alpha: 0.75)
-                              : MqColors.charcoal600),
-                    fontStyle: configured ? FontStyle.normal : FontStyle.italic,
-                  ),
-                ),
-                const SizedBox(height: MqSpacing.space2),
-                Text(
-                  l10n.commutePreviewDrivesHomeCountdown,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.labelSmall?.copyWith(
-                    letterSpacing: 0.8,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 10,
-                    // Dark mode caption: lerp red 30% toward white so
-                    // "DRIVES YOUR HOME SCREEN METRO COUNTDOWN" lifts
-                    // off the now-richer red tile background. Same
-                    // technique as the section headers, kept consistent.
-                    color: dark
-                        ? Color.lerp(MqColors.red, Colors.white, 0.30)
-                        : MqColors.red,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 2),
+          Text(
+            l10n.commutePreviewDrivesHomeCountdown,
+            style: context.textTheme.labelSmall?.copyWith(
+              letterSpacing: 0.6,
+              fontWeight: FontWeight.w700,
+              fontSize: 10,
+              color: dark
+                  ? Colors.white.withValues(alpha: 0.45)
+                  : MqColors.charcoal600,
             ),
           ),
         ],
