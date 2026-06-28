@@ -1502,6 +1502,20 @@ class _OpenDaySection extends ConsumerWidget {
             hapticsEnabled: preferences.hapticsEnabled,
             onTap: () => _showLeadTimePicker(context, ref),
           ),
+        // Single, optional Open Day control: lets users hide the
+        // personalised Suggested Stops block on Home if they prefer a
+        // lean screen. Deliberately the only extra toggle added here —
+        // Settings stays minimal.
+        _ToggleRow(
+          icon: Icons.explore_outlined,
+          label: l10n.openDay_showSuggestedStops,
+          value: preferences.showSuggestedStops,
+          semanticLabel: l10n.openDay_showSuggestedStopsSemantic,
+          hapticsEnabled: preferences.hapticsEnabled,
+          onChanged: (v) => ref
+              .read(settingsControllerProvider.notifier)
+              .updateShowSuggestedStops(v),
+        ),
       ],
     );
   }

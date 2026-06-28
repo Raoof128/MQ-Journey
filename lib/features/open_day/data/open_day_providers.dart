@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mq_journey/features/open_day/domain/entities/open_day_data.dart';
+import 'package:mq_journey/features/open_day/domain/services/open_day_personalisation.dart';
 import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
 
 /// Bundles the Open Day dataset asset path so it can be overridden in
@@ -49,4 +50,49 @@ final relevantOpenDayEventsProvider = Provider<List<OpenDayEvent>>((ref) {
   final filtered = data.events.where((e) => e.isRelevantTo(selectedId)).toList()
     ..sort((a, b) => a.startTime.compareTo(b.startTime));
   return filtered;
+});
+
+/// Suggested campus stops ranked for the user's selected interest.
+///
+/// Delegates ranking to [OpenDayPersonalisation.suggestedStops] so the UI
+/// never re-implements relevance scoring. Returns an empty list until the
+/// dataset has loaded.
+final suggestedStopsProvider = Provider<List<OpenDaySuggestedStop>>((ref) {
+  final data = ref.watch(openDayDataProvider).value;
+  if (data == null) return const [];
+  final selected = ref.watch(selectedBachelorProvider);
+  return OpenDayPersonalisation.suggestedStops(data, selected);
+});
+
+/// Injectable clock so the Live Now / Coming Up Next logic is deterministic
+/// in tests. Production reads `DateTime.now()`; tests override this provider.
+final openDayNowProvider = Provider<DateTime>((ref) => DateTime.now());
+
+/// Live / upcoming snapshot for Home, biased toward the selected interest
+/// (with a graceful fallback to the full schedule — see
+/// [OpenDayPersonalisation.liveStatus]).
+final openDayLiveStatusProvider = Provider<OpenDayLiveStatus>((ref) {
+  final data = ref.watch(openDayDataProvider).value;
+  final relevant = ref.watch(relevantOpenDayEventsProvider);
+  final now = ref.watch(openDayNowProvider);
+  final all = data?.events ?? const <OpenDayEvent>[];
+  return OpenDayPersonalisation.liveStatus(relevant, all, now);
+});
+
+/// The user's saved "Your Day" events, resolved from stored IDs to full
+/// event objects and sorted by start time. Silently drops IDs that no longer
+/// exist in the dataset (e.g. after a schedule update).
+final savedOpenDayEventsProvider = Provider<List<OpenDayEvent>>((ref) {
+  final data = ref.watch(openDayDataProvider).value;
+  if (data == null) return const [];
+  final savedIds =
+      ref.watch(settingsControllerProvider).value?.savedOpenDayEventIds ??
+      const <String>[];
+  if (savedIds.isEmpty) return const [];
+  final byId = {for (final e in data.events) e.id: e};
+  final resolved = [
+    for (final id in savedIds)
+      if (byId[id] != null) byId[id]!,
+  ]..sort((a, b) => a.startTime.compareTo(b.startTime));
+  return resolved;
 });

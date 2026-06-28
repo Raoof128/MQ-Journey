@@ -2298,6 +2298,28 @@
   },
   "openDay_noEventsForSelection": "No events matched to your study interest yet.",
   "openDay_noEventsNoneSelected": "Pick what you're interested in to see relevant events.",
+  "openDay_showSuggestedStops": "Show suggested stops",
+  "openDay_showSuggestedStopsSemantic": "Show suggested stops on Home",
+  "openDay_suggestedStopsTitle": "Suggested stops",
+  "openDay_suggestedStopsForInterest": "Picked for {interest}",
+  "@openDay_suggestedStopsForInterest": {
+    "placeholders": { "interest": { "type": "String" } }
+  },
+  "openDay_liveNowTitle": "Live now",
+  "openDay_comingUpNextTitle": "Coming up next",
+  "openDay_liveNowForInterest": "Matched to your interest",
+  "openDay_liveNowAcrossDay": "Across Open Day",
+  "openDay_yourDayTitle": "Your day",
+  "openDay_yourDayEmpty": "Save sessions you like to build your personal Open Day plan.",
+  "openDay_yourDayCount": "{count, plural, =1{1 session saved} other{{count} sessions saved}}",
+  "@openDay_yourDayCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "openDay_addToMyDay": "Add to my day",
+  "openDay_removeFromMyDay": "Remove from my day",
+  "openDay_savedToMyDay": "Added to your day",
+  "openDay_removedFromMyDay": "Removed from your day",
+  "openDay_clearMyDay": "Clear my day",
   "faculty_arts_label": "Faculty of Arts",
   "faculty_arts_desc": "Humanities, Law, Education, MMCCS",
   "faculty_business_label": "Macquarie Business School",

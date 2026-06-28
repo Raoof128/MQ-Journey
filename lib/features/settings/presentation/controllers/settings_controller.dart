@@ -136,6 +136,29 @@ class SettingsController extends AsyncNotifier<UserPreferences> {
     );
   }
 
+  Future<String?> updateShowSuggestedStops(bool enabled) async {
+    final currentPreferences = state.value ?? const UserPreferences();
+    return _save(currentPreferences.copyWith(showSuggestedStops: enabled));
+  }
+
+  /// Adds or removes an event from the user's saved "Your Day" itinerary.
+  /// Toggle semantics keep the call site (a single bookmark button) trivial.
+  Future<String?> toggleSavedOpenDayEvent(String eventId) async {
+    final currentPreferences = state.value ?? const UserPreferences();
+    final current = currentPreferences.savedOpenDayEventIds;
+    final updated = current.contains(eventId)
+        ? (current.where((id) => id != eventId).toList(growable: false))
+        : ([...current, eventId]);
+    return _save(currentPreferences.copyWith(savedOpenDayEventIds: updated));
+  }
+
+  Future<String?> clearSavedOpenDayEvents() async {
+    final currentPreferences = state.value ?? const UserPreferences();
+    return _save(
+      currentPreferences.copyWith(savedOpenDayEventIds: const <String>[]),
+    );
+  }
+
   Future<String?> updateSelectedBachelorId(String? bachelorId) async {
     final currentPreferences = state.value ?? const UserPreferences();
     return _save(

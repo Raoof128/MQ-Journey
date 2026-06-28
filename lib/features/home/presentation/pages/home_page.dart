@@ -10,6 +10,7 @@ import 'package:mq_journey/app/theme/mq_spacing.dart';
 import 'package:mq_journey/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:mq_journey/features/map/presentation/controllers/map_controller.dart';
 import 'package:mq_journey/features/open_day/presentation/widgets/open_day_home_card.dart';
+import 'package:mq_journey/features/open_day/presentation/widgets/open_day_home_sections.dart';
 import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:mq_journey/features/transit/domain/entities/metro_departure.dart';
 import 'package:mq_journey/features/transit/presentation/providers/tfnsw_provider.dart';
@@ -127,6 +128,10 @@ class HomePage extends ConsumerWidget {
                         // dataset isn't loaded, morphs between onboarding
                         // and preview based on whether a bachelor is set.
                         const OpenDayHomeCard(),
+                        // Personalised Open Day sections (Live Now, Suggested
+                        // Stops, Your Day). Self-hiding until a study interest
+                        // is chosen, so Home stays clean for new users.
+                        const OpenDayPersonalisedSections(),
                         const SizedBox(height: MqSpacing.space8),
                         _QuickAccessSection(
                           hapticsEnabled: hapticsEnabled,

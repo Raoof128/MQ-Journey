@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mq_journey/features/map/domain/entities/route_leg.dart';
 
@@ -25,6 +26,8 @@ class UserPreferences {
     this.selectedBachelorId,
     this.openDayRemindersEnabled = true,
     this.openDayReminderMinutesBefore = 15,
+    this.showSuggestedStops = true,
+    this.savedOpenDayEventIds = const <String>[],
   });
 
   final bool hasCompletedOnboarding;
@@ -50,7 +53,19 @@ class UserPreferences {
   final bool openDayRemindersEnabled;
   final int openDayReminderMinutesBefore;
 
+  /// Minimal Open Day toggle — when off, the personalised Suggested Stops
+  /// section is hidden on Home, keeping the screen lean for users who only
+  /// want the schedule.
+  final bool showSuggestedStops;
+
+  /// IDs of Open Day events the user has saved to "Your Day". Kept as an
+  /// ordered, immutable list; the itinerary view sorts by start time.
+  final List<String> savedOpenDayEventIds;
+
   Locale? get locale => localeCode == null ? null : Locale(localeCode!);
+
+  bool isOpenDayEventSaved(String eventId) =>
+      savedOpenDayEventIds.contains(eventId);
 
   UserPreferences copyWith({
     bool? hasCompletedOnboarding,
@@ -76,6 +91,8 @@ class UserPreferences {
     bool clearSelectedBachelor = false,
     bool? openDayRemindersEnabled,
     int? openDayReminderMinutesBefore,
+    bool? showSuggestedStops,
+    List<String>? savedOpenDayEventIds,
   }) {
     return UserPreferences(
       hasCompletedOnboarding:
@@ -105,6 +122,8 @@ class UserPreferences {
           openDayRemindersEnabled ?? this.openDayRemindersEnabled,
       openDayReminderMinutesBefore:
           openDayReminderMinutesBefore ?? this.openDayReminderMinutesBefore,
+      showSuggestedStops: showSuggestedStops ?? this.showSuggestedStops,
+      savedOpenDayEventIds: savedOpenDayEventIds ?? this.savedOpenDayEventIds,
     );
   }
 
@@ -133,7 +152,9 @@ class UserPreferences {
           offlineCampusMapsEnabled == other.offlineCampusMapsEnabled &&
           selectedBachelorId == other.selectedBachelorId &&
           openDayRemindersEnabled == other.openDayRemindersEnabled &&
-          openDayReminderMinutesBefore == other.openDayReminderMinutesBefore;
+          openDayReminderMinutesBefore == other.openDayReminderMinutesBefore &&
+          showSuggestedStops == other.showSuggestedStops &&
+          listEquals(savedOpenDayEventIds, other.savedOpenDayEventIds);
 
   @override
   int get hashCode => Object.hashAll([
@@ -158,5 +179,7 @@ class UserPreferences {
     selectedBachelorId,
     openDayRemindersEnabled,
     openDayReminderMinutesBefore,
+    showSuggestedStops,
+    Object.hashAll(savedOpenDayEventIds),
   ]);
 }

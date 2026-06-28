@@ -10,6 +10,7 @@ import 'package:mq_journey/features/open_day/domain/entities/open_day_data.dart'
 import 'package:mq_journey/features/open_day/domain/services/open_day_time.dart';
 import 'package:mq_journey/features/open_day/presentation/widgets/bachelor_picker_sheet.dart';
 import 'package:mq_journey/features/open_day/presentation/widgets/event_actions_sheet.dart';
+import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:mq_journey/shared/extensions/context_extensions.dart';
 import 'package:mq_journey/shared/widgets/mq_tactile_button.dart';
 
@@ -99,6 +100,7 @@ class _OpenDayBody extends StatelessWidget {
       children: [
         _StudyInterestHeader(selected: selected, openDayDate: data.openDayDate),
         const SizedBox(height: MqSpacing.space5),
+        const _YourDaySection(),
         if (events.isEmpty)
           _EmptyEventsState(hasSelection: selected != null)
         else
@@ -243,18 +245,25 @@ class _TimeBlockHeader extends StatelessWidget {
   }
 }
 
-class _EventTile extends StatelessWidget {
+class _EventTile extends ConsumerWidget {
   const _EventTile({required this.event});
 
   final OpenDayEvent event;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final dark = context.isDarkMode;
     final timeRange = OpenDayTime.formatTimeRange(
       event.startTime,
       event.endTime,
     );
+    final isSaved =
+        ref
+            .watch(settingsControllerProvider)
+            .value
+            ?.isOpenDayEventSaved(event.id) ??
+        false;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -301,14 +310,48 @@ class _EventTile extends StatelessWidget {
               ),
             ),
           ),
+          // Save-to-"Your Day" toggle. Lightweight bookmark — the entire
+          // itinerary feature is just this set of saved IDs.
+          Semantics(
+            button: true,
+            label: isSaved
+                ? l10n.openDay_removeFromMyDay
+                : l10n.openDay_addToMyDay,
+            child: MqTactileButton(
+              onTap: () async {
+                await ref
+                    .read(settingsControllerProvider.notifier)
+                    .toggleSavedOpenDayEvent(event.id);
+                if (context.mounted) {
+                  context.showSnackBar(
+                    isSaved
+                        ? l10n.openDay_removedFromMyDay
+                        : l10n.openDay_savedToMyDay,
+                  );
+                }
+              },
+              borderRadius: MqSpacing.radiusXl,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: MqSpacing.space2,
+                  vertical: MqSpacing.space3,
+                ),
+                child: Icon(
+                  isSaved
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_border_rounded,
+                  size: 24,
+                  color: dark ? MqColors.brightRed : MqColors.red,
+                ),
+              ),
+            ),
+          ),
           // Direction action: opens an action sheet rather than going
           // straight to a single destination, since we want the user to
           // consciously choose between in-app context and external nav.
           Semantics(
             button: true,
-            label: AppLocalizations.of(
-              context,
-            )!.openDay_directionsTo(event.venueName),
+            label: l10n.openDay_directionsTo(event.venueName),
             child: MqTactileButton(
               onTap: () => EventActionsSheet.show(context, event),
               borderRadius: MqSpacing.radiusXl,
@@ -321,6 +364,154 @@ class _EventTile extends StatelessWidget {
                   Icons.directions_rounded,
                   size: 24,
                   color: dark ? MqColors.brightRed : MqColors.red,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Lightweight "Your Day" itinerary block shown at the top of the Open Day
+/// page when the user has saved one or more sessions. Intentionally not a
+/// planner — just the saved sessions in time order, each removable, with a
+/// one-tap clear. Hides itself entirely when nothing is saved.
+class _YourDaySection extends ConsumerWidget {
+  const _YourDaySection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final dark = context.isDarkMode;
+    final saved = ref.watch(savedOpenDayEventsProvider);
+    if (saved.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(bottom: MqSpacing.space5),
+      child: Container(
+        padding: const EdgeInsetsDirectional.all(MqSpacing.space4),
+        decoration: BoxDecoration(
+          color: dark ? MqColors.charcoal800 : Colors.white,
+          borderRadius: BorderRadius.circular(MqSpacing.radiusXl),
+          border: Border.all(
+            color: dark ? Colors.white.withAlpha(13) : MqColors.sand200,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.bookmark_rounded,
+                  size: 18,
+                  color: dark ? MqColors.brightRed : MqColors.red,
+                ),
+                const SizedBox(width: MqSpacing.space2),
+                Text(
+                  l10n.openDay_yourDayTitle.toUpperCase(),
+                  style: context.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
+                    color: dark ? MqColors.brightRed : MqColors.red,
+                  ),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: () => ref
+                      .read(settingsControllerProvider.notifier)
+                      .clearSavedOpenDayEvents(),
+                  style: TextButton.styleFrom(
+                    foregroundColor: dark
+                        ? Colors.white.withValues(alpha: 0.85)
+                        : MqColors.contentSecondary,
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(l10n.openDay_clearMyDay),
+                ),
+              ],
+            ),
+            const SizedBox(height: MqSpacing.space2),
+            for (final e in saved) _SavedDayRow(event: e),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SavedDayRow extends ConsumerWidget {
+  const _SavedDayRow({required this.event});
+
+  final OpenDayEvent event;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final dark = context.isDarkMode;
+    final time = OpenDayTime.formatTimeOfDay(event.startTime);
+
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(top: MqSpacing.space2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 64,
+            child: Text(
+              time,
+              style: context.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: dark ? Colors.white : MqColors.contentPrimary,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  event.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: dark ? Colors.white : MqColors.contentPrimary,
+                  ),
+                ),
+                Text(
+                  event.venueName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: dark
+                        ? Colors.white.withValues(alpha: 0.72)
+                        : MqColors.contentSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Semantics(
+            button: true,
+            label: l10n.openDay_removeFromMyDay,
+            child: InkWell(
+              onTap: () => ref
+                  .read(settingsControllerProvider.notifier)
+                  .toggleSavedOpenDayEvent(event.id),
+              customBorder: const CircleBorder(),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.all(MqSpacing.space1),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 18,
+                  color: dark
+                      ? Colors.white.withValues(alpha: 0.6)
+                      : MqColors.contentTertiary,
                 ),
               ),
             ),

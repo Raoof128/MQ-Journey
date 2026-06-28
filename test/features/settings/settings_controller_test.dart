@@ -174,5 +174,56 @@ void main() {
       final state = container.read(settingsControllerProvider).value;
       expect(state?.lowDataMode, isFalse);
     });
+
+    test('updateShowSuggestedStops updates state', () async {
+      final container = createContainer();
+      final controller = container.read(settingsControllerProvider.notifier);
+
+      await controller.updateShowSuggestedStops(false);
+
+      expect(
+        container.read(settingsControllerProvider).value?.showSuggestedStops,
+        isFalse,
+      );
+    });
+
+    test('toggleSavedOpenDayEvent adds then removes an event', () async {
+      final container = createContainer();
+      final controller = container.read(settingsControllerProvider.notifier);
+
+      await controller.toggleSavedOpenDayEvent('evt-comp-1030');
+      expect(
+        container.read(settingsControllerProvider).value?.savedOpenDayEventIds,
+        ['evt-comp-1030'],
+      );
+
+      await controller.toggleSavedOpenDayEvent('evt-comp-1030');
+      expect(
+        container.read(settingsControllerProvider).value?.savedOpenDayEventIds,
+        isEmpty,
+      );
+    });
+
+    test('clearSavedOpenDayEvents empties the itinerary', () async {
+      final container = createContainer();
+      final controller = container.read(settingsControllerProvider.notifier);
+
+      await controller.toggleSavedOpenDayEvent('evt-a');
+      await controller.toggleSavedOpenDayEvent('evt-b');
+      expect(
+        container
+            .read(settingsControllerProvider)
+            .value
+            ?.savedOpenDayEventIds
+            .length,
+        2,
+      );
+
+      await controller.clearSavedOpenDayEvents();
+      expect(
+        container.read(settingsControllerProvider).value?.savedOpenDayEventIds,
+        isEmpty,
+      );
+    });
   });
 }

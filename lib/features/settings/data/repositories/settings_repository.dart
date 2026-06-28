@@ -25,6 +25,8 @@ const _favoriteStopNameKey = 'settings.favorite_stop_name';
 const _selectedBachelorIdKey = 'settings.open_day.bachelor_id';
 const _openDayRemindersEnabledKey = 'settings.open_day.reminders_enabled';
 const _openDayReminderMinutesKey = 'settings.open_day.reminder_minutes';
+const _showSuggestedStopsKey = 'settings.open_day.show_suggested_stops';
+const _savedOpenDayEventIdsKey = 'settings.open_day.saved_event_ids';
 const _hasCompletedOnboardingKey = 'settings.has_completed_onboarding';
 
 abstract interface class SettingsRepository {
@@ -77,6 +79,10 @@ class LocalSettingsRepository implements SettingsRepository {
       final openDayReminderMinutes = await _storage.read(
         _openDayReminderMinutesKey,
       );
+      final showSuggestedStops = await _storage.read(_showSuggestedStopsKey);
+      final savedOpenDayEventIds = await _storage.read(
+        _savedOpenDayEventIdsKey,
+      );
       final hasCompletedOnboarding = await _storage.read(
         _hasCompletedOnboardingKey,
       );
@@ -116,6 +122,8 @@ class LocalSettingsRepository implements SettingsRepository {
             : null,
         openDayRemindersEnabled: openDayRemindersEnabled != 'false',
         openDayReminderMinutesBefore: _parseMinutes(openDayReminderMinutes),
+        showSuggestedStops: showSuggestedStops != 'false',
+        savedOpenDayEventIds: _parseSavedEventIds(savedOpenDayEventIds),
       );
     } catch (error, stackTrace) {
       AppLogger.error('Failed to load user preferences', error, stackTrace);
@@ -188,6 +196,17 @@ class LocalSettingsRepository implements SettingsRepository {
         preferences.openDayReminderMinutesBefore.toString(),
       );
       await _storage.write(
+        _showSuggestedStopsKey,
+        preferences.showSuggestedStops.toString(),
+      );
+      // Stored as a comma-joined string — event IDs never contain commas
+      // (they're slug-like, e.g. `evt-comp-1030`), so this is a safe,
+      // dependency-free encoding for a small ordered set.
+      await _storage.write(
+        _savedOpenDayEventIdsKey,
+        preferences.savedOpenDayEventIds.join(','),
+      );
+      await _storage.write(
         _hasCompletedOnboardingKey,
         preferences.hasCompletedOnboarding.toString(),
       );
@@ -214,6 +233,15 @@ int _parseMinutes(String? raw) {
   final parsed = int.tryParse(raw ?? '');
   if (parsed == null) return 15;
   return parsed.clamp(5, 60);
+}
+
+List<String> _parseSavedEventIds(String? raw) {
+  if (raw == null || raw.trim().isEmpty) return const <String>[];
+  return raw
+      .split(',')
+      .map((e) => e.trim())
+      .where((e) => e.isNotEmpty)
+      .toList(growable: false);
 }
 
 String _normalizeCommuteMode(String? mode) {
