@@ -4,14 +4,10 @@ import 'package:mq_journey/features/map/presentation/widgets/map_mode_toggle.dar
 
 void main() {
   testWidgets('renders two segments', (tester) async {
-    MapMode? selected;
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: MapModeToggle(
-            value: MapMode.campusMap,
-            onChanged: (mode) => selected = mode,
-          ),
+          body: MapModeToggle(value: MapMode.campusMap, onChanged: (_) {}),
         ),
       ),
     );
