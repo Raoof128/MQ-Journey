@@ -62,6 +62,7 @@ class OpenDayEvent {
     required this.bachelorIds,
     this.buildingCode,
     this.description,
+    this.repeating = false,
   });
 
   final String id;
@@ -69,6 +70,10 @@ class OpenDayEvent {
   final DateTime startTime;
   final DateTime endTime;
   final String venueName;
+
+  /// Whether the official program marks this as a repeating session (the
+  /// "R" flag in the Open Day info-sessions grid).
+  final bool repeating;
 
   /// Optional link into the campus `buildings.json` registry. When present,
   /// the "View in Campus Map" action can route directly to the building
@@ -94,6 +99,7 @@ class OpenDayEvent {
       venueName: json['venueName'] as String,
       buildingCode: json['buildingCode'] as String?,
       description: json['description'] as String?,
+      repeating: (json['repeating'] as bool?) ?? false,
       bachelorIds:
           (json['bachelorIds'] as List?)?.cast<String>() ?? const <String>[],
     );
