@@ -5,5 +5,8 @@ class VisitedState {
   final bool visited;
   final bool rewardEarned;
 
-  const VisitedState(this.visited, this.rewardEarned);
+  const VisitedState({
+    required this.visited,
+    required this.rewardEarned,
+  });
 }

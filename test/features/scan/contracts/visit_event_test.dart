@@ -20,5 +20,14 @@ void main() {
       );
       expect(event.source, VisitSource.arrivalDetection);
     });
+
+    test('accepts optional buildingId', () {
+      final event = VisitEvent(
+        locationId: 'lib-01',
+        buildingId: 'c3a',
+        scannedAt: DateTime(2026, 6, 29),
+      );
+      expect(event.buildingId, 'c3a');
+    });
   });
 }

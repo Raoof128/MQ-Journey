@@ -6,5 +6,9 @@ class ScheduleSlot {
   final DateTime start;
   final DateTime end;
 
-  const ScheduleSlot(this.title, this.start, this.end);
+  const ScheduleSlot({
+    required this.title,
+    required this.start,
+    required this.end,
+  });
 }

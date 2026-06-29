@@ -5,5 +5,8 @@ class MyDayEntry {
   final String locationId;
   final DateTime when;
 
-  const MyDayEntry(this.locationId, this.when);
+  const MyDayEntry({
+    required this.locationId,
+    required this.when,
+  });
 }
