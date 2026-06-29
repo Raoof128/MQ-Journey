@@ -15,6 +15,9 @@ import 'package:mq_journey/features/open_day/presentation/pages/your_day_page.da
 import 'package:mq_journey/features/safety/presentation/pages/safety_toolkit_page.dart';
 import 'package:mq_journey/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:mq_journey/features/settings/presentation/pages/settings_page.dart';
+import 'package:mq_journey/features/scan/presentation/pages/scan_page.dart';
+import 'package:mq_journey/features/scan/presentation/pages/location_card_page.dart';
+import 'package:mq_journey/features/scan/presentation/pages/indoor_preview_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -123,6 +126,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: RouteNames.favorites,
         builder: (context, state) => const FavoritesPage(),
       ),
+      // QR scanner — camera surface for scanning Open Day QR codes.
+      GoRoute(
+        path: '/scan',
+        name: RouteNames.scan,
+        builder: (context, state) => const ScanPage(),
+      ),
+      // Scanned-location card — full-page detail for a QR-resolved location.
+      GoRoute(
+        path: '/location/:locationId',
+        name: RouteNames.locationDetail,
+        builder: (context, state) => LocationCardPage(
+          locationId: state.pathParameters['locationId'] ?? '',
+        ),
+      ),
       // The shell route handles the bottom navigation bar and nested routing.
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -158,6 +175,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     name: RouteNames.buildingDetail,
                     builder: (context, state) => MapPage(
                       initialBuildingId: state.pathParameters['buildingId'],
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'building/:buildingId/indoor',
+                    name: RouteNames.indoorPreview,
+                    builder: (context, state) => IndoorPreviewPage(
+                      buildingId: state.pathParameters['buildingId'] ?? '',
                     ),
                   ),
                 ],

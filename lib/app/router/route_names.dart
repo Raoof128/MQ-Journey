@@ -19,4 +19,9 @@ abstract final class RouteNames {
 
   // Favorites
   static const String favorites = 'favorites';
+
+  // QR scan
+  static const String scan = 'scan';
+  static const String locationDetail = 'location-detail';
+  static const String indoorPreview = 'indoor-preview';
 }

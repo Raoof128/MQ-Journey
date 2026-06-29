@@ -679,7 +679,7 @@ class _HeroSection extends StatelessWidget {
             width: double.infinity,
             height: 52,
             child: FilledButton.icon(
-              onPressed: () => context.goNamed(RouteNames.map),
+              onPressed: () => context.goNamed(RouteNames.scan),
               style: FilledButton.styleFrom(
                 backgroundColor: ctaColor,
                 foregroundColor: Colors.white,
