@@ -72,11 +72,11 @@ class _ScanPageState extends ConsumerState<ScanPage> {
   }
 
   Future<void> _onDetectBarcode(String raw) async {
-    setState(() => _currentScanState = _ScanState.decoding);
-
     final now = DateTime.now().millisecondsSinceEpoch;
     if (now - _lastProcessed < 1500) return;
     _lastProcessed = now;
+
+    setState(() => _currentScanState = _ScanState.decoding);
 
     final locationId = _parseLocationId(raw);
     if (locationId == null) {
