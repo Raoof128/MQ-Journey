@@ -44,6 +44,48 @@ lib/
 ```
 
 
+### Raouf: 2026-06-29 (Australia/Sydney) — Task 12: Indoor preview page with Pannellum webview and stop list
+**Scope:** Scan feature — `lib/features/scan/presentation/widgets/indoor_webview.dart`, `lib/features/scan/presentation/widgets/indoor_stop_list.dart`, `lib/features/scan/presentation/pages/indoor_preview_page.dart`
+**Summary:** IndoorWebView wraps InAppWebView (flutter_inappwebview) loading indoor_viewer.html and invoking Pannellum via evaluateJavascript. IndoorStopList renders indoor nodes as a ListView. IndoorPreviewPage is a ConsumerWidget watching the manifest provider with loading/error/data states. 3 widget tests. Added flutter_inappwebview dependency.
+**Files Changed:** `pubspec.yaml`, `lib/features/scan/presentation/widgets/indoor_webview.dart`, `lib/features/scan/presentation/widgets/indoor_stop_list.dart`, `lib/features/scan/presentation/pages/indoor_preview_page.dart`, `test/features/scan/pages/indoor_preview_page_test.dart`
+**Verification:** `flutter analyze` — no issues; `flutter test test/features/scan/pages/indoor_preview_page_test.dart` — 3/3 passed.
+**Follow-ups:** Create `assets/web/indoor_viewer.html` to enable Pannellum rendering.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Task 10: Scan page with camera, reticle, validation, torch toggle, and permission-denied UX
+**Scope:** Scan feature — `lib/features/scan/presentation/widgets/scanner_view.dart`, `lib/features/scan/presentation/pages/scan_page.dart`
+**Summary:** Created 3 files for the QR scan UI. `ScannerView` wraps `MobileScanner` (v7 API: 2-param errorBuilder/placeholderBuilder) with `onDetect` extracting rawValue, `errorBuilder` showing "Open Settings" button on permission denied. `ScanPage` (ConsumerStatefulWidget) with `MobileScannerController` created in state, 1.5s debounce via wall-clock guard, `_parseLocationId` validating `mq.edu.au` host or `io.mqjourney` scheme, trail manifest check, `VisitEvent` recording via `progressApiProvider`, and GoRouter navigation to `/location/:locationId`. `_DimSurround` renders 4 semi-transparent panels creating a 240x240 clear center. Torch toggle with flash_on/flash_off icon. Added `mobile_scanner: ^7.0.0` dependency.
+**Files Changed:** `pubspec.yaml` (added mobile_scanner), `lib/features/scan/presentation/widgets/scanner_view.dart`, `lib/features/scan/presentation/pages/scan_page.dart`, `test/features/scan/pages/scan_page_test.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `flutter analyze lib/features/scan/presentation/pages/scan_page.dart lib/features/scan/presentation/widgets/scanner_view.dart` — no issues; `flutter test test/features/scan/pages/scan_page_test.dart` — 1/1 passed.
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Task 11: Location card page with hero, schedule chips, visit badge, and action buttons
+**Scope:** Scan feature — presentation layer widgets and page
+**Summary:** Created 5 files for the location card UI. `LocationHero` (StatelessWidget, ClipRRect + Image.asset with errorBuilder). `ScheduleChips` (live now / coming up next chips). `CardVisitBadge` (star chip when visited). `LocationCardPage` (ConsumerWidget with Riverpod, watches `locationContentProvider`, `scheduleProvider`, `visitedStateProvider`). `_ActionButtons` private ConsumerWidget with "View indoor" → indoor-preview route, "View on Campus Map" → map with building query param, "Add to Your Day" → myDayApiProvider.addToDay + snackbar. Fixed missing `ScanPage` and `IndoorPreviewPage` stubs referenced by router.
+**Files Changed:** `lib/features/scan/presentation/widgets/location_hero.dart`, `lib/features/scan/presentation/widgets/schedule_chips.dart`, `lib/features/scan/presentation/widgets/card_visit_badge.dart`, `lib/features/scan/presentation/pages/location_card_page.dart`, `lib/features/scan/presentation/pages/scan_page.dart`, `lib/features/scan/presentation/pages/indoor_preview_page.dart`, `test/features/scan/pages/location_card_page_test.dart`
+**Verification:** `flutter analyze lib/features/scan/presentation/pages/location_card_page.dart` — no issues; `flutter test test/features/scan/pages/location_card_page_test.dart` — 1/1 passed.
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Scan data repositories: trail/indoor/buildings with caching tests
+**Scope:** Scan feature — data repositories layer
+**Summary:** Created 3 repository files under `lib/features/scan/data/repositories/`. `TrailRepository` with cached `load()` reading `assets/data/open_day_trail.json`. `IndoorRepository` with `load(buildingId)` reading `assets/data/indoor/{buildingId}.json`, returns null on missing file via `FlutterError` catch. `BuildingsRepository` with cached `load()` reading `assets/data/buildings.json`. Used `show rootBundle` + `show FlutterError` imports matching codebase convention. 2 tests cover caching and missing building null return.
+**Files Changed:** `lib/features/scan/data/repositories/trail_repository.dart`, `lib/features/scan/data/repositories/indoor_repository.dart`, `lib/features/scan/data/repositories/buildings_repository.dart`, `test/features/scan/repositories/trail_repository_test.dart`, `test/features/scan/repositories/indoor_repository_test.dart`, `assets/data/open_day_trail.json`
+**Verification:** `flutter test test/features/scan/repositories/` — 2/2 passed.
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Scan domain models: trail/indoor manifests and buildings registry
+**Scope:** Scan feature — `lib/features/scan/domain/models/`
+**Summary:** Created 3 model files under `lib/features/scan/domain/models/`. `TrailManifest` parses QR-scanned trail locations with case-insensitive lookups. `IndoorManifest` models indoor navigation graphs with Pannellum config builder for 360° previews. `BuildingsRegistry` maps building codes to campus coordinates with fallback key aliases. 9 unit tests cover JSON parsing, lookups, edge cases, and Pannellum config generation.
+**Files Changed:** `lib/features/scan/domain/models/trail_manifest.dart`, `lib/features/scan/domain/models/indoor_manifest.dart`, `lib/features/scan/domain/models/buildings_registry.dart`, `test/features/scan/models/trail_manifest_test.dart`, `test/features/scan/models/indoor_manifest_test.dart`
+**Verification:** `flutter test test/features/scan/models/` — 9/9 passed.
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Scan domain contracts and value types for QR surface
+**Scope:** Scan feature — `lib/features/scan/domain/contracts/`
+**Summary:** Created 8 contract files defining API boundaries for the QR scan → indoor preview → visit tracking feature. `VisitEvent` (value type + `VisitSource` enum), `ScheduleSlot`, `MyDayEntry`, `VisitedState`, `LocationContent` value types. `ScheduleProvider`, `MyDayApi`, `ProgressApi` abstract interfaces. Unit test for `VisitEvent` covering both `qrScan` and `arrivalDetection` sources.
+**Files Changed:** `lib/features/scan/domain/contracts/location_content.dart`, `lib/features/scan/domain/contracts/schedule_provider.dart`, `lib/features/scan/domain/contracts/my_day_api.dart`, `lib/features/scan/domain/contracts/progress_api.dart`, `lib/features/scan/domain/contracts/visit_event.dart`, `lib/features/scan/domain/contracts/schedule_slot.dart`, `lib/features/scan/domain/contracts/my_day_entry.dart`, `lib/features/scan/domain/contracts/visited_state.dart`, `test/features/scan/contracts/visit_event_test.dart`
+**Verification:** `flutter analyze` — no issues; `flutter test test/features/scan/contracts/` — 2/2 passed.
+**Follow-ups:** None.
+
 ### Raouf: 2026-06-27 (Australia/Sydney) — README stale data cleanup, rebase & merge to main, fresh homepage screenshot
 **Scope:** Documentation — README audit, rebase/merge workflow
 **Summary:** Rebased `feat/remove-login-gate` onto `mqjourney/main`, fast-forward merged, pushed. New 390×844 homepage screenshot with MQ Journey branding. Fixed 10 stale README items: 8-step → 12-step quality gate, Vitest-equivalent → Flutter Test suite, 7→6 screen captures, removed duplicate Map image (3×2 layout), iOS auth callback → deep linking, macOS auth claims → deep linking, removed stale P1 auth roadmap items, step counts 10→12 / 9→11, added missing No-stale-name and No-login-route guard rows to step table. Killed all dev servers.
@@ -1275,3 +1317,10 @@ The project was built through phases 0–5, originally including auth, calendar,
 **Files Changed:** `pubspec.yaml`, `pubspec.lock`, `AGENT.md`, `CHANGELOG.md`
 **Verification:** `flutter pub get` resolves cleanly (11 google-maps packages removed). `grep -rn "google_maps_flutter" lib test` shows 3 remaining references in source code (imports + comments in `google_map_view.dart`, `desktop_map_fallback_view.dart`) — these will be addressed in Tasks 2–4.
 **Follow-ups:** Tasks 2–4 of the Google Maps removal plan.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Task 6: Scan feature adapter layer (ProgressApi + ScheduleProvider wiring)
+**Scope:** Scan feature — `lib/features/scan/data/adapters/`, `test/features/scan/adapters/`
+**Summary:** Created 4 files for the adapter layer. `SettingsProgressApiAdapter` implements `ProgressApi` with two-tier visit recording: local via `SettingsController.recordLocationVisit(buildingCode)` and durable remote via Supabase `open_day_stamps` upsert with `ignoreDuplicates: true`. Uses `StreamController` + `ref.listen` for reactive `watch()`. Exposed via `progressApiProvider` Riverpod Provider. `OpenDayScheduleProviderAdapter` implements `ScheduleProvider` using `OpenDayPersonalisation.liveStatusForLocation()`. 3 tests cover liveNow matches/returns null/comingUpNext. Settings adapter test uses `ProviderContainer` with `_FakeSettingsController` (extends `SettingsController`, uses `await Future<void>.value()` to avoid microtask race).
+**Files Changed:** `lib/features/scan/data/adapters/settings_progress_api_adapter.dart`, `lib/features/scan/data/adapters/open_day_schedule_provider_adapter.dart`, `test/features/scan/adapters/open_day_schedule_provider_adapter_test.dart`, `test/features/scan/adapters/settings_progress_api_adapter_test.dart`
+**Verification:** `flutter test test/features/scan/adapters/` — 6/6 passed (3 OpenDay + 3 Settings). Supabase warning logged as expected (caught by catch block).
+**Follow-ups:** None.

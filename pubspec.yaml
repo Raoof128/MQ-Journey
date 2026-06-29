@@ -48,6 +48,8 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_compass: ^0.8.1
   torch_light: ^1.1.0
+  mobile_scanner: ^7.0.0
+  flutter_inappwebview: ^6.1.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -64,6 +66,7 @@ flutter:
     - assets/data/
     - assets/maps/
     - assets/images/
+    - assets/web/
 
 flutter_launcher_icons:
   android: true

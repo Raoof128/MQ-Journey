@@ -2507,5 +2507,15 @@
   "safetyQuickActions": "Quick Actions",
   "safetyEmergencyContacts": "Emergency Contacts",
   "safetyFlashlightUnavailable": "Flashlight unavailable on this device",
-  "favoritesCount": "{count, plural, =0{no buildings} =1{1 building} other{{count} buildings}}"
+  "favoritesCount": "{count, plural, =0{no buildings} =1{1 building} other{{count} buildings}}",
+  "scan_qrNotOnTrail": "Not part of the Open Day trail",
+  "scan_decodeError": "Could not read QR code",
+  "scan_cameraNotAvailable": "Camera not available",
+  "scan_viewIndoor": "View indoor",
+  "scan_viewOnMap": "View on Campus Map",
+  "scan_addToYourDay": "Add to Your Day",
+  "scan_addedToYourDay": "Added to Your Day",
+  "scan_visited": "Visited",
+  "scan_badgeEarned": "Badge earned!",
+  "scan_noIndoorPreview": "No indoor preview available"
 }

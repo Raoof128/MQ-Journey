@@ -1,3 +1,52 @@
+### Raouf: 2026-06-29 (Australia/Sydney) — Task 12: Indoor preview page with Pannellum webview and stop list
+**Scope:** Scan feature — presentation layer indoor preview UI
+**Summary:** Created 4 files for the indoor preview feature. `IndoorWebView` (StatefulWidget wrapping `InAppWebView` from `flutter_inappwebview`) loads `assets/web/indoor_viewer.html`, calls `buildPannellumConfig()` on load stop and evaluates `loadTour()` in the webview. `IndoorStopList` (StatelessWidget) renders a `ListView.separated` of indoor nodes with icons, descriptions, and connection counts; handles empty manifest state. `IndoorPreviewPage` (ConsumerWidget) watches `indoorManifestProvider(buildingId)`, renders webview (flex: 3) + stop list (flex: 2) on data, handles loading/error/empty/null states. Added `flutter_inappwebview: ^6.1.5` dependency. 3 widget tests cover loading, null manifest, and empty manifest states. Replaced `scan_page.dart` stub (broken pre-existing imports) with working minimal stub.
+**Files Changed:** `pubspec.yaml` (added flutter_inappwebview), `lib/features/scan/presentation/widgets/indoor_webview.dart`, `lib/features/scan/presentation/widgets/indoor_stop_list.dart`, `lib/features/scan/presentation/pages/indoor_preview_page.dart`, `lib/features/scan/presentation/pages/scan_page.dart` (replaced broken impl with stub), `test/features/scan/pages/indoor_preview_page_test.dart`
+**Verification:** `flutter analyze lib/features/scan/presentation/` — No issues found; `flutter test test/features/scan/pages/indoor_preview_page_test.dart` — 3/3 passed.
+**Follow-ups:** Create `assets/web/indoor_viewer.html` to enable Pannellum rendering.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Task 10: Scan page with camera, reticle, validation, torch toggle, and permission-denied UX
+**Scope:** Scan feature — presentation layer camera/scanner UI
+**Summary:** Created `ScannerView` (MobileScanner v7 wrapper with 2-param errorBuilder/placeholderBuilder) and `ScanPage` (ConsumerStatefulWidget with camera controller, 1.5s debounce, trail manifest validation, VisitEvent recording, torch toggle, _DimSurround reticle). Added `mobile_scanner: ^7.0.0` dep. Widget test verifies AppBar + torch off icon.
+**Files Changed:** `pubspec.yaml`, `lib/features/scan/presentation/widgets/scanner_view.dart`, `lib/features/scan/presentation/pages/scan_page.dart`, `test/features/scan/pages/scan_page_test.dart`, `AGENT.md`, `CHANGELOG.md`
+**Verification:** `flutter analyze` — no issues; `flutter test test/features/scan/pages/scan_page_test.dart` — 1/1 passed.
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Task 11: Location card page with hero, schedule chips, visit badge, and action buttons
+**Scope:** Scan feature — presentation layer widgets and page
+**Summary:** Created 5 files for the location card UI. `LocationHero` (StatelessWidget, ClipRRect + Image.asset with errorBuilder). `ScheduleChips` (live now / coming up next chips). `CardVisitBadge` (star chip when visited). `LocationCardPage` (ConsumerWidget with Riverpod, watches `locationContentProvider`, `scheduleProvider`, `visitedStateProvider`). `_ActionButtons` private ConsumerWidget with "View indoor" → indoor-preview route, "View on Campus Map" → map with building query param, "Add to Your Day" → myDayApiProvider.addToDay + snackbar. Fixed missing `ScanPage` and `IndoorPreviewPage` stubs referenced by router.
+**Files Changed:** `lib/features/scan/presentation/widgets/location_hero.dart`, `lib/features/scan/presentation/widgets/schedule_chips.dart`, `lib/features/scan/presentation/widgets/card_visit_badge.dart`, `lib/features/scan/presentation/pages/location_card_page.dart`, `lib/features/scan/presentation/pages/scan_page.dart`, `lib/features/scan/presentation/pages/indoor_preview_page.dart`, `test/features/scan/pages/location_card_page_test.dart`
+**Verification:** `flutter analyze lib/features/scan/presentation/pages/location_card_page.dart` — no issues; `flutter test test/features/scan/pages/location_card_page_test.dart` — 1/1 passed.
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Task 6: Scan feature adapter layer (ProgressApi + ScheduleProvider wiring)
+**Scope:** Scan feature — `lib/features/scan/data/adapters/`, `test/features/scan/adapters/`
+**Summary:** Created 4 files for the adapter layer. `SettingsProgressApiAdapter` implements `ProgressApi` with two-tier visit recording: local via `SettingsController.recordLocationVisit(buildingCode)` and durable remote via Supabase `open_day_stamps` upsert with `ignoreDuplicates: true`. Uses `StreamController` + `ref.listen` for reactive `watch()`. Exposed via `progressApiProvider` Riverpod Provider. `OpenDayScheduleProviderAdapter` implements `ScheduleProvider` using `OpenDayPersonalisation.liveStatusForLocation()`. 3 tests cover liveNow matches/returns null/comingUpNext. Settings adapter test uses `ProviderContainer` with `_FakeSettingsController` (extends `SettingsController`, uses `await Future<void>.value()` to avoid microtask race).
+**Files Changed:** `lib/features/scan/data/adapters/settings_progress_api_adapter.dart`, `lib/features/scan/data/adapters/open_day_schedule_provider_adapter.dart`, `test/features/scan/adapters/open_day_schedule_provider_adapter_test.dart`, `test/features/scan/adapters/settings_progress_api_adapter_test.dart`
+**Verification:** `flutter test test/features/scan/adapters/` — 6/6 passed (3 OpenDay + 3 Settings). Supabase uninitialized warning logged as expected (caught by catch block).
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Scan data repositories: trail/indoor/buildings with caching tests
+**Scope:** Scan feature — data repositories layer
+**Summary:** Created 3 repository files under `lib/features/scan/data/repositories/`. `TrailRepository` caches parsed `TrailManifest` from `assets/data/open_day_trail.json`. `IndoorRepository` loads per-building indoor graphs from `assets/data/indoor/{buildingId}.json`, returns null for missing buildings. `BuildingsRepository` caches parsed `BuildingsRegistry` from `assets/data/buildings.json`. Tests verify cache identity (TrailRepository) and missing-building null return (IndoorRepository).
+**Files Changed:** `lib/features/scan/data/repositories/trail_repository.dart`, `lib/features/scan/data/repositories/indoor_repository.dart`, `lib/features/scan/data/repositories/buildings_repository.dart`, `test/features/scan/repositories/trail_repository_test.dart`, `test/features/scan/repositories/indoor_repository_test.dart`, `assets/data/open_day_trail.json`
+**Verification:** `flutter test test/features/scan/repositories/` — 2/2 passed.
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Scan domain models: trail/indoor manifests and buildings registry
+**Scope:** Scan feature — domain models layer
+**Summary:** Created 3 domain model files under `lib/features/scan/domain/models/`. `TrailManifest` + `TrailLocation` for QR-scanned trail locations with case-insensitive lookups. `IndoorManifest` + `IndoorNode` + `NodeNeighbour` for indoor navigation graphs with `buildPannellumConfig()` generating 360° preview scene configs. `BuildingsRegistry` + `BuildingEntry` mapping building codes to campus coordinates with fallback key aliases (`code`/`id`, `entranceLatitude`/`latitude`). 9 unit tests cover JSON parsing, lookups, missing fields, and Pannellum structure.
+**Files Changed:** `lib/features/scan/domain/models/trail_manifest.dart`, `lib/features/scan/domain/models/indoor_manifest.dart`, `lib/features/scan/domain/models/buildings_registry.dart`, `test/features/scan/models/trail_manifest_test.dart`, `test/features/scan/models/indoor_manifest_test.dart`
+**Verification:** `flutter test test/features/scan/models/` — 9/9 passed.
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Scan domain contracts and value types for QR surface
+**Scope:** Scan feature — domain contracts layer
+**Summary:** Created 8 contract files under `lib/features/scan/domain/contracts/` defining the API boundaries for the QR scan → indoor preview → visit tracking feature. Added `VisitEvent` (value type + VisitSource enum), `ScheduleSlot`, `MyDayEntry`, `VisitedState`, `LocationContent` value types. Added `ScheduleProvider`, `MyDayApi`, `ProgressApi` abstract interfaces. Wrote unit test for `VisitEvent` covering default source and explicit `arrivalDetection` source.
+**Files Changed:** `lib/features/scan/domain/contracts/location_content.dart`, `lib/features/scan/domain/contracts/schedule_provider.dart`, `lib/features/scan/domain/contracts/my_day_api.dart`, `lib/features/scan/domain/contracts/progress_api.dart`, `lib/features/scan/domain/contracts/visit_event.dart`, `lib/features/scan/domain/contracts/schedule_slot.dart`, `lib/features/scan/domain/contracts/my_day_entry.dart`, `lib/features/scan/domain/contracts/visited_state.dart`, `test/features/scan/contracts/visit_event_test.dart`
+**Verification:** `flutter analyze lib/features/scan/ test/features/scan/` — No issues found; `flutter test test/features/scan/contracts/` — 2/2 passed.
+**Follow-ups:** None.
+
 ### Raouf: 2026-06-27 (Australia/Sydney) — README stale data cleanup, rebase & merge, fresh homepage screenshot
 **Scope:** Documentation — README stale data fix, rebase/merge
 **Summary:** Rebased feat/remove-login-gate → main, fast-forward merged, pushed. New 390×844 mobile-sized homepage screenshot with MQ Journey branding. Fixed 10 stale README items: 8-step → 12-step, Vitest-equivalent → Flutter Test, 7→6 screen captures, removed duplicate Map image (3×2 layout), iOS auth callback → deep linking, macOS auth claims → deep linking, removed stale P1 auth roadmap items, step counts 10→12 / 9→11, added No-stale-name and No-login-route guard rows to step table.
