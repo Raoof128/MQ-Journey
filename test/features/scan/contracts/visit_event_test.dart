@@ -1,0 +1,24 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mq_journey/features/scan/domain/contracts/visit_event.dart';
+
+void main() {
+  group('VisitEvent', () {
+    test('defaults to qrScan source', () {
+      final event = VisitEvent(
+        locationId: 'lib-01',
+        scannedAt: DateTime(2026, 6, 29),
+      );
+      expect(event.source, VisitSource.qrScan);
+      expect(event.locationId, 'lib-01');
+    });
+
+    test('accepts explicit arrivalDetection source', () {
+      final event = VisitEvent(
+        locationId: 'lib-01',
+        scannedAt: DateTime(2026, 6, 29),
+        source: VisitSource.arrivalDetection,
+      );
+      expect(event.source, VisitSource.arrivalDetection);
+    });
+  });
+}
