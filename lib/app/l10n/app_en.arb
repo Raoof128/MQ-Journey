@@ -2179,6 +2179,18 @@
   "@openDay_clearSelection": {
     "description": "Label on the button that removes the selected bachelor."
   },
+  "openDay_searchBachelorHint": "Search for your degree",
+  "@openDay_searchBachelorHint": {
+    "description": "Placeholder text in the bachelor-picker search field."
+  },
+  "openDay_noBachelorMatch": "No matching degree found",
+  "@openDay_noBachelorMatch": {
+    "description": "Empty state title shown when the bachelor-picker search has no results."
+  },
+  "openDay_noBachelorMatchHint": "Try a different keyword",
+  "@openDay_noBachelorMatchHint": {
+    "description": "Empty state hint shown under the no-match title in the bachelor picker."
+  },
   "openDay_headerWithDate": "OPEN DAY · {date}",
   "@openDay_headerWithDate": {
     "description": "Eyebrow label on the Open Day home card that includes the formatted date.",
@@ -2319,7 +2331,10 @@
   "openDay_liveNowTitle": "Live now",
   "openDay_comingUpNextTitle": "Coming up next",
   "openDay_liveNowForInterest": "Matched to your interest",
-  "openDay_liveNowAcrossDay": "Across Open Day",
+  "openDay_liveNowAcrossDay": "Open to all visitors",
+  "openDay_matchedToYourDegree": "Matched to your degree",
+  "openDay_generalOpenToAll": "General · Open to all visitors",
+  "openDay_allSessionsLabel": "All sessions",
   "openDay_yourDayTitle": "Your day",
   "openDay_yourDayEmpty": "Save sessions you like to build your personal Open Day plan.",
   "openDay_yourDayCount": "{count, plural, =1{1 session saved} other{{count} sessions saved}}",

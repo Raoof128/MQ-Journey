@@ -41,47 +41,65 @@ class OpenDayPersonalisation {
   OpenDayPersonalisation._();
 
   /// Returns the suggested stops most relevant to [selected], ranked
-  /// strongest-match-first and trimmed to [max].
+  /// trimmed to [max].
   ///
-  /// Ranking is stable: stops with equal relevance keep their dataset order,
-  /// so curators can control tie-breaks simply by ordering the JSON. The
-  /// universal (relevance-1) stops act as a backfill, guaranteeing the list
-  /// reaches [max] wherever enough stops exist — so the section never looks
-  /// thin even for a niche interest.
+  /// **Degree-first, NOT faculty-wide.** The selection rule is:
+  ///   1. stops that name the exact selected degree in `bachelorIds`;
+  ///   2. plus universal stops (Library, Hub, food) that suit any visitor.
+  ///
+  /// Faculty (study-area) sibling stops are included **only as a fallback**
+  /// when the degree has no dedicated stop at all — never by default. This
+  /// stops e.g. a Bachelor of Information Technology from being shown the
+  /// whole Science & Engineering building list (Physics, Biology, Engineering
+  /// …); it sees the School of Computing plus general campus spots.
   static List<OpenDaySuggestedStop> suggestedStops(
     OpenDayData data,
     OpenDayBachelor? selected, {
     int max = 5,
   }) {
-    final scored = <({OpenDaySuggestedStop stop, int score, int order})>[];
-    for (var i = 0; i < data.suggestedStops.length; i++) {
-      final stop = data.suggestedStops[i];
-      final score = stop.relevanceFor(selected);
-      if (score <= 0) continue;
-      scored.add((stop: stop, score: score, order: i));
+    final stops = data.suggestedStops;
+    bool isUniversal(OpenDaySuggestedStop s) =>
+        s.studyAreaIds.isEmpty && s.bachelorIds.isEmpty;
+    final universal = stops.where(isUniversal).toList();
+
+    if (selected == null) {
+      // No interest chosen → general campus highlights only.
+      return universal.take(max).toList();
     }
-    scored.sort((a, b) {
-      final byScore = b.score.compareTo(a.score);
-      return byScore != 0 ? byScore : a.order.compareTo(b.order);
-    });
-    return [for (final s in scored.take(max)) s.stop];
+
+    final exact =
+        stops.where((s) => s.bachelorIds.contains(selected.id)).toList();
+    if (exact.isNotEmpty) {
+      // Degree-specific stops first, then general — no faculty siblings.
+      return [...exact, ...universal].take(max).toList();
+    }
+
+    // Fallback ONLY when the degree has no dedicated stop: surface its
+    // faculty's stops (study-area match) so the section isn't empty.
+    final faculty = stops
+        .where((s) =>
+            !isUniversal(s) &&
+            s.studyAreaIds.contains(selected.studyAreaId))
+        .toList();
+    return [...faculty, ...universal].take(max).toList();
   }
 
-  /// Computes the live/upcoming snapshot for Home.
+  /// Computes the live/upcoming snapshot for Home — degree-first.
   ///
-  /// [relevant] should already be filtered to the user's interest (e.g. the
-  /// `relevantOpenDayEventsProvider` output) and [all] is the full schedule.
-  /// When the user's interest yields nothing live or upcoming, we fall back
-  /// to [all] so the section stays useful — and flag it via
-  /// [OpenDayLiveStatus.usedFallback].
+  /// [degreeStrict] are sessions that name the exact selected degree (NOT the
+  /// whole faculty). [generalFallback] are general/open-to-all sessions.
+  /// Degree sessions win; only when none are live/upcoming do we fall back to
+  /// general sessions — flagged via [OpenDayLiveStatus.usedFallback] so the UI
+  /// can label it honestly ("Open to all visitors"). It never falls back to
+  /// unrelated same-faculty sessions.
   static OpenDayLiveStatus liveStatus(
-    List<OpenDayEvent> relevant,
-    List<OpenDayEvent> all,
+    List<OpenDayEvent> degreeStrict,
+    List<OpenDayEvent> generalFallback,
     DateTime now,
   ) {
-    final relevantStatus = _statusFrom(relevant, now, usedFallback: false);
-    if (!relevantStatus.isEmpty) return relevantStatus;
-    return _statusFrom(all, now, usedFallback: true);
+    final primary = _statusFrom(degreeStrict, now, usedFallback: false);
+    if (!primary.isEmpty) return primary;
+    return _statusFrom(generalFallback, now, usedFallback: true);
   }
 
   /// Live/upcoming snapshot scoped to a single location (building code).

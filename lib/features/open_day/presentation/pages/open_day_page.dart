@@ -27,7 +27,8 @@ class OpenDayPage extends ConsumerWidget {
     final dark = context.isDarkMode;
     final dataAsync = ref.watch(openDayDataProvider);
     final selected = ref.watch(selectedBachelorProvider);
-    final events = ref.watch(relevantOpenDayEventsProvider);
+    final degreeSessions = ref.watch(degreeSessionsProvider);
+    final generalSessions = ref.watch(generalSessionsProvider);
 
     return Scaffold(
       backgroundColor: dark ? MqColors.charcoal800 : MqColors.alabaster,
@@ -70,8 +71,12 @@ class OpenDayPage extends ConsumerWidget {
             ),
           ),
         ),
-        data: (data) =>
-            _OpenDayBody(data: data, selected: selected, events: events),
+        data: (data) => _OpenDayBody(
+          data: data,
+          selected: selected,
+          degreeSessions: degreeSessions,
+          generalSessions: generalSessions,
+        ),
       ),
     );
   }
@@ -81,15 +86,21 @@ class _OpenDayBody extends StatelessWidget {
   const _OpenDayBody({
     required this.data,
     required this.selected,
-    required this.events,
+    required this.degreeSessions,
+    required this.generalSessions,
   });
 
   final OpenDayData data;
   final OpenDayBachelor? selected;
-  final List<OpenDayEvent> events;
+  final List<OpenDayEvent> degreeSessions;
+  final List<OpenDayEvent> generalSessions;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final hasSelection = selected != null;
+    final nothingToShow = degreeSessions.isEmpty && generalSessions.isEmpty;
+
     return ListView(
       padding: const EdgeInsetsDirectional.fromSTEB(
         MqSpacing.space5,
@@ -100,10 +111,35 @@ class _OpenDayBody extends StatelessWidget {
       children: [
         _StudyInterestHeader(selected: selected, openDayDate: data.openDayDate),
         const SizedBox(height: MqSpacing.space5),
-        if (events.isEmpty)
-          _EmptyEventsState(hasSelection: selected != null)
-        else
-          ..._groupedByHour(events),
+
+        if (nothingToShow) _EmptyEventsState(hasSelection: hasSelection),
+
+        // 1. Degree-first section — ONLY sessions for the exact selected
+        //    degree. Primary (red) header so it reads as the main content.
+        if (hasSelection && degreeSessions.isNotEmpty) ...[
+          _SessionSectionHeader(
+            label: l10n.openDay_matchedToYourDegree,
+            icon: Icons.school_rounded,
+            primary: true,
+          ),
+          const SizedBox(height: MqSpacing.space3),
+          ..._groupedByHour(degreeSessions),
+          // Strong visual break before the secondary group.
+          const SizedBox(height: MqSpacing.space6),
+        ],
+
+        // 2. General / open-to-all section — neutral header, clearly secondary
+        //    and separated, so it never masquerades as degree-specific.
+        if (generalSessions.isNotEmpty) ...[
+          _SessionSectionHeader(
+            label: hasSelection
+                ? l10n.openDay_generalOpenToAll
+                : l10n.openDay_allSessionsLabel,
+            icon: Icons.groups_rounded,
+          ),
+          const SizedBox(height: MqSpacing.space3),
+          ..._groupedByHour(generalSessions),
+        ],
       ],
     );
   }
@@ -209,6 +245,84 @@ class _StudyInterestHeader extends ConsumerWidget {
                 selected == null
                     ? l10n.openDay_chooseInterest
                     : l10n.openDay_changeInterest,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Prominent, tinted section header band that separates the "Matched to your
+/// degree" feed from the "Open to all visitors" feed.
+///
+/// [primary] gives the band the Macquarie-red identity (the highlighted
+/// degree section); the non-primary variant uses a quiet neutral tint so it
+/// reads as clearly secondary. An icon chip on the leading edge reinforces
+/// the meaning of each group at a glance.
+class _SessionSectionHeader extends StatelessWidget {
+  const _SessionSectionHeader({
+    required this.label,
+    required this.icon,
+    this.primary = false,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool primary;
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = context.isDarkMode;
+
+    final background = primary
+        ? (dark ? MqColors.red.withAlpha(48) : MqColors.red.withAlpha(20))
+        : (dark
+              ? Colors.white.withValues(alpha: 0.06)
+              : MqColors.charcoal800.withValues(alpha: 0.05));
+    final borderColor = primary
+        ? MqColors.red.withValues(alpha: dark ? 0.55 : 0.30)
+        : (dark
+              ? Colors.white.withValues(alpha: 0.10)
+              : MqColors.charcoal800.withValues(alpha: 0.10));
+    final labelColor = primary
+        ? (dark ? Colors.white : MqColors.red)
+        : (dark
+              ? Colors.white.withValues(alpha: 0.82)
+              : MqColors.contentSecondary);
+    final iconBg = primary
+        ? MqColors.red
+        : (dark
+              ? Colors.white.withValues(alpha: 0.18)
+              : MqColors.charcoal600);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsetsDirectional.all(MqSpacing.space3),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(MqSpacing.radiusLg),
+        border: Border.all(color: borderColor, width: primary ? 1.0 : 0.6),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
+            child: Icon(icon, size: 16, color: Colors.white),
+          ),
+          const SizedBox(width: MqSpacing.space3),
+          Expanded(
+            child: Text(
+              label.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.8,
+                color: labelColor,
               ),
             ),
           ),

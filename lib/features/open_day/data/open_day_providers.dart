@@ -54,6 +54,36 @@ final relevantOpenDayEventsProvider = Provider<List<OpenDayEvent>>((ref) {
   return filtered;
 });
 
+/// Sessions that name the **exact** selected degree (NOT the whole faculty),
+/// sorted by start time. Empty when no interest is chosen. This is the
+/// "Matched to your degree" feed.
+final degreeSessionsProvider = Provider<List<OpenDayEvent>>((ref) {
+  final data = ref.watch(openDayDataProvider).value;
+  if (data == null) return const [];
+  final selectedId = ref
+      .watch(settingsControllerProvider)
+      .value
+      ?.selectedBachelorId;
+  if (selectedId == null) return const [];
+  final list = data.events
+      .where((e) => e.bachelorIds.contains(selectedId))
+      .toList()
+    ..sort((a, b) => a.startTime.compareTo(b.startTime));
+  return list;
+});
+
+/// General / open-to-all sessions (empty `bachelorIds`), sorted by start time.
+/// These are intentionally open to every visitor (pathways, HSC tips, etc.)
+/// and are shown in their own clearly-labelled section — never mixed into the
+/// degree feed.
+final generalSessionsProvider = Provider<List<OpenDayEvent>>((ref) {
+  final data = ref.watch(openDayDataProvider).value;
+  if (data == null) return const [];
+  final list = data.events.where((e) => e.bachelorIds.isEmpty).toList()
+    ..sort((a, b) => a.startTime.compareTo(b.startTime));
+  return list;
+});
+
 /// Suggested campus stops ranked for the user's selected interest.
 ///
 /// Delegates ranking to [OpenDayPersonalisation.suggestedStops] so the UI
@@ -70,15 +100,18 @@ final suggestedStopsProvider = Provider<List<OpenDaySuggestedStop>>((ref) {
 /// in tests. Production reads `DateTime.now()`; tests override this provider.
 final openDayNowProvider = Provider<DateTime>((ref) => DateTime.now());
 
-/// Live / upcoming snapshot for Home, biased toward the selected interest
-/// (with a graceful fallback to the full schedule — see
-/// [OpenDayPersonalisation.liveStatus]).
+/// Live / upcoming snapshot for Home — degree-first.
+///
+/// Primary = sessions that name the exact selected degree (NOT the whole
+/// faculty). Fallback = general/open-to-all sessions only. It never surfaces
+/// unrelated same-faculty sessions, so "Coming Up Next" for Bachelor of IT
+/// shows the next IT session (or, failing that, an honestly-labelled general
+/// session) — not the next Engineering/Science session.
 final openDayLiveStatusProvider = Provider<OpenDayLiveStatus>((ref) {
-  final data = ref.watch(openDayDataProvider).value;
-  final relevant = ref.watch(relevantOpenDayEventsProvider);
   final now = ref.watch(openDayNowProvider);
-  final all = data?.events ?? const <OpenDayEvent>[];
-  return OpenDayPersonalisation.liveStatus(relevant, all, now);
+  final degreeStrict = ref.watch(degreeSessionsProvider);
+  final general = ref.watch(generalSessionsProvider);
+  return OpenDayPersonalisation.liveStatus(degreeStrict, general, now);
 });
 
 /// The user's saved "Your Day" events, resolved from stored IDs to full

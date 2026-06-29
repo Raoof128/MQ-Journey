@@ -33,7 +33,9 @@ class OpenDayHomeCard extends ConsumerWidget {
 
     final data = dataAsync.value;
     final selected = ref.watch(selectedBachelorProvider);
-    final events = ref.watch(relevantOpenDayEventsProvider);
+    // Degree-specific sessions only, so the preview reflects the chosen degree
+    // rather than general/open sessions.
+    final events = ref.watch(degreeSessionsProvider);
 
     return selected == null
         ? _OnboardingCard(openDayDate: data.openDayDate)
