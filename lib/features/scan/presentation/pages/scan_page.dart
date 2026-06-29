@@ -9,7 +9,14 @@ import 'package:mq_journey/features/scan/presentation/widgets/scanner_view.dart'
 import 'package:mq_journey/features/scan/providers/scan_providers.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-enum _ScanState { permissionRequired, scanning, decoding, denied, notOnTrail, decodeError }
+enum _ScanState {
+  permissionRequired,
+  scanning,
+  decoding,
+  denied,
+  notOnTrail,
+  decodeError,
+}
 
 class ScanPage extends ConsumerStatefulWidget {
   const ScanPage({super.key});
@@ -127,8 +134,10 @@ class _ScanPageState extends ConsumerState<ScanPage> {
               const SizedBox(height: 16),
               Text(l10n.scanPermissionDenied),
               const SizedBox(height: 8),
-              Text(l10n.scanPermissionDeniedDesc,
-                style: const TextStyle(color: Colors.white54)),
+              Text(
+                l10n.scanPermissionDeniedDesc,
+                style: const TextStyle(color: Colors.white54),
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () async => await openAppSettings(),
@@ -147,7 +156,8 @@ class _ScanPageState extends ConsumerState<ScanPage> {
               Text(l10n.scanDecodeError),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => setState(() => _currentScanState = _ScanState.scanning),
+                onPressed: () =>
+                    setState(() => _currentScanState = _ScanState.scanning),
                 child: const Text('Scan again'),
               ),
             ],
@@ -162,11 +172,14 @@ class _ScanPageState extends ConsumerState<ScanPage> {
               const SizedBox(height: 16),
               Text(l10n.scanNotOnTrail),
               const SizedBox(height: 8),
-              Text(l10n.scanNotOnTrailDesc,
-                style: const TextStyle(color: Colors.white54)),
+              Text(
+                l10n.scanNotOnTrailDesc,
+                style: const TextStyle(color: Colors.white54),
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => setState(() => _currentScanState = _ScanState.scanning),
+                onPressed: () =>
+                    setState(() => _currentScanState = _ScanState.scanning),
                 child: const Text('Scan again'),
               ),
             ],
@@ -181,7 +194,8 @@ class _ScanPageState extends ConsumerState<ScanPage> {
             ScannerView(
               controller: _scannerController,
               onDetect: _onDetectBarcode,
-              onPermissionDenied: () => setState(() => _currentScanState = _ScanState.denied),
+              onPermissionDenied: () =>
+                  setState(() => _currentScanState = _ScanState.denied),
             ),
             const _DimSurround(reticleColor: Colors.white),
             Center(

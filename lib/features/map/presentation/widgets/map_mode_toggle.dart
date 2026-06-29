@@ -45,8 +45,7 @@ class MapModeToggle extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               for (final mode in segments) ...[
-                if (mode != segments.first)
-                  const SizedBox(width: 2),
+                if (mode != segments.first) const SizedBox(width: 2),
                 _SegmentButton(
                   label: mode == MapMode.campusMap
                       ? (campusMapLabel ?? 'Campus Map')

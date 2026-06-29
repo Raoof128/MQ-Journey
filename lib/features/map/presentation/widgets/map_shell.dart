@@ -48,9 +48,7 @@ class MapShell extends StatelessWidget {
 
     return Stack(
       children: [
-        Positioned.fill(
-          child: isCampusMap ? mapView : (arContent ?? mapView),
-        ),
+        Positioned.fill(child: isCampusMap ? mapView : (arContent ?? mapView)),
 
         if (isCampusMap) ...[
           Positioned(
@@ -103,10 +101,7 @@ class MapShell extends StatelessWidget {
 
                 if (mapMode != null && onMapModeChanged != null) ...[
                   const SizedBox(height: MqSpacing.space3),
-                  MapModeToggle(
-                    value: mapMode!,
-                    onChanged: onMapModeChanged!,
-                  ),
+                  MapModeToggle(value: mapMode!, onChanged: onMapModeChanged!),
                 ],
 
                 if (filterChips != null) ...[

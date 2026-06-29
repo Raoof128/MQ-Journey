@@ -113,8 +113,10 @@ class _ManifestAwarePickerState extends ConsumerState<_ManifestAwarePicker> {
           title: Text(id),
           subtitle: Text(widget.l10n.arComingSoon),
           enabled: false,
-          trailing: Icon(Icons.lock,
-              color: widget.isDark ? Colors.white24 : Colors.black26),
+          trailing: Icon(
+            Icons.lock,
+            color: widget.isDark ? Colors.white24 : Colors.black26,
+          ),
         );
       },
     );

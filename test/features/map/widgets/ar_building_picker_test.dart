@@ -11,33 +11,57 @@ import 'package:mq_journey/features/scan/domain/models/indoor_manifest.dart';
 
 class _MultiFakeTrailRepository extends TrailRepository {
   @override
-  Future<TrailManifest> load() async => TrailManifest(locations: [
-    TrailLocation(locationId: 'lib-01', buildingId: 'C3A', title: 'Library'),
-    TrailLocation(locationId: 'sc-01', buildingId: 'E7A', title: 'Engineering'),
-    TrailLocation(locationId: 'sc-02', buildingId: '18WW', title: 'Service Connect'),
-  ]);
+  Future<TrailManifest> load() async => TrailManifest(
+    locations: [
+      TrailLocation(locationId: 'lib-01', buildingId: 'C3A', title: 'Library'),
+      TrailLocation(
+        locationId: 'sc-01',
+        buildingId: 'E7A',
+        title: 'Engineering',
+      ),
+      TrailLocation(
+        locationId: 'sc-02',
+        buildingId: '18WW',
+        title: 'Service Connect',
+      ),
+    ],
+  );
 }
 
 class _SingleFakeTrailRepository extends TrailRepository {
   @override
-  Future<TrailManifest> load() async => TrailManifest(locations: [
-    TrailLocation(locationId: 'lib-01', buildingId: 'C3A', title: 'Library'),
-    TrailLocation(locationId: 'sc-02', buildingId: '18WW', title: 'Service Connect'),
-  ]);
+  Future<TrailManifest> load() async => TrailManifest(
+    locations: [
+      TrailLocation(locationId: 'lib-01', buildingId: 'C3A', title: 'Library'),
+      TrailLocation(
+        locationId: 'sc-02',
+        buildingId: '18WW',
+        title: 'Service Connect',
+      ),
+    ],
+  );
 }
 
 class _FakeIndoorRepository extends IndoorRepository {
   @override
   Future<IndoorManifest?> load(String buildingId) async {
     if (buildingId.toLowerCase() == 'c3a') {
-      return IndoorManifest(nodes: [
-        IndoorNode(id: 'lobby', image: 'c3a/lobby.jpg', description: 'Lobby'),
-      ]);
+      return IndoorManifest(
+        nodes: [
+          IndoorNode(id: 'lobby', image: 'c3a/lobby.jpg', description: 'Lobby'),
+        ],
+      );
     }
     if (buildingId.toLowerCase() == 'e7a') {
-      return IndoorManifest(nodes: [
-        IndoorNode(id: 'entrance', image: 'e7a/entrance.jpg', description: 'Entrance'),
-      ]);
+      return IndoorManifest(
+        nodes: [
+          IndoorNode(
+            id: 'entrance',
+            image: 'e7a/entrance.jpg',
+            description: 'Entrance',
+          ),
+        ],
+      );
     }
     return null;
   }
@@ -63,11 +87,13 @@ Widget _buildApp({
 
 void main() {
   testWidgets('renders manifest and non-manifest buildings', (tester) async {
-    await tester.pumpWidget(_buildApp(
-      trailRepo: _MultiFakeTrailRepository(),
-      indoorRepo: _FakeIndoorRepository(),
-      onSelect: (_) {},
-    ));
+    await tester.pumpWidget(
+      _buildApp(
+        trailRepo: _MultiFakeTrailRepository(),
+        indoorRepo: _FakeIndoorRepository(),
+        onSelect: (_) {},
+      ),
+    );
 
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
@@ -78,13 +104,17 @@ void main() {
     expect(find.text('18WW'), findsOneWidget);
   });
 
-  testWidgets('auto-selects when exactly one building has manifest', (tester) async {
+  testWidgets('auto-selects when exactly one building has manifest', (
+    tester,
+  ) async {
     String? selected;
-    await tester.pumpWidget(_buildApp(
-      trailRepo: _SingleFakeTrailRepository(),
-      indoorRepo: _FakeIndoorRepository(),
-      onSelect: (id) => selected = id,
-    ));
+    await tester.pumpWidget(
+      _buildApp(
+        trailRepo: _SingleFakeTrailRepository(),
+        indoorRepo: _FakeIndoorRepository(),
+        onSelect: (id) => selected = id,
+      ),
+    );
 
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));

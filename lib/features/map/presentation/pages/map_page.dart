@@ -52,10 +52,12 @@ class _MapPageState extends ConsumerState<MapPage> {
       return IndoorPreviewPage(buildingId: buildingCode);
     }
 
-    return ArBuildingPicker(onSelect: (buildingId) {
-      ref.read(mapControllerProvider.notifier).selectBuildingById(buildingId);
-      setState(() {});
-    });
+    return ArBuildingPicker(
+      onSelect: (buildingId) {
+        ref.read(mapControllerProvider.notifier).selectBuildingById(buildingId);
+        setState(() {});
+      },
+    );
   }
 
   Future<void> _openSearchSheet() async {
