@@ -42,9 +42,9 @@ class BuildingsRegistry {
           campusX: (m['campusX'] as num).toDouble(),
           campusY: (m['campusY'] as num).toDouble(),
           entranceLatitude:
-              (m['entranceLatitude'] ?? m['latitude'] as num).toDouble(),
+              (m['entranceLatitude'] ?? m['latitude'] as num?)?.toDouble() ?? 0,
           entranceLongitude:
-              (m['entranceLongitude'] ?? m['longitude'] as num).toDouble(),
+              (m['entranceLongitude'] ?? m['longitude'] as num?)?.toDouble() ?? 0,
         );
       }).toList(growable: false),
     );

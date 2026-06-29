@@ -77,7 +77,7 @@ class IndoorManifest {
     }
     return {
       'default': {
-        'firstScene': nodes.first.id,
+        if (nodes.isNotEmpty) 'firstScene': nodes.first.id,
         'sceneFadeDuration': 600,
       },
       'scenes': scenes,

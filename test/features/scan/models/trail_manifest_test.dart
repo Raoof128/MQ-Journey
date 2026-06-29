@@ -3,7 +3,7 @@ import 'package:mq_journey/features/scan/domain/models/trail_manifest.dart';
 
 void main() {
   group('TrailManifest', () {
-    final validJson =
+    const validJson =
         '{"locations":[{"locationId":"lib-01","buildingId":"C3A","title":"Library"}]}';
     final manifest = TrailManifest.fromJson(validJson);
 

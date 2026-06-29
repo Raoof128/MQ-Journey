@@ -3,7 +3,7 @@ import 'package:mq_journey/features/scan/domain/models/indoor_manifest.dart';
 
 void main() {
   group('IndoorManifest', () {
-    final json = '''{
+    const json = '''{
       "nodes": [
         {
           "id": "lobby",
@@ -39,6 +39,13 @@ void main() {
     test('isEmpty is true for empty manifest', () {
       final m = IndoorManifest.fromJson('{"nodes":[]}');
       expect(m.isEmpty, isTrue);
+    });
+
+    test('buildPannellumConfig handles empty manifest without crashing', () {
+      final m = IndoorManifest.fromJson('{"nodes":[]}');
+      final config = m.buildPannellumConfig(assetBaseUrl: '/indoor');
+      expect(config['default']['firstScene'], isNull);
+      expect(config['scenes'], isEmpty);
     });
   });
 }
