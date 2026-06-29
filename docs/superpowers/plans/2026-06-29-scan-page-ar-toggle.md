@@ -88,14 +88,21 @@ git commit -m "feat(scan): add ARB keys for scan states, map mode toggle, and AR
 
 - [ ] **Add lifecycle listener and state enum to ScanPage**
 
-Replace the current `_ScanPageState` with one that uses `AppLifecycleListener` for pause/resume and a `_ScanState` enum for state coverage:
+Replace the current `_ScanPageState` with one that uses **both** `AppLifecycleListener` (app backgrounding) and route-leave detection (navigating away while foregrounded). Two approaches for route-leave:
+
+- **Option A (recommended):** `mobile_scanner` v7 has built-in lifecycle handling — `MobileScannerController` auto-pauses on `WindowVisibilityChange`. Verify this covers route-leave. If it does, the `AppLifecycleListener` is only needed for app-backgrounding.
+- **Option B (fallback):** Use `RouteAware` + `RouteObserver` to call `_scannerController.pause()` in `didPop`/`didPushNext` and `_scannerController.start()` in `didPopNext`/`didPush`.
+
+The agent should verify Option A first (check the v7 API docs). Implement Option B only if A is insufficient.
+
+State enum for coverage:
 
 ```dart
-enum _ScanState { requestingPermission, scanning, decoding, denied, notOnTrail, decodeError }
+enum _ScanState { permissionRequired, scanning, decoding, denied, notOnTrail, decodeError }
 ```
 
 ```dart
-class _ScanPageState extends ConsumerState<ScanPage> with WidgetsBindingObserver {
+class _ScanPageState extends ConsumerState<ScanPage> {
   late final MobileScannerController _scannerController;
   _ScanState _currentScanState = _ScanState.scanning;
   bool _torchOn = false;
@@ -128,6 +135,8 @@ class _ScanPageState extends ConsumerState<ScanPage> with WidgetsBindingObserver
   }
 ```
 
+**Why no `WidgetsBindingObserver`:** Removed — `AppLifecycleListener` provides the same app-lifecycle hooks without the extra mixin, and route-leave is handled by `mobile_scanner`'s built-in lifecycle (or Option B `RouteAware`).
+
 - [ ] **Add torch guard — only show torch in scanning state**
 
 ```dart
@@ -143,39 +152,31 @@ actions: [
 ],
 ```
 
-- [ ] **Update `_onDetectBarcode` to set state for decoding/decode-error/not-on-trail**
+- [ ] **Layer `_ScanState` transitions on top of existing `_onDetectBarcode`**
+
+Do NOT rewrite the detection/validation/visit pipeline. Preserve the existing `_onDetectBarcode` method — it handles signed-deep-link verification, trail membership, visit recording, and navigation. Only add `setState` calls at the existing decision points:
 
 ```dart
+// Inside existing _onDetectBarcode — only add state transitions:
 Future<void> _onDetectBarcode(String raw) async {
-  final now = DateTime.now().millisecondsSinceEpoch;
-  if (now - _lastProcessed < 1500) return;
-  _lastProcessed = now;
-
   setState(() => _currentScanState = _ScanState.decoding);
+  // ... existing debounce, parse, signed-deep-link check, manifest check, visit logic ...
 
-  final uri = Uri.tryParse(raw);
-  final locationId = uri?.host == 'mq.edu.au' || uri?.scheme == 'io.mqjourney'
-      ? uri?.queryParameters['locationId']
-      : null;
-
-  if (locationId == null) {
+  if (/* invalid */) {
     setState(() => _currentScanState = _ScanState.decodeError);
     return;
   }
 
-  final manifest = await ref.read(trailManifestProvider.future);
-  if (!manifest.contains(locationId)) {
+  if (/* not on trail */) {
     setState(() => _currentScanState = _ScanState.notOnTrail);
     return;
   }
 
-  final visit = VisitEvent(locationId: locationId, scannedAt: DateTime.now());
-  await ref.read(progressApiProvider).recordVisit(visit);
-
-  if (!mounted) return;
-  context.go('/location/$locationId');
+  // ... existing visit recording, navigation ...
 }
 ```
+
+**Why this approach:** The existing code handles signed-deep-link verification, trail membership, visit recording, and navigation. Rewriting it would lose the security verification and risk double-recording visits. We only add state transitions at the natural decision boundaries.
 
 - [ ] **Update `_openAppSettings` to set denied state**
 
@@ -268,7 +269,7 @@ Widget _buildBody(AppLocalizations l10n) {
       );
     case _ScanState.decoding:
       return const Center(child: CircularProgressIndicator());
-    case _ScanState.requestingPermission:
+    case _ScanState.permissionRequired:
     case _ScanState.scanning:
       return Stack(
         children: [
@@ -300,12 +301,19 @@ Widget _buildBody(AppLocalizations l10n) {
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mq_journey/app/l10n/l10n.dart';
 import 'package:mq_journey/features/scan/presentation/pages/scan_page.dart';
 
 void main() {
   testWidgets('renders scan page with app bar', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: ScanPage())),
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ScanPage(),
+        ),
+      ),
     );
     await tester.pump();
     expect(find.byType(ScanPage), findsOneWidget);
@@ -313,7 +321,13 @@ void main() {
 
   testWidgets('shows torch toggle in scanning state', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: ScanPage())),
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ScanPage(),
+        ),
+      ),
     );
     await tester.pump();
     expect(find.byIcon(Icons.flash_off), findsOneWidget);
@@ -321,7 +335,13 @@ void main() {
 
   testWidgets('lifecycle disposes controller cleanly', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: ScanPage())),
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ScanPage(),
+        ),
+      ),
     );
     await tester.pump();
     // dispose() is called automatically when widget is removed; verify no crash
@@ -365,7 +385,7 @@ Add near the top of the `build()` method, wrapping the Scaffold:
 Widget build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
   return PopScope(
-    canPop: false,
+    canPop: context.canPop(),
     onPopInvokedWithResult: (didPop, _) {
       if (!didPop && mounted) {
         context.go('/');
@@ -392,7 +412,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-The key mechanic: `canPop: false` makes PopScope intercept ALL back attempts. When the stack has a previous route, GoRouter still processes the back normally via the AppBar arrow. When the stack is empty (deep-link/cold-start), `onPopInvokedWithResult` fires with `didPop = false`, and we fall back to `context.go('/')`.
+**Why `canPop: context.canPop()`:** `context.canPop()` returns `true` when GoRouter's navigation stack has a previous route. Normal back → `canPop: true` → `PopScope` allows the system pop → `onPopInvokedWithResult` fires with `didPop = true` → no redirect. Empty stack → `canPop: false` → system pop is blocked → `onPopInvokedWithResult` fires with `didPop = false` → `context.go('/')` runs. This correctly handles the AppBar arrow AND OS back gesture.
 
 - [ ] **Run analyzer**
 
@@ -682,7 +702,9 @@ class _ManifestAwarePicker extends ConsumerWidget {
     }
 
     // Auto-select if exactly one building has a manifest
-    if (hasManifest.length == 1) {
+    // Guard with a flag to prevent re-fire on rebuilds
+    if (hasManifest.length == 1 && !_autoSelected) {
+      _autoSelected = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         onSelect(hasManifest.first);
       });
@@ -698,6 +720,8 @@ class _ManifestAwarePicker extends ConsumerWidget {
           final id = hasManifest[index];
           return ListTile(
             title: Text(id),
+            // Consider showing TrailLocation.title for human name:
+            // title: Text(_locationTitles[id] ?? id),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => onSelect(id),
           );
@@ -854,6 +878,20 @@ if (mapMode == MapMode.ar && arContent != null) {
 }
 ```
 
+**Important — gate chrome to campusMap mode:** When `mapMode == MapMode.ar`, the search bar, filter chips, locate button, and overlay picker are nonsensical over a 360° panorama. Gate their display behind `mapMode == MapMode.campusMap`:
+
+```dart
+// Search bar
+if (mapMode == MapMode.campusMap) ...[
+  _SearchBar(...),
+],
+
+// Filter chips
+if (mapMode == MapMode.campusMap) ...[
+  _FilterChips(...),
+],
+```
+
 - [ ] **Wire MapPage with MapMode state**
 
 In `MapPage`, add a `_mapMode` local state variable. Pass it to `MapShell` and handle mode changes:
@@ -878,6 +916,9 @@ When AR is active, show either the building's indoor preview (if selected/has ma
 Widget? _buildArContent() {
   final state = ref.read(mapControllerProvider).value;
   final selected = state?.selectedBuilding;
+  // Verify: selectedBuilding.code must match TrailLocation.buildingId
+  // (e.g., "C3A" matches both). If they diverge, resolve by mapping
+  // between building code and manifest buildingId.
   final buildingCode = selected?.code;
 
   if (buildingCode != null) {
@@ -1015,8 +1056,8 @@ class _ArContent extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, __) => Expanded(
-        child: Center(child: Text('Could not load indoor preview')),
+      error: (_, __) => const Center(
+        child: Text('Could not load indoor preview'),
       ),
     );
   }
