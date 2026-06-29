@@ -391,15 +391,20 @@ Deno.serve(async (req) => {
     const routeFilteredDepartures = departuresMatchingRoute.length > 0
       ? departuresMatchingRoute
       : departuresForMode;
-    const departuresMatchingDirection = favoriteDirection.length === 0
-      ? routeFilteredDepartures
-      : routeFilteredDepartures.filter((item) =>
-        item.destination.toLowerCase().includes(favoriteDirection)
-      );
+    // Unlike route (where several lines can legitimately serve the same
+    // direction, so falling back to "all departures for this mode" is a
+    // reasonable degrade), direction has exactly two mutually-exclusive
+    // values. Falling back to the unfiltered list here would silently show
+    // a departure heading the *opposite* way from what the user configured,
+    // labelled as if it matched — so when a direction preference is set and
+    // nothing matches it, we return no departures rather than a misleading
+    // one.
     const departures = (
-      departuresMatchingDirection.length > 0
-        ? departuresMatchingDirection
-        : routeFilteredDepartures
+      favoriteDirection.length === 0
+        ? routeFilteredDepartures
+        : routeFilteredDepartures.filter((item) =>
+          item.destination.toLowerCase().includes(favoriteDirection)
+        )
     ).slice(0, 3);
 
     return new Response(JSON.stringify(departures), {

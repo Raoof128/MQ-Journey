@@ -414,7 +414,14 @@ class _DepartureBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final next = departures.isEmpty ? null : departures.first;
-    final routeSuffix = favoriteRoute.trim().isEmpty ? '' : ' • $favoriteRoute';
+    // Prefer the line the API actually reports for *this* departure over the
+    // saved preference string — if the server's route filter ever falls back
+    // to an unfiltered list, echoing the saved preference here would pair it
+    // with a destination/line that doesn't really match.
+    final routeLabel = next != null && next.line.trim().isNotEmpty
+        ? next.line.trim()
+        : favoriteRoute.trim();
+    final routeSuffix = routeLabel.isEmpty ? '' : ' • $routeLabel';
 
     final title = next == null
         ? l10n.homeNextMetroLabel
@@ -776,9 +783,12 @@ class _LogoFallback extends StatelessWidget {
 // PRIVACY / INSTANT-ACCESS STRIP                                             //
 // -------------------------------------------------------------------------- //
 
-/// Quiet privacy note shown at the very bottom of Home. Deliberately plain —
-/// no card, no border — so it reads as a low-priority informational footnote
-/// rather than a CTA-adjacent block.
+/// Quiet privacy note shown at the very bottom of Home. Text color alone
+/// can't guarantee contrast here — like [_SectionHeader] above it, this sits
+/// directly on the blurred campus photo background, not a plain surface, so
+/// it gets its own small pill chip rather than floating loose. Kept low-key
+/// versus [_SectionHeader] (footnote-sized, regular weight, no shadow) so it
+/// still reads as an informational aside, not a section title or CTA.
 class _PrivacyStrip extends StatelessWidget {
   const _PrivacyStrip();
 
@@ -786,29 +796,43 @@ class _PrivacyStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final dark = context.isDarkMode;
-    final color = dark
-        ? Colors.white.withValues(alpha: 0.60)
-        : MqColors.charcoal800.withValues(alpha: 0.55);
-    return Padding(
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: MqSpacing.space2,
-        vertical: MqSpacing.space2,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.lock_outline_rounded, size: 14, color: color),
-          const SizedBox(width: MqSpacing.space2),
-          Flexible(
-            child: Text(
-              l10n.openDay_privacyStrip,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: context.textTheme.bodySmall?.copyWith(color: color),
-            ),
+    final color = dark ? Colors.white.withValues(alpha: 0.85) : MqColors.contentSecondary;
+    return Center(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: dark
+              ? MqColors.black.withValues(alpha: 0.30)
+              : Colors.white.withValues(alpha: 0.82),
+          borderRadius: BorderRadius.circular(MqSpacing.radiusFull),
+          border: Border.all(
+            color: dark
+                ? Colors.white.withValues(alpha: 0.10)
+                : MqColors.black.withValues(alpha: 0.14),
+            width: 0.8,
           ),
-        ],
+        ),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: MqSpacing.space3,
+            vertical: MqSpacing.space1,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.lock_outline_rounded, size: 13, color: color),
+              const SizedBox(width: MqSpacing.space1),
+              Flexible(
+                child: Text(
+                  l10n.openDay_privacyStrip,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.bodySmall?.copyWith(color: color),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
