@@ -7,11 +7,7 @@ class NodeNeighbour {
   final double bearing;
   final String? label;
 
-  const NodeNeighbour({
-    required this.id,
-    required this.bearing,
-    this.label,
-  });
+  const NodeNeighbour({required this.id, required this.bearing, this.label});
 }
 
 @immutable
@@ -39,22 +35,26 @@ class IndoorManifest {
 
   factory IndoorManifest.fromJson(String raw) {
     final json = jsonDecode(raw) as Map<String, dynamic>;
-    final nodeList = (json['nodes'] as List).map((e) {
-      final m = e as Map<String, dynamic>;
-      return IndoorNode(
-        id: m['id'] as String,
-        image: m['image'] as String,
-        description: (m['description'] as String?) ?? '',
-        neighbours: ((m['neighbours'] as List?) ?? []).map((n) {
-          final nm = n as Map<String, dynamic>;
-          return NodeNeighbour(
-            id: nm['id'] as String,
-            bearing: (nm['bearing'] as num).toDouble(),
-            label: nm['label'] as String?,
+    final nodeList = (json['nodes'] as List)
+        .map((e) {
+          final m = e as Map<String, dynamic>;
+          return IndoorNode(
+            id: m['id'] as String,
+            image: m['image'] as String,
+            description: (m['description'] as String?) ?? '',
+            neighbours: ((m['neighbours'] as List?) ?? [])
+                .map((n) {
+                  final nm = n as Map<String, dynamic>;
+                  return NodeNeighbour(
+                    id: nm['id'] as String,
+                    bearing: (nm['bearing'] as num).toDouble(),
+                    label: nm['label'] as String?,
+                  );
+                })
+                .toList(growable: false),
           );
-        }).toList(growable: false),
-      );
-    }).toList(growable: false);
+        })
+        .toList(growable: false);
     return IndoorManifest(nodes: nodeList);
   }
 

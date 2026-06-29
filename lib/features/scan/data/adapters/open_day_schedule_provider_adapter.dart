@@ -7,8 +7,8 @@ class OpenDayScheduleProviderAdapter implements ScheduleProvider {
   OpenDayScheduleProviderAdapter({
     required List<OpenDayEvent> allEvents,
     required DateTime now,
-  })  : _allEvents = allEvents,
-        _now = now;
+  }) : _allEvents = allEvents,
+       _now = now;
 
   final List<OpenDayEvent> _allEvents;
   final DateTime _now;
@@ -16,7 +16,10 @@ class OpenDayScheduleProviderAdapter implements ScheduleProvider {
   @override
   ScheduleSlot? liveNow(String locationId) {
     final status = OpenDayPersonalisation.liveStatusForLocation(
-        _allEvents, locationId, _now);
+      _allEvents,
+      locationId,
+      _now,
+    );
     if (status.liveNow.isEmpty) return null;
     final e = status.liveNow.first;
     return ScheduleSlot(title: e.title, start: e.startTime, end: e.endTime);
@@ -25,7 +28,10 @@ class OpenDayScheduleProviderAdapter implements ScheduleProvider {
   @override
   ScheduleSlot? comingUpNext(String locationId) {
     final status = OpenDayPersonalisation.liveStatusForLocation(
-        _allEvents, locationId, _now);
+      _allEvents,
+      locationId,
+      _now,
+    );
     if (status.comingUpNext == null) return null;
     return ScheduleSlot(
       title: status.comingUpNext!.title,

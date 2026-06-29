@@ -18,22 +18,28 @@ void main() {
     ];
 
     test('liveNow returns matching slot', () {
-      final adapter =
-          OpenDayScheduleProviderAdapter(allEvents: events, now: now);
+      final adapter = OpenDayScheduleProviderAdapter(
+        allEvents: events,
+        now: now,
+      );
       final slot = adapter.liveNow('C3A');
       expect(slot, isNotNull);
       expect(slot!.title, 'Library Tour');
     });
 
     test('liveNow returns null for non-matching code', () {
-      final adapter =
-          OpenDayScheduleProviderAdapter(allEvents: events, now: now);
+      final adapter = OpenDayScheduleProviderAdapter(
+        allEvents: events,
+        now: now,
+      );
       expect(adapter.liveNow('ZZZ'), isNull);
     });
 
     test('comingUpNext returns null when nothing upcoming', () {
-      final adapter =
-          OpenDayScheduleProviderAdapter(allEvents: events, now: now);
+      final adapter = OpenDayScheduleProviderAdapter(
+        allEvents: events,
+        now: now,
+      );
       expect(adapter.comingUpNext('C3A'), isNull);
     });
   });

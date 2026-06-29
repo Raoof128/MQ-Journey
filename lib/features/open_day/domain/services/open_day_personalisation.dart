@@ -113,8 +113,7 @@ class OpenDayPersonalisation {
     final liveNow = <OpenDayEvent>[];
     OpenDayEvent? comingUpNext;
     for (final e in sorted) {
-      final isLive =
-          !now.isBefore(e.startTime) && !now.isAfter(e.endTime);
+      final isLive = !now.isBefore(e.startTime) && !now.isAfter(e.endTime);
       if (isLive) {
         liveNow.add(e);
       } else if (e.startTime.isAfter(now) && comingUpNext == null) {

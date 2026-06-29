@@ -34,10 +34,7 @@ void main() {
     });
 
     test('rejects malformed JSON gracefully', () {
-      expect(
-        () => TrailManifest.fromJson('not json'),
-        throwsFormatException,
-      );
+      expect(() => TrailManifest.fromJson('not json'), throwsFormatException);
     });
   });
 }

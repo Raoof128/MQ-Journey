@@ -149,10 +149,7 @@ void _openOnMap(BuildContext context, WidgetRef ref, String? buildingCode) {
   final resolved = _resolveBuilding(buildings, buildingCode);
   final targetId = resolved?.id ?? buildingCode;
   ref.read(mapControllerProvider.notifier).selectBuildingById(targetId);
-  context.goNamed(
-    RouteNames.map,
-    queryParameters: {'building': targetId},
-  );
+  context.goNamed(RouteNames.map, queryParameters: {'building': targetId});
 }
 
 Building? _resolveBuilding(List<Building>? buildings, String? code) {
@@ -598,9 +595,7 @@ class _YourDayCard extends ConsumerWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isEmpty
-                    ? Icons.bookmark_add_outlined
-                    : Icons.bookmark_rounded,
+                isEmpty ? Icons.bookmark_add_outlined : Icons.bookmark_rounded,
                 color: isEmpty ? MqColors.red : Colors.white,
                 size: 22,
               ),

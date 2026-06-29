@@ -25,11 +25,12 @@ class LocationHero extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text(content.title,
-            style: Theme.of(context).textTheme.headlineSmall),
+        Text(content.title, style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 8),
-        Text(content.shortDescription,
-            style: Theme.of(context).textTheme.bodyMedium),
+        Text(
+          content.shortDescription,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
       ],
     );
   }

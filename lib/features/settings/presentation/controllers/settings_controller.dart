@@ -185,7 +185,10 @@ class SettingsController extends AsyncNotifier<UserPreferences> {
     }
     await _save(
       currentPreferences.copyWith(
-        visitedLocationCodes: [...currentPreferences.visitedLocationCodes, code],
+        visitedLocationCodes: [
+          ...currentPreferences.visitedLocationCodes,
+          code,
+        ],
       ),
     );
     return true;

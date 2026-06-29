@@ -86,7 +86,9 @@ class LocalSettingsRepository implements SettingsRepository {
         _savedOpenDayEventIdsKey,
       );
       final savedStopIds = await _storage.read(_savedStopIdsKey);
-      final visitedLocationCodes = await _storage.read(_visitedLocationCodesKey);
+      final visitedLocationCodes = await _storage.read(
+        _visitedLocationCodesKey,
+      );
       final hasCompletedOnboarding = await _storage.read(
         _hasCompletedOnboardingKey,
       );

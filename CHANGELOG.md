@@ -1,3 +1,10 @@
+### Raouf: 2026-06-29 (Australia/Sydney) — Vendor Pannellum JS files and create indoor manifest files
+**Scope:** Assets — Pannellum vendor files and indoor building manifests
+**Summary:** Downloaded Pannellum 2.5.6 CSS/JS to `assets/web/pannellum/`. Created indoor manifest JSON for C3A (Library, 3 nodes) and 18WW (Service Connect, 2 nodes) at `assets/data/indoor/`.
+**Files Changed:** `assets/web/pannellum/pannellum.css`, `assets/web/pannellum/pannellum.js`, `assets/data/indoor/C3A.json`, `assets/data/indoor/18WW.json`
+**Verification:** `ls -la assets/web/pannellum/` — 2 files (9.7 KB + 56.2 KB); `ls -la assets/data/indoor/` — 2 files (949 B + 560 B)
+**Follow-ups:** Create `assets/web/indoor_viewer.html` to reference the Pannellum vendor files.
+
 ### Raouf: 2026-06-29 (Australia/Sydney) — Task 12: Indoor preview page with Pannellum webview and stop list
 **Scope:** Scan feature — presentation layer indoor preview UI
 **Summary:** Created 4 files for the indoor preview feature. `IndoorWebView` (StatefulWidget wrapping `InAppWebView` from `flutter_inappwebview`) loads `assets/web/indoor_viewer.html`, calls `buildPannellumConfig()` on load stop and evaluates `loadTour()` in the webview. `IndoorStopList` (StatelessWidget) renders a `ListView.separated` of indoor nodes with icons, descriptions, and connection counts; handles empty manifest state. `IndoorPreviewPage` (ConsumerWidget) watches `indoorManifestProvider(buildingId)`, renders webview (flex: 3) + stop list (flex: 2) on data, handles loading/error/empty/null states. Added `flutter_inappwebview: ^6.1.5` dependency. 3 widget tests cover loading, null manifest, and empty manifest states. Replaced `scan_page.dart` stub (broken pre-existing imports) with working minimal stub.

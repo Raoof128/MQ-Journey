@@ -32,9 +32,8 @@ class OpenDayGamification {
     required List<OpenDaySuggestedStop> trail,
     String? trailName,
   }) {
-    final visitedUpper = {
-      for (final c in visited) c.trim().toUpperCase(),
-    }..removeWhere((c) => c.isEmpty);
+    final visitedUpper = {for (final c in visited) c.trim().toUpperCase()}
+      ..removeWhere((c) => c.isEmpty);
 
     final trailCodes = <String>{
       for (final s in trail)
@@ -48,7 +47,8 @@ class OpenDayGamification {
       visitedCount: visitedInTrail,
       totalCount: trailCodes.length,
       xp: xpForVisitCount(visitedUpper.length),
-      trailComplete: trailCodes.isNotEmpty && visitedInTrail == trailCodes.length,
+      trailComplete:
+          trailCodes.isNotEmpty && visitedInTrail == trailCodes.length,
       trailName: trailName,
     );
   }

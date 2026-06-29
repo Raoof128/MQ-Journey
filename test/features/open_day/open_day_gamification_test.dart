@@ -65,7 +65,10 @@ void main() {
     });
 
     test('empty trail reports no progress and is not complete', () {
-      final p = OpenDayGamification.progress(visited: const [], trail: const []);
+      final p = OpenDayGamification.progress(
+        visited: const [],
+        trail: const [],
+      );
       expect(p.hasTrail, isFalse);
       expect(p.trailComplete, isFalse);
       expect(p.fraction, 0);

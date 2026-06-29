@@ -209,10 +209,9 @@ void main() {
       final controller = container.read(settingsControllerProvider.notifier);
 
       await controller.toggleSavedStop('stop-computing');
-      expect(
-        container.read(settingsControllerProvider).value?.savedStopIds,
-        ['stop-computing'],
-      );
+      expect(container.read(settingsControllerProvider).value?.savedStopIds, [
+        'stop-computing',
+      ]);
 
       await controller.toggleSavedStop('stop-computing');
       expect(

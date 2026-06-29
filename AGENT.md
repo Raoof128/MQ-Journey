@@ -44,6 +44,13 @@ lib/
 ```
 
 
+### Raouf: 2026-06-29 (Australia/Sydney) — Vendor Pannellum JS files and create indoor manifest files
+**Scope:** Assets — Pannellum vendor files and indoor building manifests
+**Summary:** Downloaded Pannellum 2.5.6 CSS/JS to `assets/web/pannellum/`. Created indoor manifest JSON for C3A (Library, 3 nodes) and 18WW (Service Connect, 2 nodes) at `assets/data/indoor/`.
+**Files Changed:** `assets/web/pannellum/pannellum.css`, `assets/web/pannellum/pannellum.js`, `assets/data/indoor/C3A.json`, `assets/data/indoor/18WW.json`
+**Verification:** `ls -la assets/web/pannellum/` — 2 files (9.7 KB + 56.2 KB); `ls -la assets/data/indoor/` — 2 files (949 B + 560 B)
+**Follow-ups:** Create `assets/web/indoor_viewer.html` to reference the Pannellum vendor files.
+
 ### Raouf: 2026-06-29 (Australia/Sydney) — Task 12: Indoor preview page with Pannellum webview and stop list
 **Scope:** Scan feature — `lib/features/scan/presentation/widgets/indoor_webview.dart`, `lib/features/scan/presentation/widgets/indoor_stop_list.dart`, `lib/features/scan/presentation/pages/indoor_preview_page.dart`
 **Summary:** IndoorWebView wraps InAppWebView (flutter_inappwebview) loading indoor_viewer.html and invoking Pannellum via evaluateJavascript. IndoorStopList renders indoor nodes as a ListView. IndoorPreviewPage is a ConsumerWidget watching the manifest provider with loading/error/data states. 3 widget tests. Added flutter_inappwebview dependency.

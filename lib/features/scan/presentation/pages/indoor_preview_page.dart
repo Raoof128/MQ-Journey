@@ -27,7 +27,8 @@ class IndoorPreviewPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Could not load indoor preview: $e')),
+        error: (e, _) =>
+            Center(child: Text('Could not load indoor preview: $e')),
       ),
     );
   }

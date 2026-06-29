@@ -9,7 +9,10 @@ class FakeProgressApi implements ProgressApi {
 
   @override
   Stream<VisitedState> watch(String locationId) async* {
-    yield VisitedState(visited: _visited.contains(locationId), rewardEarned: false);
+    yield VisitedState(
+      visited: _visited.contains(locationId),
+      rewardEarned: false,
+    );
     yield* _controller.stream;
   }
 

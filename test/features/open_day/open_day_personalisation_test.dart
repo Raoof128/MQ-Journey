@@ -9,7 +9,11 @@ OpenDayData _fixture() {
     openDayDate: DateTime.parse('2026-08-15T00:00:00+10:00'),
     lastUpdated: DateTime.parse('2026-04-29T00:00:00+10:00'),
     studyAreas: const [
-      OpenDayStudyArea(id: 'fse', name: 'Science & Engineering', icon: 'science'),
+      OpenDayStudyArea(
+        id: 'fse',
+        name: 'Science & Engineering',
+        icon: 'science',
+      ),
       OpenDayStudyArea(id: 'mbs', name: 'Business', icon: 'business_center'),
     ],
     bachelors: const [
@@ -71,18 +75,22 @@ OpenDayData _fixture() {
 
 void main() {
   group('OpenDayPersonalisation.suggestedStops', () {
-    test('ranks bachelor match > area match > universal, dropping unrelated', () {
-      final data = _fixture();
-      final computing = data.bachelorById('computing');
+    test(
+      'ranks bachelor match > area match > universal, dropping unrelated',
+      () {
+        final data = _fixture();
+        final computing = data.bachelorById('computing');
 
-      final result = OpenDayPersonalisation.suggestedStops(data, computing);
+        final result = OpenDayPersonalisation.suggestedStops(data, computing);
 
-      expect(
-        result.map((s) => s.id),
-        ['stop-computing', 'stop-science', 'stop-library'],
-        reason: 'business stop is irrelevant to computing and must be dropped',
-      );
-    });
+        expect(
+          result.map((s) => s.id),
+          ['stop-computing', 'stop-science', 'stop-library'],
+          reason:
+              'business stop is irrelevant to computing and must be dropped',
+        );
+      },
+    );
 
     test('with no selection, only universal stops are returned', () {
       final data = _fixture();
@@ -116,12 +124,21 @@ void main() {
         studyAreaIds: ['fse'],
         bachelorIds: ['computing'],
       );
-      const computing =
-          OpenDayBachelor(id: 'computing', name: 'C', studyAreaId: 'fse');
-      const otherFse =
-          OpenDayBachelor(id: 'science', name: 'S', studyAreaId: 'fse');
-      const business =
-          OpenDayBachelor(id: 'business', name: 'B', studyAreaId: 'mbs');
+      const computing = OpenDayBachelor(
+        id: 'computing',
+        name: 'C',
+        studyAreaId: 'fse',
+      );
+      const otherFse = OpenDayBachelor(
+        id: 'science',
+        name: 'S',
+        studyAreaId: 'fse',
+      );
+      const business = OpenDayBachelor(
+        id: 'business',
+        name: 'B',
+        studyAreaId: 'mbs',
+      );
 
       expect(stop.relevanceFor(computing), 3);
       expect(stop.relevanceFor(otherFse), 2);
@@ -130,8 +147,11 @@ void main() {
 
     test('universal stop scores 1 for anyone and for no selection', () {
       const stop = OpenDaySuggestedStop(id: 's', title: 't', description: 'd');
-      const business =
-          OpenDayBachelor(id: 'business', name: 'B', studyAreaId: 'mbs');
+      const business = OpenDayBachelor(
+        id: 'business',
+        name: 'B',
+        studyAreaId: 'mbs',
+      );
 
       expect(stop.relevanceFor(null), 1);
       expect(stop.relevanceFor(business), 1);

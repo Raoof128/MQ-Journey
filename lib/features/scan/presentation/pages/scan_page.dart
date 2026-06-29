@@ -54,25 +54,22 @@ class _ScanPageState extends ConsumerState<ScanPage> {
     final locationId = _parseLocationId(raw);
     if (locationId == null) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not read QR code')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not read QR code')));
       return;
     }
 
     final manifest = await ref.read(trailManifestProvider.future);
     if (!manifest.contains(locationId)) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Not part of the trail')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Not part of the trail')));
       return;
     }
 
-    final visit = VisitEvent(
-      locationId: locationId,
-      scannedAt: DateTime.now(),
-    );
+    final visit = VisitEvent(locationId: locationId, scannedAt: DateTime.now());
     await ref.read(progressApiProvider).recordVisit(visit);
 
     if (!mounted) return;
@@ -135,10 +132,34 @@ class _DimSurround extends StatelessWidget {
         const dim = Colors.black54;
         return Stack(
           children: [
-            Positioned(left: 0, top: 0, width: w, height: cy, child: Container(color: dim)),
-            Positioned(left: 0, bottom: 0, width: w, height: cy, child: Container(color: dim)),
-            Positioned(left: 0, top: cy, width: cx, height: r, child: Container(color: dim)),
-            Positioned(right: 0, top: cy, width: cx, height: r, child: Container(color: dim)),
+            Positioned(
+              left: 0,
+              top: 0,
+              width: w,
+              height: cy,
+              child: Container(color: dim),
+            ),
+            Positioned(
+              left: 0,
+              bottom: 0,
+              width: w,
+              height: cy,
+              child: Container(color: dim),
+            ),
+            Positioned(
+              left: 0,
+              top: cy,
+              width: cx,
+              height: r,
+              child: Container(color: dim),
+            ),
+            Positioned(
+              right: 0,
+              top: cy,
+              width: cx,
+              height: r,
+              child: Container(color: dim),
+            ),
           ],
         );
       },

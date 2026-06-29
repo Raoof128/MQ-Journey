@@ -15,7 +15,7 @@ Future<void> ensureAnonSession({SupabaseClient? supabaseClient}) async {
 
 class SettingsProgressApiAdapter implements ProgressApi {
   SettingsProgressApiAdapter(this._ref, {SupabaseClient? supabaseClient})
-      : _supabaseClientOverride = supabaseClient;
+    : _supabaseClientOverride = supabaseClient;
   final Ref _ref;
   final SupabaseClient? _supabaseClientOverride;
   late final SupabaseClient _supabaseClient =
@@ -37,11 +37,17 @@ class SettingsProgressApiAdapter implements ProgressApi {
     try {
       final userId = _supabaseClient.auth.currentUser?.id;
       if (userId == null) return;
-      await _supabaseClient.from('open_day_stamps').upsert({
-        'user_id': userId,
-        'location_id': locationId,
-        'scanned_at': DateTime.now().toIso8601String(),
-      }, onConflict: 'user_id,location_id', ignoreDuplicates: true);
+      await _supabaseClient
+          .from('open_day_stamps')
+          .upsert(
+            {
+              'user_id': userId,
+              'location_id': locationId,
+              'scanned_at': DateTime.now().toIso8601String(),
+            },
+            onConflict: 'user_id,location_id',
+            ignoreDuplicates: true,
+          );
     } catch (e, s) {
       AppLogger.warning('Failed to upsert stamp', e, s);
     }
@@ -49,6 +55,7 @@ class SettingsProgressApiAdapter implements ProgressApi {
 
   @override
   Stream<VisitedState> watch(String locationId) {
+    // ignore: close_sinks
     final controller = StreamController<VisitedState>.broadcast();
 
     void emit() {

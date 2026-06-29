@@ -10,7 +10,9 @@ void main() {
   group('Fakes', () {
     test('FakeMyDayApi records entries', () async {
       final api = FakeMyDayApi();
-      await api.addToDay(MyDayEntry(locationId: 'lib-01', when: DateTime.now()));
+      await api.addToDay(
+        MyDayEntry(locationId: 'lib-01', when: DateTime.now()),
+      );
       expect(api.added.length, 1);
     });
 

@@ -32,14 +32,16 @@ class TrailManifest {
 
   factory TrailManifest.fromJson(String raw) {
     final json = jsonDecode(raw) as Map<String, dynamic>;
-    final locs = (json['locations'] as List).map((e) {
-      final m = e as Map<String, dynamic>;
-      return TrailLocation(
-        locationId: m['locationId'] as String,
-        buildingId: m['buildingId'] as String?,
-        title: m['title'] as String,
-      );
-    }).toList(growable: false);
+    final locs = (json['locations'] as List)
+        .map((e) {
+          final m = e as Map<String, dynamic>;
+          return TrailLocation(
+            locationId: m['locationId'] as String,
+            buildingId: m['buildingId'] as String?,
+            title: m['title'] as String,
+          );
+        })
+        .toList(growable: false);
     return TrailManifest(locations: locs);
   }
 }

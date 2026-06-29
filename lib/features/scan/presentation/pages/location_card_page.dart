@@ -20,12 +20,12 @@ class LocationCardPage extends ConsumerWidget {
     final content = ref.watch(locationContentProvider(locationId));
     final schedule = ref.watch(scheduleProvider);
     final visitedAsync = ref.watch(visitedStateProvider(locationId));
-    final visited = visitedAsync.asData?.value ?? const VisitedState(visited: false, rewardEarned: false);
+    final visited =
+        visitedAsync.asData?.value ??
+        const VisitedState(visited: false, rewardEarned: false);
 
     if (content == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final liveNow = schedule.liveNow(locationId);
@@ -86,10 +86,9 @@ class _ActionButtons extends ConsumerWidget {
         OutlinedButton.icon(
           onPressed: () async {
             final api = ref.read(myDayApiProvider);
-            await api.addToDay(MyDayEntry(
-              locationId: content.locationId,
-              when: DateTime.now(),
-            ));
+            await api.addToDay(
+              MyDayEntry(locationId: content.locationId, when: DateTime.now()),
+            );
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Added to Your Day')),

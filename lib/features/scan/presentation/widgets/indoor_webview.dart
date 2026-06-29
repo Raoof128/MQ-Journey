@@ -13,10 +13,10 @@ class IndoorWebView extends StatefulWidget {
 
 class _IndoorWebViewState extends State<IndoorWebView> {
   InAppWebViewSettings get _settings => InAppWebViewSettings(
-        javaScriptEnabled: true,
-        transparentBackground: true,
-        mediaPlaybackRequiresUserGesture: true,
-      );
+    javaScriptEnabled: true,
+    transparentBackground: true,
+    mediaPlaybackRequiresUserGesture: true,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +24,9 @@ class _IndoorWebViewState extends State<IndoorWebView> {
       initialFile: 'assets/web/indoor_viewer.html',
       initialSettings: _settings,
       onLoadStop: (controller, _) async {
-        final config =
-            widget.manifest.buildPannellumConfig(assetBaseUrl: '/assets/indoor');
+        final config = widget.manifest.buildPannellumConfig(
+          assetBaseUrl: '/assets/indoor',
+        );
         final cfgJson = jsonEncode(config);
         await controller.evaluateJavascript(source: 'loadTour($cfgJson);');
       },
