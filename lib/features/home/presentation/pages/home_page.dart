@@ -796,7 +796,9 @@ class _PrivacyStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final dark = context.isDarkMode;
-    final color = dark ? Colors.white.withValues(alpha: 0.85) : MqColors.contentSecondary;
+    final color = dark
+        ? Colors.white.withValues(alpha: 0.85)
+        : MqColors.contentSecondary;
     return Center(
       child: DecoratedBox(
         decoration: BoxDecoration(
