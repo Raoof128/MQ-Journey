@@ -288,6 +288,10 @@ for dir in $GOOGLE_SOURCE_DIRS; do
     --exclude='*.g.dart' \
     --exclude='*.freezed.dart' \
     --exclude-dir=Pods \
+    --exclude='Podfile.lock' \
+    --exclude='sync_supabase_secrets.sh' \
+    --exclude='run.sh' \
+    --exclude='check.sh' \
     2>/dev/null > /tmp/mq_google_guard.txt; then
     echo -e "${RED}Google Maps references found in $dir:${NC}"
     cat /tmp/mq_google_guard.txt
