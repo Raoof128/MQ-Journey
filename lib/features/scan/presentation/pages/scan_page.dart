@@ -93,18 +93,26 @@ class _ScanPageState extends ConsumerState<ScanPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.scanQrCta),
-        actions: [
-          if (_currentScanState == _ScanState.scanning)
-            IconButton(
-              icon: Icon(_torchOn ? Icons.flash_on : Icons.flash_off),
-              onPressed: _toggleTorch,
-            ),
-        ],
+    return PopScope(
+      canPop: Navigator.canPop(context),
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && mounted) {
+          context.go('/');
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.scanQrCta),
+          actions: [
+            if (_currentScanState == _ScanState.scanning)
+              IconButton(
+                icon: Icon(_torchOn ? Icons.flash_on : Icons.flash_off),
+                onPressed: _toggleTorch,
+              ),
+          ],
+        ),
+        body: _buildBody(l10n),
       ),
-      body: _buildBody(l10n),
     );
   }
 
