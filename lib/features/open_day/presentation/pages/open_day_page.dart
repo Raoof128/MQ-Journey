@@ -293,9 +293,7 @@ class _SessionSectionHeader extends StatelessWidget {
               : MqColors.contentSecondary);
     final iconBg = primary
         ? MqColors.red
-        : (dark
-              ? Colors.white.withValues(alpha: 0.18)
-              : MqColors.charcoal600);
+        : (dark ? Colors.white.withValues(alpha: 0.18) : MqColors.charcoal600);
 
     return Container(
       width: double.infinity,

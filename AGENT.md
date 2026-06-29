@@ -233,6 +233,9 @@ lib/
 **Verification:** `./scripts/check.sh --quick --fix` (8/8 passed): pub get, format, analyze, test (307/307), gen-l10n (0 untranslated), privacy guard, secret scan.
 **Follow-ups:** None.
 
+## Build Notes
+- **macOS minimum deployment target**: `14.0` (set in `macos/Podfile` — both `platform :osx` and `MACOSX_DEPLOYMENT_TARGET`). Required by Firebase 12.15.0+.
+
 ## Key Environment Variables (--dart-define)
 - SUPABASE_URL, SUPABASE_ANON_KEY, GOOGLE_MAPS_API_KEY, APP_ENV
 - DEV_SUPABASE_URL, DEV_SUPABASE_ANON_KEY, DEV_GOOGLE_MAPS_API_KEY (debug-only fallbacks)

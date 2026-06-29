@@ -140,9 +140,7 @@ class _BachelorList extends ConsumerStatefulWidget {
 
 class _BachelorListState extends ConsumerState<_BachelorList> {
   late final List<OpenDayBachelor> _sorted = [...widget.data.bachelors]
-    ..sort(
-      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-    );
+    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
   final _searchController = TextEditingController();
   String _query = '';

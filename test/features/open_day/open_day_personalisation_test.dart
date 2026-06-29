@@ -79,30 +79,37 @@ void main() {
       final data = _fixture();
       final computing = data.bachelorById('computing');
 
-        final result = OpenDayPersonalisation.suggestedStops(data, computing);
+      final result = OpenDayPersonalisation.suggestedStops(data, computing);
 
       expect(
         result.map((s) => s.id),
         ['stop-computing', 'stop-library'],
-        reason: 'exact degree stop + universal; the same-faculty stop-science '
+        reason:
+            'exact degree stop + universal; the same-faculty stop-science '
             'must NOT be pulled in when an exact match exists',
       );
     });
 
-    test('falls back to faculty stops ONLY when the degree has no own stop', () {
-      final data = _fixture();
-      // 'physics' is fse but no stop names it → fallback to fse siblings.
-      const physics =
-          OpenDayBachelor(id: 'physics', name: 'Physics', studyAreaId: 'fse');
+    test(
+      'falls back to faculty stops ONLY when the degree has no own stop',
+      () {
+        final data = _fixture();
+        // 'physics' is fse but no stop names it → fallback to fse siblings.
+        const physics = OpenDayBachelor(
+          id: 'physics',
+          name: 'Physics',
+          studyAreaId: 'fse',
+        );
 
-      final result = OpenDayPersonalisation.suggestedStops(data, physics);
+        final result = OpenDayPersonalisation.suggestedStops(data, physics);
 
-      expect(
-        result.map((s) => s.id),
-        ['stop-computing', 'stop-science', 'stop-library'],
-        reason: 'no exact physics stop → faculty (fse) stops + universal',
-      );
-    });
+        expect(
+          result.map((s) => s.id),
+          ['stop-computing', 'stop-science', 'stop-library'],
+          reason: 'no exact physics stop → faculty (fse) stops + universal',
+        );
+      },
+    );
 
     test('with no selection, only universal stops are returned', () {
       final data = _fixture();

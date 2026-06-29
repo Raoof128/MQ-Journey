@@ -65,10 +65,9 @@ final degreeSessionsProvider = Provider<List<OpenDayEvent>>((ref) {
       .value
       ?.selectedBachelorId;
   if (selectedId == null) return const [];
-  final list = data.events
-      .where((e) => e.bachelorIds.contains(selectedId))
-      .toList()
-    ..sort((a, b) => a.startTime.compareTo(b.startTime));
+  final list =
+      data.events.where((e) => e.bachelorIds.contains(selectedId)).toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
   return list;
 });
 

@@ -1,3 +1,17 @@
+### Raouf: 2026-06-29 (Australia/Sydney) — Bump macOS deployment target 13.0→14.0 in Xcode project + suppress pod warnings
+**Scope:** Build — `macos/Runner.xcodeproj/project.pbxproj`, `macos/Podfile`
+**Summary:** After bumping Podfile to macOS 14.0, build still failed: `app_links` and other pod modules were compiled for 14.0 but Runner target was still targeting 13.0. Fixed by updating `MACOSX_DEPLOYMENT_TARGET = 14.0` in all 3 Xcode build configs (Debug/Profile/Release) and the 2 Flutter shell scripts in `project.pbxproj`. Also replaced per-pod warning suppression with blanket `GCC_WARN_INHIBIT_ALL_WARNINGS = YES` and `SWIFT_SUPPRESS_WARNINGS = YES` in Podfile. `flutter run -d macos` now builds and launches cleanly.
+**Files Changed:** `macos/Podfile`, `macos/Runner.xcodeproj/project.pbxproj`
+**Verification:** `flutter run -d macos` — build passed, app launched. Remaining output: pre-existing runtime logs (Firebase/Supabase/ObjectBox not configured for macOS — expected).
+**Follow-ups:** None.
+
+### Raouf: 2026-06-29 (Australia/Sydney) — Fix macOS pod install: Firebase/Messaging min deployment target
+**Scope:** Build — `macos/Podfile`
+**Summary:** `flutter run` on macOS failed because `firebase_messaging` plugin upgraded to require `Firebase/Messaging ~> 12.15.0`, which needs macOS 14.0+. The Podfile had `platform :osx, '13.0'` and `MACOSX_DEPLOYMENT_TARGET = '13.0'`. Bumped both to `14.0`, deleted stale `Podfile.lock`, ran `pod install --repo-update` to fetch the latest Firebase SDK (12.15.0).
+**Files Changed:** `macos/Podfile`, `macos/Podfile.lock` (regenerated)
+**Verification:** `pod install` — 29 pods installed, Firebase 12.15.0 + FirebaseMessaging 12.15.0 resolved successfully.
+**Follow-ups:** Consider migrating Firebase CocoaPods to SPM before Oct 2026 deprecation.
+
 ### Raouf: 2026-06-29 (Australia/Sydney) — Vendor Pannellum JS files and create indoor manifest files
 **Scope:** Assets — Pannellum vendor files and indoor building manifests
 **Summary:** Downloaded Pannellum 2.5.6 CSS/JS to `assets/web/pannellum/`. Created indoor manifest JSON for C3A (Library, 3 nodes) and 18WW (Service Connect, 2 nodes) at `assets/data/indoor/`.

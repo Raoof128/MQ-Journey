@@ -67,8 +67,9 @@ class OpenDayPersonalisation {
       return universal.take(max).toList();
     }
 
-    final exact =
-        stops.where((s) => s.bachelorIds.contains(selected.id)).toList();
+    final exact = stops
+        .where((s) => s.bachelorIds.contains(selected.id))
+        .toList();
     if (exact.isNotEmpty) {
       // Degree-specific stops first, then general — no faculty siblings.
       return [...exact, ...universal].take(max).toList();
@@ -77,9 +78,10 @@ class OpenDayPersonalisation {
     // Fallback ONLY when the degree has no dedicated stop: surface its
     // faculty's stops (study-area match) so the section isn't empty.
     final faculty = stops
-        .where((s) =>
-            !isUniversal(s) &&
-            s.studyAreaIds.contains(selected.studyAreaId))
+        .where(
+          (s) =>
+              !isUniversal(s) && s.studyAreaIds.contains(selected.studyAreaId),
+        )
         .toList();
     return [...faculty, ...universal].take(max).toList();
   }
