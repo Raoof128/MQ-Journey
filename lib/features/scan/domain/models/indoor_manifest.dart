@@ -45,9 +45,12 @@ class IndoorManifest {
             neighbours: ((m['neighbours'] as List?) ?? [])
                 .map((n) {
                   final nm = n as Map<String, dynamic>;
+                  // Manifest assets use `targetId`/`heading`; older fixtures
+                  // use `id`/`bearing`. Accept both schemas.
                   return NodeNeighbour(
-                    id: nm['id'] as String,
-                    bearing: (nm['bearing'] as num).toDouble(),
+                    id: (nm['targetId'] ?? nm['id']) as String,
+                    bearing: ((nm['heading'] ?? nm['bearing']) as num)
+                        .toDouble(),
                     label: nm['label'] as String?,
                   );
                 })

@@ -19,14 +19,19 @@ class LocationCardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final content = ref.watch(locationContentProvider(locationId));
     final schedule = ref.watch(scheduleProvider);
-    final visitedAsync = ref.watch(visitedStateProvider(locationId));
-    final visited =
-        visitedAsync.asData?.value ??
-        const VisitedState(visited: false, rewardEarned: false);
 
     if (content == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+
+    // Visits are recorded against the building code, so the badge must watch
+    // by building code too (falling back to locationId when unmapped).
+    final visitedAsync = ref.watch(
+      visitedStateProvider(content.buildingId ?? locationId),
+    );
+    final visited =
+        visitedAsync.asData?.value ??
+        const VisitedState(visited: false, rewardEarned: false);
 
     final liveNow = schedule.liveNow(locationId);
     final nextUp = schedule.comingUpNext(locationId);

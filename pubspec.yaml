@@ -64,9 +64,11 @@ flutter:
   generate: true
   assets:
     - assets/data/
+    - assets/data/indoor/
     - assets/maps/
     - assets/images/
     - assets/web/
+    - assets/web/pannellum/
 
 flutter_launcher_icons:
   android: true
