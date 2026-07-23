@@ -48,6 +48,31 @@ void main() {
       expect(building.campusPoint, isNotNull);
     });
 
+    // `campusX: 0, campusY: 0` is the "not yet digitised" sentinel used by
+    // un-georeferenced entries in `assets/data/buildings.json` (the Wally's
+    // Walk trail stops ship with it). Treating it as a real pixel coordinate
+    // pinned those buildings to the top-left corner of the campus overlay
+    // instead of falling back to their GPS position.
+    test('campusPoint rejects the (0,0) not-digitised sentinel', () {
+      final building = Building.fromJson({
+        ...sampleJson,
+        'campusX': 0,
+        'campusY': 0,
+      });
+      expect(building.hasCampusCoordinates, isFalse);
+      expect(building.campusPoint, isNull);
+    });
+
+    test('campusPoint keeps a genuine zero on only one axis', () {
+      final building = Building.fromJson({
+        ...sampleJson,
+        'campusX': 0,
+        'campusY': 256,
+      });
+      expect(building.hasCampusCoordinates, isTrue);
+      expect(building.campusPoint, isNotNull);
+    });
+
     test('fromJson handles missing optional fields', () {
       final building = Building.fromJson({
         'id': 'TEST',

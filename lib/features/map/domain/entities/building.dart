@@ -173,7 +173,18 @@ class Building {
   double? get routingLatitude => entranceLatitude ?? latitude;
   double? get routingLongitude => entranceLongitude ?? longitude;
   bool get hasGeographicCoordinates => latitude != null && longitude != null;
-  bool get hasCampusCoordinates => campusX != null && campusY != null;
+
+  /// Whether this building carries usable campus-overlay pixel coordinates.
+  ///
+  /// `(0, 0)` is the "not yet digitised" sentinel that un-georeferenced
+  /// entries in `assets/data/buildings.json` ship with (the Wally's Walk
+  /// trail stops, 10 Hadenfeld Ave, 14 Ondaatje Ave). Taken literally it is
+  /// the top-left corner of the overlay raster, which pinned those buildings
+  /// to the corner of the map instead of letting them fall back to their GPS
+  /// position. A zero on a *single* axis is a legitimate edge coordinate and
+  /// is preserved.
+  bool get hasCampusCoordinates =>
+      campusX != null && campusY != null && !(campusX == 0 && campusY == 0);
   CampusPoint? get campusPoint =>
       hasCampusCoordinates ? CampusPoint(x: campusX!, y: campusY!) : null;
 

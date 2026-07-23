@@ -86,4 +86,91 @@ void main() {
       expect(sunrise(), findsNothing);
     },
   );
+
+  // ── RTL (fa/ar/he/ur) ──────────────────────────────────────
+  //
+  // The tab row is a plain [Row], so under `TextDirection.rtl` Flutter
+  // mirrors it: item 0 renders at the *physical right*. Hit-testing
+  // (`localPosition.dx`) and the indicator (`Positioned.left`) are both
+  // physical-left-origin, so without mirroring they address the opposite
+  // tab — taps navigate to the wrong page and the lens glides the wrong way.
+  Widget rtlHost({
+    required int currentIndex,
+    required ValueChanged<int> onSelected,
+  }) {
+    return MaterialApp(
+      home: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          bottomNavigationBar: LiquidTabBar(
+            currentIndex: currentIndex,
+            onSelected: onSelected,
+            color: Colors.black,
+            items: const [
+              LiquidNavItem(
+                icon: Icons.home_outlined,
+                activeIcon: Icons.home,
+                label: 'Home',
+                fx: TabFx.homecoming,
+              ),
+              LiquidNavItem(
+                icon: Icons.qr_code_scanner_outlined,
+                activeIcon: Icons.qr_code_scanner,
+                label: 'Scan',
+                fx: TabFx.scanline,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  testWidgets('RTL: tapping a tab selects that tab, not its mirror', (
+    tester,
+  ) async {
+    final selected = <int>[];
+    await tester.pumpWidget(rtlHost(currentIndex: 0, onSelected: selected.add));
+
+    // Scan (index 1) renders on the physical LEFT under RTL.
+    await tester.tap(
+      find.byIcon(Icons.qr_code_scanner_outlined),
+      warnIfMissed: false,
+    );
+    await tester.pump();
+    expect(selected, [1]);
+  });
+
+  testWidgets('RTL: the lens sits over the selected tab', (tester) async {
+    Rect lensRect(WidgetTester tester) {
+      final positioned = tester
+          .widgetList<Positioned>(
+            find.descendant(
+              of: find.byType(LiquidTabBar),
+              matching: find.byType(Positioned),
+            ),
+          )
+          .first;
+      final barWidth = tester.getSize(find.byType(LiquidTabBar)).width;
+      return Rect.fromLTWH(
+        positioned.left!,
+        0,
+        positioned.width!,
+        1,
+      ).translate(0, barWidth * 0); // width-relative assertions below
+    }
+
+    await tester.pumpWidget(rtlHost(currentIndex: 0, onSelected: (_) {}));
+    await tester.pumpAndSettle();
+
+    final barWidth = tester.getSize(find.byType(LiquidTabBar)).width;
+    final lens = lensRect(tester);
+    // Index 0 is the right-hand half of a 2-tab bar under RTL.
+    expect(lens.center.dx, greaterThan(barWidth / 2));
+
+    // And the lens must actually cover the Home icon.
+    final homeCentre = tester.getCenter(find.byIcon(Icons.home));
+    expect(homeCentre.dx, greaterThan(lens.left));
+    expect(homeCentre.dx, lessThan(lens.right));
+  });
 }

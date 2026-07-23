@@ -94,17 +94,22 @@ class LocationSource {
       return null;
     }
 
-    // Platform-specific settings give a substantially more accurate fix on
-    // Android: `forceLocationManager: true` bypasses the Play-Services Fused
-    // Location Provider (which often returns Wi-Fi-triangulated estimates
-    // that can be hundreds of metres off the true position) and uses the raw
-    // OS LocationManager + GPS provider directly.
+    // Android uses the Play-Services Fused Location Provider (the geolocator
+    // default, i.e. `forceLocationManager: false`).
+    //
+    // We previously forced the raw OS LocationManager on the theory that
+    // Wi-Fi triangulation was dragging the fix off-target. In practice that
+    // made things worse on campus: raw GPS alone has no sensor/Wi-Fi fusion
+    // and no Kalman smoothing, so between the buildings along Wally's Walk
+    // the dot drifted and jumped tens of metres between updates, and indoors
+    // it often never produced a fix at all. The fused provider at
+    // `bestForNavigation` is the more accurate *and* more stable source in a
+    // dense low-rise campus like this one.
     final LocationSettings locationSettings =
         defaultTargetPlatform == TargetPlatform.android
         ? AndroidSettings(
             accuracy: LocationAccuracy.bestForNavigation,
             distanceFilter: 0,
-            forceLocationManager: true,
             timeLimit: const Duration(seconds: 15),
           )
         : AppleSettings(
@@ -184,15 +189,14 @@ class LocationSource {
       return;
     }
 
-    // Same platform-specific tuning as `getCurrentLocation` — raw GPS on
-    // Android avoids Wi-Fi-triangulation jitter that can pull the
-    // navigation dot tens of metres off the route polyline.
+    // Same platform tuning as `getCurrentLocation` — the fused provider keeps
+    // the live navigation dot stable instead of letting raw-GPS noise skitter
+    // it off the route polyline.
     final LocationSettings locationSettings =
         defaultTargetPlatform == TargetPlatform.android
         ? AndroidSettings(
             accuracy: LocationAccuracy.bestForNavigation,
             distanceFilter: 5,
-            forceLocationManager: true,
             intervalDuration: const Duration(seconds: 2),
           )
         : AppleSettings(

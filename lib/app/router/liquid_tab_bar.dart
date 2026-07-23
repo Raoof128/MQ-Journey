@@ -101,30 +101,41 @@ class _LiquidTabBarState extends State<LiquidTabBar>
   @override
   Widget build(BuildContext context) {
     final n = widget.items.length;
+    // The tab strip below is a plain [Row], so Flutter mirrors it under RTL
+    // (fa/ar/he/ur): item 0 renders at the *physical right*. Pointer
+    // coordinates (`localPosition.dx`) and `Positioned.left` are both
+    // physical-left-origin and do NOT mirror, so index-space and pixel-space
+    // must be flipped by hand — otherwise taps select the mirrored tab and
+    // the lens glides away from the tab it should land on.
+    final rtl = Directionality.of(context) == TextDirection.rtl;
     return LayoutBuilder(
       builder: (context, constraints) {
         final w = constraints.maxWidth;
         final slot = w / n;
         final indH = widget.height * 0.78; // tall enough to hold icon + label
 
+        // Physical pointer x → logical (start-relative) x.
+        double localDx(Offset p) => rtl ? w - p.dx : p.dx;
+
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTapDown: (d) =>
-              setState(() => _pressed = _indexAt(d.localPosition.dx, slot, n)),
+          onTapDown: (d) => setState(
+            () => _pressed = _indexAt(localDx(d.localPosition), slot, n),
+          ),
           onTapCancel: () => setState(() => _pressed = null),
           onTapUp: (d) {
-            final i = _indexAt(d.localPosition.dx, slot, n);
+            final i = _indexAt(localDx(d.localPosition), slot, n);
             setState(() => _pressed = null);
             widget.onSelected(i);
           },
           onHorizontalDragStart: (d) => setState(() {
-            _pressed = _indexAt(d.localPosition.dx, slot, n);
-            _dragFrac = _fracAt(d.localPosition.dx, slot, n);
+            _pressed = _indexAt(localDx(d.localPosition), slot, n);
+            _dragFrac = _fracAt(localDx(d.localPosition), slot, n);
           }),
           onHorizontalDragUpdate: (d) {
-            final i = _indexAt(d.localPosition.dx, slot, n);
+            final i = _indexAt(localDx(d.localPosition), slot, n);
             setState(() {
-              _dragFrac = _fracAt(d.localPosition.dx, slot, n);
+              _dragFrac = _fracAt(localDx(d.localPosition), slot, n);
               _pressed = i;
             });
             if (i != widget.currentIndex) widget.onSelected(i);
@@ -159,7 +170,10 @@ class _LiquidTabBarState extends State<LiquidTabBar>
               animation: _slide,
               builder: (context, _) {
                 final frac = _displayFrac;
-                final indicatorCenter = (frac + 0.5) * slot;
+                // Index-space → physical-pixel space. Under RTL the Row lays
+                // item 0 out last, so mirror the fraction before converting.
+                final visualFrac = rtl ? (n - 1) - frac : frac;
+                final indicatorCenter = (visualFrac + 0.5) * slot;
                 // One fixed lens size — it glides between tabs but never
                 // stretches or changes width.
                 final indW = slot * 0.82;
