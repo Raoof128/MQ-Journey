@@ -10,7 +10,7 @@
     "longitude": 151.1126116,
     "entranceLatitude": -33.77388,
     "entranceLongitude": 151.11275,
-    "campusX": 2201,
+    "campusX": 2281,
     "campusY": 1882,
     "aliases": [
       "Tech Bar",
@@ -108,8 +108,8 @@
     "longitude": 151.1131306,
     "entranceLatitude": -33.7754,
     "entranceLongitude": 151.11325,
-    "campusX": 2345,
-    "campusY": 2388,
+    "campusX": 2393,
+    "campusY": 2311,
     "aliases": [
       "16 Macquarie Walk",
       "16 Macquarie Walk (Waranara Library)",
@@ -163,8 +163,8 @@
     "longitude": 151.1061672,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 232,
-    "campusY": 2213,
+    "campusX": 324,
+    "campusY": 2193,
     "aliases": [
       "Security & Information",
       "Emergency & First Aid",
@@ -208,8 +208,8 @@
     "longitude": 151.1112771,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1687,
-    "campusY": 1913,
+    "campusX": 1844,
+    "campusY": 1924,
     "aliases": [
       "Faculty of Arts",
       "Department of History and Archaeology",
@@ -279,7 +279,7 @@
     "longitude": 151.1133652,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2436,
+    "campusX": 2516,
     "campusY": 1883,
     "aliases": [
       "Macquarie Law School",
@@ -339,7 +339,7 @@
     "longitude": 151.1160258,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3066,
+    "campusX": 3146,
     "campusY": 2352,
     "aliases": [
       "Faculty of Macquarie Business School",
@@ -387,8 +387,8 @@
     "longitude": 151.1186167,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 4024,
-    "campusY": 1585,
+    "campusX": 4027,
+    "campusY": 1764,
     "aliases": [
       "Mindspot",
       "Macquarie Medical School",
@@ -432,8 +432,8 @@
     "longitude": 151.111851,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1748,
-    "campusY": 2689,
+    "campusX": 2011,
+    "campusY": 2617,
     "aliases": [
       "Speech & Hearing Clinic",
       "Psychology Clinic",
@@ -518,7 +518,7 @@
     "longitude": 151.1155757,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3098,
+    "campusX": 3178,
     "campusY": 1906,
     "aliases": [
       "School of Engineering",
@@ -562,7 +562,7 @@
     "longitude": 151.1177871,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3653,
+    "campusX": 3733,
     "campusY": 1975,
     "aliases": [
       "School of Computing"
@@ -601,8 +601,8 @@
     "longitude": 151.1146649,
     "entranceLatitude": -33.7742,
     "entranceLongitude": 151.11475,
-    "campusX": 2790,
-    "campusY": 1882,
+    "campusX": 2852,
+    "campusY": 1813,
     "aliases": [
       "School of Mathematical & Physical Sciences",
       "12 Wally's Walk",
@@ -647,8 +647,8 @@
     "longitude": 151.1158118,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3060,
-    "campusY": 1830,
+    "campusX": 3194,
+    "campusY": 1676,
     "aliases": [
       "School of Natural Sciences",
       "Herbarium",
@@ -697,8 +697,8 @@
     "longitude": 151.1167778,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3407,
-    "campusY": 1876,
+    "campusX": 3481,
+    "campusY": 1761,
     "aliases": [
       "Australian Proteome Analysis Facility"
     ],
@@ -731,7 +731,7 @@
     "longitude": 151.1106244,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1559,
+    "campusX": 1639,
     "campusY": 1961,
     "aliases": [
       "Lotus Theatre",
@@ -778,8 +778,8 @@
     "longitude": 151.1122714,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2023,
-    "campusY": 1961,
+    "campusX": 2140,
+    "campusY": 1954,
     "aliases": [
       "Macquarie Theatre",
       "Theatre"
@@ -815,7 +815,7 @@
     "longitude": 151.1117559,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1872,
+    "campusX": 1952,
     "campusY": 1956,
     "aliases": [
       "Price Theatre",
@@ -851,7 +851,7 @@
     "longitude": 151.1114894,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1928,
+    "campusX": 2008,
     "campusY": 1135,
     "aliases": [],
     "tags": [
@@ -882,7 +882,7 @@
     "longitude": 151.1174832,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3722,
+    "campusX": 3802,
     "campusY": 1871,
     "aliases": [
       "1 Wally's Walk",
@@ -929,8 +929,8 @@
     "longitude": 151.1179502,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3735,
-    "campusY": 1622,
+    "campusX": 3830,
+    "campusY": 1572,
     "aliases": [
       "Macquarie Medical Imaging",
       "MMI",
@@ -983,8 +983,8 @@
     "longitude": 151.1176713,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3646,
-    "campusY": 1472,
+    "campusX": 3748,
+    "campusY": 1388,
     "aliases": [
       "Specialist Clinics",
       "GP Clinic",
@@ -1034,7 +1034,7 @@
     "longitude": 151.1197583,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 4180,
+    "campusX": 4260,
     "campusY": 2048,
     "aliases": [
       "2 Innovation Road",
@@ -1068,8 +1068,8 @@
     "longitude": 151.1105693,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1568,
-    "campusY": 1210,
+    "campusX": 1637,
+    "campusY": 1289,
     "aliases": [
       "Sporting Hall of Fame Museum",
       "MUSAC",
@@ -1122,8 +1122,8 @@
     "longitude": 151.1127799,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1521,
-    "campusY": 159,
+    "campusX": 2293,
+    "campusY": 1541,
     "aliases": [],
     "tags": [
       "sports",
@@ -1159,7 +1159,7 @@
     "longitude": 151.1133796,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2449,
+    "campusX": 2529,
     "campusY": 1542,
     "aliases": [
       "UBar",
@@ -1205,8 +1205,8 @@
     "longitude": 151.1112771,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2424,
-    "campusY": 1799,
+    "campusX": 1844,
+    "campusY": 1924,
     "aliases": [
       "Cult Café",
       "Cult Cafe",
@@ -1244,7 +1244,7 @@
     "longitude": 151.1158846,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3123,
+    "campusX": 3203,
     "campusY": 750,
     "aliases": [
       "1 Executive Road"
@@ -1278,7 +1278,7 @@
     "longitude": 151.11473,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2722,
+    "campusX": 2802,
     "campusY": 2224,
     "aliases": [
       "Future Students",
@@ -1329,8 +1329,8 @@
     "longitude": 151.113649,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2378,
-    "campusY": 1884,
+    "campusX": 2550,
+    "campusY": 1810,
     "aliases": [
       "Graduate Research Academy",
       "Research Services",
@@ -1378,7 +1378,7 @@
     "longitude": 151.113014,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2142,
+    "campusX": 2222,
     "campusY": 2115,
     "aliases": [
       "Student Wellbeing",
@@ -1419,8 +1419,8 @@
     "longitude": 151.1148539,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2969,
-    "campusY": 1290,
+    "campusX": 2912,
+    "campusY": 1207,
     "aliases": [
       "Chancellery",
       "Archives & Records Management"
@@ -1457,7 +1457,7 @@
     "longitude": 151.1111248,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1665,
+    "campusX": 1745,
     "campusY": 480,
     "aliases": [
       "Astronomy",
@@ -1493,8 +1493,8 @@
     "longitude": 151.1090529,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1112,
-    "campusY": 2535,
+    "campusX": 1180,
+    "campusY": 2550,
     "aliases": [
       "Macquarie University Incubator"
     ],
@@ -1535,8 +1535,8 @@
     "longitude": 151.1105191,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1474,
-    "campusY": 1925,
+    "campusX": 1620,
+    "campusY": 1839,
     "aliases": [
       "Walanga Muru",
       "29 Wally's Walk",
@@ -1584,8 +1584,8 @@
     "longitude": 151.1090476,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1129,
-    "campusY": 2173,
+    "campusX": 1180,
+    "campusY": 2170,
     "aliases": [
       "Banksia Cottage"
     ],
@@ -1624,8 +1624,8 @@
     "longitude": 151.1122559,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2046,
-    "campusY": 3067,
+    "campusX": 2130,
+    "campusY": 2984,
     "aliases": [
       "Gumnut Cottage"
     ],
@@ -1663,7 +1663,7 @@
     "longitude": 151.1105191,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1466,
+    "campusX": 1546,
     "campusY": 1852,
     "aliases": [
       "Mia Mia Child Care Centre",
@@ -1703,7 +1703,7 @@
     "longitude": 151.11174,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2362,
+    "campusX": 2442,
     "campusY": 3137,
     "aliases": [
       "Waratah Childcare"
@@ -1742,7 +1742,7 @@
     "longitude": 151.1106033,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1231,
+    "campusX": 1311,
     "campusY": 957,
     "aliases": [],
     "tags": [
@@ -1768,7 +1768,7 @@
     "longitude": 151.1090071,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 942,
+    "campusX": 1022,
     "campusY": 1038,
     "aliases": [],
     "tags": [
@@ -1795,7 +1795,7 @@
     "longitude": 151.1167229,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3334,
+    "campusX": 3414,
     "campusY": 1478,
     "aliases": [
       "3 Science Road",
@@ -1837,8 +1837,8 @@
     "longitude": 151.1127909,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2261,
-    "campusY": 1879,
+    "campusX": 2295,
+    "campusY": 1787,
     "aliases": [],
     "tags": [
       "food",
@@ -1863,8 +1863,8 @@
     "longitude": 151.1131306,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2327,
-    "campusY": 2386,
+    "campusX": 2393,
+    "campusY": 2311,
     "aliases": [],
     "tags": [
       "food",
@@ -1889,8 +1889,8 @@
     "longitude": 151.1165648,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3035,
-    "campusY": 3001,
+    "campusX": 3410,
+    "campusY": 3175,
     "aliases": [],
     "tags": [
       "residential",
@@ -1922,8 +1922,8 @@
     "longitude": 151.1168364,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3359,
-    "campusY": 3044,
+    "campusX": 3492,
+    "campusY": 2832,
     "aliases": [],
     "tags": [
       "residential",
@@ -1955,7 +1955,7 @@
     "longitude": 151.1079173,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 947,
+    "campusX": 1027,
     "campusY": 795,
     "aliases": [
       "Macquarie University Village",
@@ -1994,8 +1994,8 @@
     "longitude": 151.1148585,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2929,
-    "campusY": 1302,
+    "campusX": 2913,
+    "campusY": 1182,
     "aliases": [
       "MQ Art Gallery",
       "Macquarie Art Gallery"
@@ -2031,8 +2031,8 @@
     "longitude": 151.1159258,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3085,
-    "campusY": 1600,
+    "campusX": 3228,
+    "campusY": 1591,
     "aliases": [
       "6 Science Road",
       "Biological Sciences Museum"
@@ -2070,8 +2070,8 @@
     "longitude": 151.1151193,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2836,
-    "campusY": 1927,
+    "campusX": 2987,
+    "campusY": 1937,
     "aliases": [
       "11 Wally's Walk",
       "11 WW",
@@ -2108,8 +2108,8 @@
     "longitude": 151.1171794,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3529,
-    "campusY": 1441,
+    "campusX": 3602,
+    "campusY": 1454,
     "aliases": [],
     "tags": [
       "research",
@@ -2133,7 +2133,7 @@
     "longitude": 151.115895,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2969,
+    "campusX": 3049,
     "campusY": 2279,
     "aliases": [],
     "tags": [
@@ -2160,7 +2160,7 @@
     "longitude": 151.1135164,
     "entranceLatitude": -33.77395,
     "entranceLongitude": 151.11365,
-    "campusX": 2467,
+    "campusX": 2547,
     "campusY": 1618,
     "aliases": [
       "Graduation Venue",
@@ -2208,8 +2208,8 @@
     "longitude": 151.116676,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3369,
-    "campusY": 1376,
+    "campusX": 3452,
+    "campusY": 1429,
     "aliases": [],
     "tags": [
       "research",
@@ -2233,8 +2233,8 @@
     "longitude": 151.1134198,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2473,
-    "campusY": 2873,
+    "campusX": 2476,
+    "campusY": 2856,
     "aliases": [],
     "tags": [
       "research",
@@ -2259,8 +2259,8 @@
     "longitude": 151.114706,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2688,
-    "campusY": 2004,
+    "campusX": 2863,
+    "campusY": 2032,
     "aliases": [],
     "tags": [
       "academic",
@@ -2284,7 +2284,7 @@
     "longitude": 151.115721,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2966,
+    "campusX": 3046,
     "campusY": 1742,
     "aliases": [],
     "tags": [
@@ -2311,8 +2311,8 @@
     "longitude": 151.109691,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1344,
-    "campusY": 2130,
+    "campusX": 1372,
+    "campusY": 2027,
     "aliases": [
       "Macquarie University Special Education Centre"
     ],
@@ -2344,7 +2344,7 @@
     "longitude": 151.114706,
     "entranceLatitude": -33.77395,
     "entranceLongitude": 151.11485,
-    "campusX": 2686,
+    "campusX": 2766,
     "campusY": 1761,
     "aliases": [
       "14 Sir Christopher Ondaatje Avenue",
@@ -2424,7 +2424,7 @@
     "longitude": 151.1114772,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1806,
+    "campusX": 1886,
     "campusY": 2086,
     "aliases": [],
     "tags": [
@@ -2450,8 +2450,8 @@
     "longitude": 151.112022,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2053,
-    "campusY": 2256,
+    "campusX": 2064,
+    "campusY": 2215,
     "aliases": [],
     "tags": [
       "academic"
@@ -2474,8 +2474,8 @@
     "longitude": 151.113178,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2319,
-    "campusY": 2431,
+    "campusX": 2407,
+    "campusY": 2486,
     "aliases": [],
     "tags": [
       "academic"
@@ -2498,8 +2498,8 @@
     "longitude": 151.116079,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3077,
-    "campusY": 934,
+    "campusX": 3277,
+    "campusY": 916,
     "aliases": [],
     "tags": [
       "academic"
@@ -2522,7 +2522,7 @@
     "longitude": 151.1157,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3045,
+    "campusX": 3125,
     "campusY": 958,
     "aliases": [],
     "tags": [
@@ -2546,8 +2546,8 @@
     "longitude": 151.1157984,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3201,
-    "campusY": 1010,
+    "campusX": 3193,
+    "campusY": 1048,
     "aliases": [],
     "tags": [
       "academic"
@@ -2570,8 +2570,8 @@
     "longitude": 151.113379,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2309,
-    "campusY": 2259,
+    "campusX": 2468,
+    "campusY": 2183,
     "aliases": [],
     "tags": [
       "academic"
@@ -2594,8 +2594,8 @@
     "longitude": 151.112847,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2146,
-    "campusY": 2258,
+    "campusX": 2310,
+    "campusY": 2201,
     "aliases": [],
     "tags": [
       "academic"
@@ -2618,8 +2618,8 @@
     "longitude": 151.1058082,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 178,
-    "campusY": 2057,
+    "campusX": 218,
+    "campusY": 2061,
     "aliases": [],
     "tags": [
       "academic"
@@ -2642,8 +2642,8 @@
     "longitude": 151.1066688,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 306,
-    "campusY": 2123,
+    "campusX": 474,
+    "campusY": 1990,
     "aliases": [],
     "tags": [
       "academic"
@@ -2666,8 +2666,8 @@
     "longitude": 151.120262,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 4337,
-    "campusY": 1816,
+    "campusX": 4517,
+    "campusY": 1651,
     "aliases": [],
     "tags": [
       "residential"
@@ -2690,8 +2690,8 @@
     "longitude": 151.118627,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 4038,
-    "campusY": 2085,
+    "campusX": 4028,
+    "campusY": 2126,
     "aliases": [],
     "tags": [
       "academic"
@@ -2714,8 +2714,8 @@
     "longitude": 151.119137,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 4129,
-    "campusY": 2160,
+    "campusX": 4179,
+    "campusY": 2237,
     "aliases": [],
     "tags": [
       "academic"
@@ -2738,8 +2738,8 @@
     "longitude": 151.116836,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3526,
-    "campusY": 1318,
+    "campusX": 3500,
+    "campusY": 1335,
     "aliases": [],
     "tags": [
       "academic"
@@ -2762,8 +2762,8 @@
     "longitude": 151.114914,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1586,
-    "campusY": 71,
+    "campusX": 2941,
+    "campusY": 0,
     "aliases": [],
     "tags": [
       "sports",
@@ -2793,8 +2793,8 @@
     "longitude": 151.1132109,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2137,
-    "campusY": 3279,
+    "campusX": 2411,
+    "campusY": 3307,
     "aliases": [],
     "tags": [
       "residential",
@@ -2823,8 +2823,8 @@
     "longitude": 151.116066,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3192,
-    "campusY": 1037,
+    "campusX": 3273,
+    "campusY": 1084,
     "aliases": [],
     "tags": [
       "academic"
@@ -2847,8 +2847,8 @@
     "longitude": 151.115679,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3043,
-    "campusY": 1082,
+    "campusX": 3157,
+    "campusY": 1131,
     "aliases": [],
     "tags": [
       "academic"
@@ -2871,8 +2871,8 @@
     "longitude": 151.1151423,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2560,
-    "campusY": 2425,
+    "campusX": 2991,
+    "campusY": 2385,
     "aliases": [],
     "tags": [
       "academic"
@@ -2895,8 +2895,8 @@
     "longitude": 151.115713,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2968,
-    "campusY": 1321,
+    "campusX": 3166,
+    "campusY": 1339,
     "aliases": [],
     "tags": [
       "academic"
@@ -2919,8 +2919,8 @@
     "longitude": 151.117209,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3485,
-    "campusY": 1877,
+    "campusX": 3609,
+    "campusY": 1764,
     "aliases": [],
     "tags": [
       "academic"
@@ -2943,8 +2943,8 @@
     "longitude": 151.111811,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1910,
-    "campusY": 1880,
+    "campusX": 2002,
+    "campusY": 2102,
     "aliases": [],
     "tags": [
       "academic"
@@ -2967,8 +2967,8 @@
     "longitude": 151.119825,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 4182,
-    "campusY": 2015,
+    "campusX": 4385,
+    "campusY": 1998,
     "aliases": [],
     "tags": [
       "commercial",
@@ -2992,7 +2992,7 @@
     "longitude": 151.1118029,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 882,
+    "campusX": 962,
     "campusY": 2522,
     "aliases": [
       "10 Hadenfeld Avenue",
@@ -3047,8 +3047,8 @@
     "longitude": 151.1211352,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 4112,
-    "campusY": 2591,
+    "campusX": 4678,
+    "campusY": 2798,
     "aliases": [],
     "tags": [
       "food",
@@ -3073,8 +3073,8 @@
     "longitude": 151.1165762,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3091,
-    "campusY": 3052,
+    "campusX": 3413,
+    "campusY": 3204,
     "aliases": [],
     "tags": [
       "residential"
@@ -3097,8 +3097,8 @@
     "longitude": 151.1105191,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1496,
-    "campusY": 1875,
+    "campusX": 1620,
+    "campusY": 1839,
     "aliases": [
       "29 Wally's Walk",
       "29 WW",
@@ -3138,8 +3138,8 @@
     "longitude": 151.1110393,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1685,
-    "campusY": 1876,
+    "campusX": 1773,
+    "campusY": 2141,
     "aliases": [],
     "tags": [
       "academic"
@@ -3162,8 +3162,8 @@
     "longitude": 151.112682,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2096,
-    "campusY": 2058,
+    "campusX": 2261,
+    "campusY": 2039,
     "aliases": [],
     "tags": [
       "academic"
@@ -3186,8 +3186,8 @@
     "longitude": 151.1127885,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2195,
-    "campusY": 1586,
+    "campusX": 2296,
+    "campusY": 1495,
     "aliases": [
       "Student Accommodation",
       "15-17 Gymnasium Road",
@@ -3230,8 +3230,8 @@
     "longitude": 151.111826,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2100,
-    "campusY": 663,
+    "campusX": 2017,
+    "campusY": 99,
     "aliases": [],
     "tags": [
       "residential"
@@ -3254,8 +3254,8 @@
     "longitude": 151.111623,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2099,
-    "campusY": 751,
+    "campusX": 1956,
+    "campusY": 229,
     "aliases": [],
     "tags": [
       "residential"
@@ -3278,8 +3278,8 @@
     "longitude": 151.116569,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3067,
-    "campusY": 3030,
+    "campusX": 3412,
+    "campusY": 2997,
     "aliases": [],
     "tags": [
       "residential"
@@ -3302,8 +3302,8 @@
     "longitude": 151.1166667,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3084,
-    "campusY": 3048,
+    "campusX": 3441,
+    "campusY": 2942,
     "aliases": [],
     "tags": [
       "residential",
@@ -3327,8 +3327,8 @@
     "longitude": 151.11359,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2146,
-    "campusY": 3276,
+    "campusX": 2522,
+    "campusY": 3307,
     "aliases": [],
     "tags": [
       "residential"
@@ -3351,8 +3351,8 @@
     "longitude": 151.113325,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2440,
-    "campusY": 1749,
+    "campusX": 2454,
+    "campusY": 1806,
     "aliases": [],
     "tags": [
       "food",
@@ -3377,8 +3377,8 @@
     "longitude": 151.113779,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2384,
-    "campusY": 1761,
+    "campusX": 2589,
+    "campusY": 1751,
     "aliases": [],
     "tags": [
       "food",
@@ -3403,8 +3403,8 @@
     "longitude": 151.112794,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2426,
-    "campusY": 1723,
+    "campusX": 2297,
+    "campusY": 1594,
     "aliases": [],
     "tags": [
       "food",
@@ -3429,8 +3429,8 @@
     "longitude": 151.113772,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2429,
-    "campusY": 1790,
+    "campusX": 2587,
+    "campusY": 1837,
     "aliases": [],
     "tags": [
       "food",
@@ -3455,8 +3455,8 @@
     "longitude": 151.11382,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2482,
-    "campusY": 1512,
+    "campusX": 2603,
+    "campusY": 1497,
     "aliases": [],
     "tags": [
       "food",
@@ -3481,8 +3481,8 @@
     "longitude": 151.11281,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2507,
-    "campusY": 1595,
+    "campusX": 2302,
+    "campusY": 1596,
     "aliases": [],
     "tags": [
       "food",
@@ -3507,7 +3507,7 @@
     "longitude": 151.11281,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2390,
+    "campusX": 2302,
     "campusY": 1596,
     "aliases": [],
     "tags": [
@@ -3533,8 +3533,8 @@
     "longitude": 151.113215,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2403,
-    "campusY": 1606,
+    "campusX": 2422,
+    "campusY": 1585,
     "aliases": [],
     "tags": [
       "food",
@@ -3559,8 +3559,8 @@
     "longitude": 151.113187,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2435,
-    "campusY": 1611,
+    "campusX": 2414,
+    "campusY": 1601,
     "aliases": [],
     "tags": [
       "food",
@@ -3585,8 +3585,8 @@
     "longitude": 151.113436,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2413,
-    "campusY": 1622,
+    "campusX": 2487,
+    "campusY": 1802,
     "aliases": [],
     "tags": [
       "food",
@@ -3612,8 +3612,8 @@
     "longitude": 151.113534,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2415,
-    "campusY": 1712,
+    "campusX": 2516,
+    "campusY": 1800,
     "aliases": [],
     "tags": [
       "food",
@@ -3638,8 +3638,8 @@
     "longitude": 151.112661,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2431,
-    "campusY": 1617,
+    "campusX": 2256,
+    "campusY": 1804,
     "aliases": [],
     "tags": [
       "food",
@@ -3664,8 +3664,8 @@
     "longitude": 151.113474,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2386,
-    "campusY": 1591,
+    "campusX": 2499,
+    "campusY": 1589,
     "aliases": [],
     "tags": [
       "food",
@@ -3690,8 +3690,8 @@
     "longitude": 151.113687,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2383,
-    "campusY": 1593,
+    "campusX": 2563,
+    "campusY": 1560,
     "aliases": [],
     "tags": [
       "food",
@@ -3716,8 +3716,8 @@
     "longitude": 151.113362,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2400,
-    "campusY": 1627,
+    "campusX": 2466,
+    "campusY": 1532,
     "aliases": [],
     "tags": [
       "food",
@@ -3743,8 +3743,8 @@
     "longitude": 151.113841,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2400,
-    "campusY": 1595,
+    "campusX": 2609,
+    "campusY": 1543,
     "aliases": [],
     "tags": [
       "food",
@@ -3769,8 +3769,8 @@
     "longitude": 151.115756,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2451,
-    "campusY": 1656,
+    "campusX": 3181,
+    "campusY": 972,
     "aliases": [],
     "tags": [
       "food",
@@ -3795,8 +3795,8 @@
     "longitude": 151.117692,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3658,
-    "campusY": 2001,
+    "campusX": 3751,
+    "campusY": 1925,
     "aliases": [],
     "tags": [
       "food",
@@ -3821,8 +3821,8 @@
     "longitude": 151.110554,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1527,
-    "campusY": 1131,
+    "campusX": 1634,
+    "campusY": 1141,
     "aliases": [
       "Crunch Café"
     ],
@@ -3854,8 +3854,8 @@
     "longitude": 151.118332,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3618,
-    "campusY": 1419,
+    "campusX": 3944,
+    "campusY": 1522,
     "aliases": [],
     "tags": [
       "food",
@@ -3880,8 +3880,8 @@
     "longitude": 151.112015,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1910,
-    "campusY": 2723,
+    "campusX": 2060,
+    "campusY": 2664,
     "aliases": [],
     "tags": [
       "food",
@@ -3906,8 +3906,8 @@
     "longitude": 151.114171,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2508,
-    "campusY": 2603,
+    "campusX": 2701,
+    "campusY": 2589,
     "aliases": [
       "Parking on campus",
       "Car park"
@@ -3944,8 +3944,8 @@
     "longitude": 151.116794,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3364,
-    "campusY": 2243,
+    "campusX": 3483,
+    "campusY": 2207,
     "aliases": [
       "Parking on campus",
       "Car park"
@@ -3982,8 +3982,8 @@
     "longitude": 151.116969,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3386,
-    "campusY": 1999,
+    "campusX": 3537,
+    "campusY": 1908,
     "aliases": [
       "Parking on campus",
       "Car park"
@@ -4020,8 +4020,8 @@
     "longitude": 151.109232,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1080,
-    "campusY": 1595,
+    "campusX": 1238,
+    "campusY": 1584,
     "aliases": [
       "Parking on campus",
       "Car park"
@@ -4058,8 +4058,8 @@
     "longitude": 151.109179,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 825,
-    "campusY": 2798,
+    "campusX": 1216,
+    "campusY": 2776,
     "aliases": [
       "Parking on campus",
       "Car park"
@@ -4096,8 +4096,8 @@
     "longitude": 151.110247,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1250,
-    "campusY": 2351,
+    "campusX": 1536,
+    "campusY": 2314,
     "aliases": [
       "Parking on campus",
       "Car park"
@@ -4134,8 +4134,8 @@
     "longitude": 151.117418,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3061,
-    "campusY": 1340,
+    "campusX": 3674,
+    "campusY": 1208,
     "aliases": [
       "Parking on campus",
       "Car park"
@@ -4173,8 +4173,8 @@
     "longitude": 151.117429,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 3476,
-    "campusY": 1758,
+    "campusX": 3674,
+    "campusY": 1749,
     "aliases": [
       "Parking on campus",
       "Car park"
@@ -4211,8 +4211,8 @@
     "longitude": 151.113952,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2441,
-    "campusY": 1803,
+    "campusX": 2641,
+    "campusY": 1605,
     "aliases": [
       "CCSA",
       "Central Courtyard student accommodation",
@@ -4248,8 +4248,8 @@
     "longitude": 151.114336,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 2558,
-    "campusY": 3405,
+    "campusX": 2747,
+    "campusY": 3214,
     "aliases": [
       "MRSA",
       "Morling Cottage"
@@ -4284,8 +4284,8 @@
     "longitude": 151.112639,
     "entranceLatitude": -33.774,
     "entranceLongitude": 151.1127,
-    "campusX": 2125,
-    "campusY": 1792,
+    "campusX": 2250,
+    "campusY": 1757,
     "aliases": [],
     "tags": [
       "study",
@@ -4318,8 +4318,8 @@
     "longitude": 151.111416,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1809,
-    "campusY": 1369,
+    "campusX": 1888,
+    "campusY": 1441,
     "aliases": [],
     "tags": [
       "sports",
@@ -4351,8 +4351,8 @@
     "longitude": 151.1113971,
     "entranceLatitude": null,
     "entranceLongitude": null,
-    "campusX": 1747,
-    "campusY": 1903,
+    "campusX": 1880,
+    "campusY": 1944,
     "aliases": [
       "Gale Museum",
       "History Museum",
@@ -4411,7 +4411,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 963,
+    "campusY": 2576
   },
   {
     "id": "BIKEF02",
@@ -4441,7 +4443,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 996,
+    "campusY": 2501
   },
   {
     "id": "BIKEF03",
@@ -4471,7 +4475,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 1080,
+    "campusY": 2428
   },
   {
     "id": "BIKEF04",
@@ -4501,7 +4507,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 1201,
+    "campusY": 2572
   },
   {
     "id": "BIKEF05",
@@ -4531,7 +4539,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 607,
+    "campusY": 2493
   },
   {
     "id": "BIKEF06",
@@ -4561,7 +4571,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 456,
+    "campusY": 2446
   },
   {
     "id": "BIKEF07",
@@ -4591,7 +4603,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 1261,
+    "campusY": 1787
   },
   {
     "id": "BIKEF08",
@@ -4621,7 +4635,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 1599,
+    "campusY": 1885
   },
   {
     "id": "BIKEF09",
@@ -4651,7 +4667,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 1631,
+    "campusY": 2095
   },
   {
     "id": "BIKEF10",
@@ -4681,7 +4699,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 1922,
+    "campusY": 1909
   },
   {
     "id": "BIKEF11",
@@ -4711,7 +4731,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2099,
+    "campusY": 1832
   },
   {
     "id": "BIKEF12",
@@ -4741,7 +4763,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2428,
+    "campusY": 1873
   },
   {
     "id": "BIKEF13",
@@ -4771,7 +4795,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2239,
+    "campusY": 1998
   },
   {
     "id": "BIKEF14",
@@ -4801,7 +4827,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2504,
+    "campusY": 2249
   },
   {
     "id": "BIKEF15",
@@ -4831,7 +4859,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2567,
+    "campusY": 2146
   },
   {
     "id": "BIKEF16",
@@ -4861,7 +4891,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2773,
+    "campusY": 1876
   },
   {
     "id": "BIKEF17",
@@ -4891,7 +4923,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2806,
+    "campusY": 2115
   },
   {
     "id": "BIKEF18",
@@ -4921,7 +4955,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2852,
+    "campusY": 1617
   },
   {
     "id": "BIKEF19",
@@ -4951,7 +4987,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 3072,
+    "campusY": 1829
   },
   {
     "id": "BIKEF20",
@@ -4981,7 +5019,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 3159,
+    "campusY": 2276
   },
   {
     "id": "BIKEF21",
@@ -5011,7 +5051,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 3352,
+    "campusY": 2048
   },
   {
     "id": "BIKEF22",
@@ -5041,7 +5083,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 1675,
+    "campusY": 1137
   },
   {
     "id": "BIKEF23",
@@ -5071,7 +5115,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 3183,
+    "campusY": 1151
   },
   {
     "id": "BIKEF24",
@@ -5101,7 +5147,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 1957,
+    "campusY": 55
   },
   {
     "id": "BIKEF25",
@@ -5131,7 +5179,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 3716,
+    "campusY": 2665
   },
   {
     "id": "BIKEHUBC",
@@ -5161,7 +5211,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2232,
+    "campusY": 2092
   },
   {
     "id": "BIKEHUBE",
@@ -5191,7 +5243,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 3074,
+    "campusY": 1670
   },
   {
     "id": "BIKEREPC",
@@ -5221,7 +5275,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 2248,
+    "campusY": 2031
   },
   {
     "id": "BIKEREPE",
@@ -5251,7 +5307,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "bike"
-    ]
+    ],
+    "campusX": 3073,
+    "campusY": 1708
   },
   {
     "id": "SMOKE1",
@@ -5278,7 +5336,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "smoking"
-    ]
+    ],
+    "campusX": 2265,
+    "campusY": 2473
   },
   {
     "id": "SMOKE2",
@@ -5305,7 +5365,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "smoking"
-    ]
+    ],
+    "campusX": 1083,
+    "campusY": 2261
   },
   {
     "id": "SMOKE3",
@@ -5332,7 +5394,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "smoking"
-    ]
+    ],
+    "campusX": 1955,
+    "campusY": 1800
   },
   {
     "id": "SMOKE4",
@@ -5359,7 +5423,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "smoking"
-    ]
+    ],
+    "campusX": 1909,
+    "campusY": 1024
   },
   {
     "id": "SMOKE5",
@@ -5386,7 +5452,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "smoking"
-    ]
+    ],
+    "campusX": 3452,
+    "campusY": 1134
   },
   {
     "id": "SMOKE6",
@@ -5413,7 +5481,9 @@
     "studentServicesGroups": [],
     "campusHubGroups": [
       "smoking"
-    ]
+    ],
+    "campusX": 4059,
+    "campusY": 1911
   },
   {
     "id": "hadenfeld-10",
@@ -5422,12 +5492,12 @@
     "description": "Open Day venue.",
     "address": "10 Hadenfeld Avenue",
     "category": "teaching",
-    "latitude": -33.7745,
-    "longitude": 151.113,
+    "latitude": -33.7764943,
+    "longitude": 151.1118029,
     "entranceLatitude": -33.7745,
     "entranceLongitude": 151.113,
-    "campusX": 0,
-    "campusY": 0,
+    "campusX": 962,
+    "campusY": 2522,
     "aliases": [],
     "tags": [
       "open day"
@@ -5436,7 +5506,7 @@
       "hadenfeld-10",
       "10 hadenfeld avenue"
     ],
-    "gridRef": "P6",
+    "gridRef": "R6",
     "levels": null,
     "wheelchair": true,
     "studentServicesGroups": [],
@@ -5449,12 +5519,12 @@
     "description": "Open Day venue.",
     "address": "29 Wally's Walk",
     "category": "teaching",
-    "latitude": -33.774,
-    "longitude": 151.1135,
+    "latitude": -33.7742704,
+    "longitude": 151.1105191,
     "entranceLatitude": -33.774,
     "entranceLongitude": 151.1135,
-    "campusX": 0,
-    "campusY": 0,
+    "campusX": 1620,
+    "campusY": 1839,
     "aliases": [],
     "tags": [
       "open day"
@@ -5463,7 +5533,7 @@
       "wallys-29",
       "29 wally's walk"
     ],
-    "gridRef": "L11",
+    "gridRef": null,
     "levels": null,
     "wheelchair": true,
     "studentServicesGroups": [],
@@ -5480,8 +5550,8 @@
     "longitude": 151.1136,
     "entranceLatitude": -33.7741,
     "entranceLongitude": 151.1136,
-    "campusX": 0,
-    "campusY": 0,
+    "campusX": 2536,
+    "campusY": 1766,
     "aliases": [],
     "tags": [
       "open day"
@@ -5503,12 +5573,12 @@
     "description": "Open Day venue.",
     "address": "23 Wally's Walk",
     "category": "teaching",
-    "latitude": -33.7742,
-    "longitude": 151.1137,
+    "latitude": -33.775064,
+    "longitude": 151.111811,
     "entranceLatitude": -33.7742,
     "entranceLongitude": 151.1137,
-    "campusX": 0,
-    "campusY": 0,
+    "campusX": 2002,
+    "campusY": 2102,
     "aliases": [],
     "tags": [
       "open day"
@@ -5517,7 +5587,7 @@
       "wallys-23",
       "23 wally's walk"
     ],
-    "gridRef": "L14",
+    "gridRef": null,
     "levels": null,
     "wheelchair": true,
     "studentServicesGroups": [],
@@ -5530,12 +5600,12 @@
     "description": "Open Day venue.",
     "address": "21 Wally's Walk",
     "category": "teaching",
-    "latitude": -33.7743,
-    "longitude": 151.1138,
+    "latitude": -33.7746334,
+    "longitude": 151.1122714,
     "entranceLatitude": -33.7743,
     "entranceLongitude": 151.1138,
-    "campusX": 0,
-    "campusY": 0,
+    "campusX": 2140,
+    "campusY": 1954,
     "aliases": [],
     "tags": [
       "open day"
@@ -5544,7 +5614,7 @@
       "wallys-21",
       "21 wally's walk"
     ],
-    "gridRef": "L15",
+    "gridRef": "O15",
     "levels": null,
     "wheelchair": true,
     "studentServicesGroups": [],
@@ -5557,12 +5627,12 @@
     "description": "Open Day venue.",
     "address": "17 Wally's Walk",
     "category": "teaching",
-    "latitude": -33.7744,
-    "longitude": 151.1139,
+    "latitude": -33.7748805,
+    "longitude": 151.1133652,
     "entranceLatitude": -33.7744,
     "entranceLongitude": 151.1139,
-    "campusX": 0,
-    "campusY": 0,
+    "campusX": 2516,
+    "campusY": 1883,
     "aliases": [],
     "tags": [
       "open day"
@@ -5571,7 +5641,7 @@
       "wallys-17",
       "17 wally's walk"
     ],
-    "gridRef": "L17",
+    "gridRef": "O19",
     "levels": null,
     "wheelchair": true,
     "studentServicesGroups": [],
@@ -5584,12 +5654,12 @@
     "description": "Open Day venue.",
     "address": "14 Sir Christopher Ondaatje Avenue",
     "category": "teaching",
-    "latitude": -33.7746,
-    "longitude": 151.1141,
-    "entranceLatitude": -33.7746,
-    "entranceLongitude": 151.1141,
-    "campusX": 0,
-    "campusY": 0,
+    "latitude": -33.773899,
+    "longitude": 151.114706,
+    "entranceLatitude": -33.77395,
+    "entranceLongitude": 151.11485,
+    "campusX": 2766,
+    "campusY": 1761,
     "aliases": [],
     "tags": [
       "open day"
@@ -5598,7 +5668,7 @@
       "ondaatje-14",
       "14 sir christopher ondaatje avenue"
     ],
-    "gridRef": "J20",
+    "gridRef": "N20",
     "levels": null,
     "wheelchair": true,
     "studentServicesGroups": [],
@@ -5615,8 +5685,8 @@
     "longitude": 151.1142,
     "entranceLatitude": -33.7747,
     "entranceLongitude": 151.1142,
-    "campusX": 0,
-    "campusY": 0,
+    "campusX": 2713,
+    "campusY": 1967,
     "aliases": [],
     "tags": [
       "open day"
@@ -5638,12 +5708,12 @@
     "description": "Open Day venue.",
     "address": "25 Wally's Walk",
     "category": "teaching",
-    "latitude": -33.7748,
-    "longitude": 151.1143,
+    "latitude": -33.7751678,
+    "longitude": 151.1110393,
     "entranceLatitude": -33.7748,
     "entranceLongitude": 151.1143,
-    "campusX": 0,
-    "campusY": 0,
+    "campusX": 1773,
+    "campusY": 2141,
     "aliases": [],
     "tags": [
       "open day"
@@ -5652,7 +5722,7 @@
       "wallys-25",
       "25 wally's walk"
     ],
-    "gridRef": "N12",
+    "gridRef": null,
     "levels": null,
     "wheelchair": true,
     "studentServicesGroups": [],
