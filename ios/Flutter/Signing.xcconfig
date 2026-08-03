@@ -1,0 +1,35 @@
+// Code-signing team for every target in this project (Runner *and* RunnerTests).
+//
+// This is wired in as the *project-level* base configuration, so both targets
+// inherit it. Do not add DEVELOPMENT_TEAM to a target's Build Settings in
+// Xcode: a value written into project.pbxproj overrides this file, which is
+// exactly the bug this file exists to prevent (RunnerTests was pinned to a
+// team nobody on this project had a certificate for, so every Xcode build
+// that touched the test bundle failed to sign).
+//
+// ---------------------------------------------------------------------------
+// Building on a machine that is not Raouf's? Do this once:
+//
+//   1. Xcode > Settings > Accounts > add your Apple ID (a free one is fine).
+//   2. Find your 10-character Team ID:
+//        security find-identity -v -p codesigning
+//      ...it is the code in parentheses, e.g. "Apple Development: you@mail.com (ABCDE12345)"
+//      is NOT the team id -- get the team id from Xcode > Settings > Accounts,
+//      or by running:  xcodebuild -showBuildSettings | grep DEVELOPMENT_TEAM
+//   3. Create ios/Flutter/Signing.local.xcconfig (it is gitignored) containing:
+//
+//        DEVELOPMENT_TEAM = YOURTEAMID
+//
+// That file is included last, so it overrides the default below. Nothing else
+// needs to change, and your team id never lands in git.
+//
+// Note: the bundle id (com.pouya.mqnavigation) is deliberately NOT overridable
+// here -- ios/Runner/GoogleService-Info.plist is issued against it, so changing
+// it breaks Firebase messaging.
+// ---------------------------------------------------------------------------
+
+// Default team, used when no Signing.local.xcconfig is present.
+DEVELOPMENT_TEAM = 3L5A4R7JNY
+
+// Per-developer override. Optional: the build works fine without this file.
+#include? "Signing.local.xcconfig"
